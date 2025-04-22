@@ -1,4 +1,4 @@
-package modelo.BD.hibernate;
+package modelo.baseDeDatos.hibernate;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

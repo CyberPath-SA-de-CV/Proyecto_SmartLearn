@@ -1,4 +1,4 @@
-package modelo.BD.dao;
+package modelo.baseDeDatos.dao;
 
 import java.util.List;
 

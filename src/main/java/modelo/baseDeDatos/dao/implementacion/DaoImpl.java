@@ -1,8 +1,8 @@
-package modelo.BD.dao.implementacion;
+package modelo.baseDeDatos.dao.implementacion;
 
 import lombok.NoArgsConstructor;
-import modelo.BD.dao.DaoInterface;
-import modelo.BD.hibernate.HibernateUtil;
+import modelo.baseDeDatos.dao.DaoInterface;
+import modelo.baseDeDatos.hibernate.HibernateUtil;
 import org.hibernate.Session;
 
 
