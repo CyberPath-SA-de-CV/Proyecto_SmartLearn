@@ -5,7 +5,7 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema SmartLearn
+-- Schema mydb
 -- -----------------------------------------------------
 SHOW WARNINGS;
 -- -----------------------------------------------------
@@ -21,32 +21,32 @@ SHOW WARNINGS;
 USE `smartlearn` ;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_ROL`
+-- Table `smartlearn`.`tbl_rol`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_ROL` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_rol` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_ROL` (
-  `id_rol` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_rol` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nombre` ENUM('ADMIN', 'ESTUDIANTE') NOT NULL,
-  PRIMARY KEY (`id_rol`))
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE UNIQUE INDEX `nombre` ON `smartlearn`.`TBL_ROL` (`nombre` ASC) VISIBLE;
+CREATE UNIQUE INDEX `nombre` ON `smartlearn`.`tbl_rol` (`nombre` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_USUARIO`
+-- Table `smartlearn`.`tbl_usuario`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_USUARIO` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_usuario` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_USUARIO` (
-  `id_usuario` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_usuario` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(255) NOT NULL,
   `correo` VARCHAR(255) NOT NULL,
   `contrasena` VARCHAR(255) NOT NULL,
@@ -54,167 +54,167 @@ CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_USUARIO` (
   `huella_digital` BLOB NULL DEFAULT NULL,
   `discapacidad` VARCHAR(255) NULL DEFAULT NULL,
   `id_rol` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`id_usuario`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `usuario_ibfk_1`
     FOREIGN KEY (`id_rol`)
-    REFERENCES `smartlearn`.`TBL_ROL` (`id_rol`))
+    REFERENCES `smartlearn`.`tbl_rol` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `id_rol` ON `smartlearn`.`TBL_USUARIO` (`id_rol` ASC) VISIBLE;
+CREATE INDEX `id_rol` ON `smartlearn`.`tbl_usuario` (`id_rol` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_CONTENIDO`
+-- Table `smartlearn`.`tbl_contenido`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_CONTENIDO` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_contenido` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_CONTENIDO` (
-  `id_contenido` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_contenido` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `tipo` ENUM('TEORICO', 'PRACTICO') NOT NULL,
   `creado_por` INT NULL DEFAULT NULL,
   `fecha_creacion` DATE NULL DEFAULT NULL,
   `ultima_edicion` DATE NULL DEFAULT NULL,
-  PRIMARY KEY (`id_contenido`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `contenido_ibfk_2`
     FOREIGN KEY (`creado_por`)
-    REFERENCES `smartlearn`.`TBL_USUARIO` (`id_usuario`))
+    REFERENCES `smartlearn`.`tbl_usuario` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `creado_por` ON `smartlearn`.`TBL_CONTENIDO` (`creado_por` ASC) VISIBLE;
+CREATE INDEX `creado_por` ON `smartlearn`.`tbl_contenido` (`creado_por` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_TIPO_EJERCICIO`
+-- Table `smartlearn`.`tbl_tipo_ejercicio`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_TIPO_EJERCICIO` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_tipo_ejercicio` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_TIPO_EJERCICIO` (
-  `id_tipo` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_tipo_ejercicio` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id_tipo`))
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE UNIQUE INDEX `nombre` ON `smartlearn`.`TBL_TIPO_EJERCICIO` (`nombre` ASC) VISIBLE;
+CREATE UNIQUE INDEX `nombre` ON `smartlearn`.`tbl_tipo_ejercicio` (`nombre` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_EJERCICIO`
+-- Table `smartlearn`.`tbl_ejercicio`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_EJERCICIO` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_ejercicio` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_EJERCICIO` (
-  `id_ejercicio` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_ejercicio` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `id_contenido` INT NULL DEFAULT NULL,
   `id_tipo` INT NULL DEFAULT NULL,
   `descripcion` TEXT NOT NULL,
   `creado_por` INT NULL DEFAULT NULL,
   `fecha_creacion` DATE NULL DEFAULT NULL,
-  PRIMARY KEY (`id_ejercicio`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `ejercicio_ibfk_1`
     FOREIGN KEY (`id_contenido`)
-    REFERENCES `smartlearn`.`TBL_CONTENIDO` (`id_contenido`),
+    REFERENCES `smartlearn`.`tbl_contenido` (`id`),
   CONSTRAINT `ejercicio_ibfk_2`
     FOREIGN KEY (`id_tipo`)
-    REFERENCES `smartlearn`.`TBL_TIPO_EJERCICIO` (`id_tipo`),
+    REFERENCES `smartlearn`.`tbl_tipo_ejercicio` (`id`),
   CONSTRAINT `ejercicio_ibfk_3`
     FOREIGN KEY (`creado_por`)
-    REFERENCES `smartlearn`.`TBL_USUARIO` (`id_usuario`))
+    REFERENCES `smartlearn`.`tbl_usuario` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `id_contenido` ON `smartlearn`.`TBL_EJERCICIO` (`id_contenido` ASC) VISIBLE;
+CREATE INDEX `id_contenido` ON `smartlearn`.`tbl_ejercicio` (`id_contenido` ASC) VISIBLE;
 
 SHOW WARNINGS;
-CREATE INDEX `id_tipo` ON `smartlearn`.`TBL_EJERCICIO` (`id_tipo` ASC) VISIBLE;
+CREATE INDEX `id_tipo` ON `smartlearn`.`tbl_ejercicio` (`id_tipo` ASC) VISIBLE;
 
 SHOW WARNINGS;
-CREATE INDEX `creado_por` ON `smartlearn`.`TBL_EJERCICIO` (`creado_por` ASC) VISIBLE;
+CREATE INDEX `creado_por` ON `smartlearn`.`tbl_ejercicio` (`creado_por` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_INTENTO_EJERCICIO`
+-- Table `smartlearn`.`tbl_intento_ejercicio`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_INTENTO_EJERCICIO` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_intento_ejercicio` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_INTENTO_EJERCICIO` (
-  `id_intento` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_intento_ejercicio` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `id_usuario` INT NULL DEFAULT NULL,
   `id_ejercicio` INT NULL DEFAULT NULL,
   `fecha` DATE NULL DEFAULT NULL,
-  PRIMARY KEY (`id_intento`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `intentoejercicio_ibfk_1`
     FOREIGN KEY (`id_usuario`)
-    REFERENCES `smartlearn`.`TBL_USUARIO` (`id_usuario`),
+    REFERENCES `smartlearn`.`tbl_usuario` (`id`),
   CONSTRAINT `intentoejercicio_ibfk_2`
     FOREIGN KEY (`id_ejercicio`)
-    REFERENCES `smartlearn`.`TBL_EJERCICIO` (`id_ejercicio`))
+    REFERENCES `smartlearn`.`tbl_ejercicio` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `id_usuario` ON `smartlearn`.`TBL_INTENTO_EJERCICIO` (`id_usuario` ASC) VISIBLE;
+CREATE INDEX `id_usuario` ON `smartlearn`.`tbl_intento_ejercicio` (`id_usuario` ASC) VISIBLE;
 
 SHOW WARNINGS;
-CREATE INDEX `id_ejercicio` ON `smartlearn`.`TBL_INTENTO_EJERCICIO` (`id_ejercicio` ASC) VISIBLE;
+CREATE INDEX `id_ejercicio` ON `smartlearn`.`tbl_intento_ejercicio` (`id_ejercicio` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_CALIFICACION`
+-- Table `smartlearn`.`tbl_calificacion`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_CALIFICACION` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_calificacion` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_CALIFICACION` (
-  `id_calificacion` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_calificacion` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `id_intento` INT NULL DEFAULT NULL,
   `puntaje` DECIMAL(5,2) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_calificacion`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `calificacion_ibfk_1`
     FOREIGN KEY (`id_intento`)
-    REFERENCES `smartlearn`.`TBL_INTENTO_EJERCICIO` (`id_intento`))
+    REFERENCES `smartlearn`.`tbl_intento_ejercicio` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `id_intento` ON `smartlearn`.`TBL_CALIFICACION` (`id_intento` ASC) VISIBLE;
+CREATE INDEX `id_intento` ON `smartlearn`.`tbl_calificacion` (`id_intento` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_CONTENIDO_PRACTICO`
+-- Table `smartlearn`.`tbl_contenido_practico`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_CONTENIDO_PRACTICO` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_contenido_practico` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_CONTENIDO_PRACTICO` (
-  `id_contenido` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_contenido_practico` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `instrucciones` TEXT NOT NULL,
-  PRIMARY KEY (`id_contenido`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `contenidopractico_ibfk_1`
-    FOREIGN KEY (`id_contenido`)
-    REFERENCES `smartlearn`.`TBL_CONTENIDO` (`id_contenido`))
+    FOREIGN KEY (`id`)
+    REFERENCES `smartlearn`.`tbl_contenido` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -222,19 +222,19 @@ COLLATE = utf8mb4_0900_ai_ci;
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_CONTENIDO_TEORICO`
+-- Table `smartlearn`.`tbl_contenido_teorico`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_CONTENIDO_TEORICO` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_contenido_teorico` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_CONTENIDO_TEORICO` (
-  `id_contenido` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_contenido_teorico` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `texto` TEXT NOT NULL,
   `tiene_audio` TINYINT(1) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_contenido`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `contenidoteorico_ibfk_1`
-    FOREIGN KEY (`id_contenido`)
-    REFERENCES `smartlearn`.`TBL_CONTENIDO` (`id_contenido`))
+    FOREIGN KEY (`id`)
+    REFERENCES `smartlearn`.`tbl_contenido` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -242,15 +242,15 @@ COLLATE = utf8mb4_0900_ai_ci;
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_MATERIA`
+-- Table `smartlearn`.`tbl_materia`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_MATERIA` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_materia` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_MATERIA` (
-  `id_materia` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_materia` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id_materia`))
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -258,136 +258,136 @@ COLLATE = utf8mb4_0900_ai_ci;
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_PREGUNTA`
+-- Table `smartlearn`.`tbl_pregunta`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_PREGUNTA` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_pregunta` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_PREGUNTA` (
-  `id_pregunta` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_pregunta` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `enunciado` TEXT NOT NULL,
   `id_ejercicio` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`id_pregunta`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `pregunta_ibfk_1`
     FOREIGN KEY (`id_ejercicio`)
-    REFERENCES `smartlearn`.`TBL_EJERCICIO` (`id_ejercicio`))
+    REFERENCES `smartlearn`.`tbl_ejercicio` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `id_ejercicio` ON `smartlearn`.`TBL_PREGUNTA` (`id_ejercicio` ASC) VISIBLE;
+CREATE INDEX `id_ejercicio` ON `smartlearn`.`tbl_pregunta` (`id_ejercicio` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_OPCION`
+-- Table `smartlearn`.`tbl_opcion`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_OPCION` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_opcion` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_OPCION` (
-  `id_opcion` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_opcion` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `texto` VARCHAR(255) NOT NULL,
   `es_correcta` TINYINT(1) NULL DEFAULT NULL,
   `id_pregunta` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`id_opcion`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `opcion_ibfk_1`
     FOREIGN KEY (`id_pregunta`)
-    REFERENCES `smartlearn`.`TBL_PREGUNTA` (`id_pregunta`))
+    REFERENCES `smartlearn`.`tbl_pregunta` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `id_pregunta` ON `smartlearn`.`TBL_OPCION` (`id_pregunta` ASC) VISIBLE;
+CREATE INDEX `id_pregunta` ON `smartlearn`.`tbl_opcion` (`id_pregunta` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_RESPUESTA_USUARIO`
+-- Table `smartlearn`.`tbl_respuesta_usuario`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_RESPUESTA_USUARIO` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_respuesta_usuario` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_RESPUESTA_USUARIO` (
-  `id_respuesta` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_respuesta_usuario` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `id_intento` INT NULL DEFAULT NULL,
   `id_pregunta` INT NULL DEFAULT NULL,
   `respuesta_texto` TEXT NOT NULL,
   `correcta` TINYINT(1) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_respuesta`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `respuestausuario_ibfk_1`
     FOREIGN KEY (`id_intento`)
-    REFERENCES `smartlearn`.`TBL_INTENTO_EJERCICIO` (`id_intento`),
+    REFERENCES `smartlearn`.`tbl_intento_ejercicio` (`id`),
   CONSTRAINT `respuestausuario_ibfk_2`
     FOREIGN KEY (`id_pregunta`)
-    REFERENCES `smartlearn`.`TBL_PREGUNTA` (`id_pregunta`))
+    REFERENCES `smartlearn`.`tbl_pregunta` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `id_intento` ON `smartlearn`.`TBL_RESPUESTA_USUARIO` (`id_intento` ASC) VISIBLE;
+CREATE INDEX `id_intento` ON `smartlearn`.`tbl_respuesta_usuario` (`id_intento` ASC) VISIBLE;
 
 SHOW WARNINGS;
-CREATE INDEX `id_pregunta` ON `smartlearn`.`TBL_RESPUESTA_USUARIO` (`id_pregunta` ASC) VISIBLE;
+CREATE INDEX `id_pregunta` ON `smartlearn`.`tbl_respuesta_usuario` (`id_pregunta` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_RETROALIMENTACION`
+-- Table `smartlearn`.`tbl_retroalimentacion`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_RETROALIMENTACION` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_retroalimentacion` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_RETROALIMENTACION` (
-  `id_retro` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_retroalimentacion` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `id_intento` INT NULL DEFAULT NULL,
   `mensaje` TEXT NOT NULL,
-  PRIMARY KEY (`id_retro`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `retroalimentacion_ibfk_1`
     FOREIGN KEY (`id_intento`)
-    REFERENCES `smartlearn`.`TBL_INTENTO_EJERCICIO` (`id_intento`))
+    REFERENCES `smartlearn`.`tbl_intento_ejercicio` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `id_intento` ON `smartlearn`.`TBL_RETROALIMENTACION` (`id_intento` ASC) VISIBLE;
+CREATE INDEX `id_intento` ON `smartlearn`.`tbl_retroalimentacion` (`id_intento` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_TEMA`
+-- Table `smartlearn`.`tbl_tema`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_TEMA` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_tema` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_TEMA` (
-  `id_tema` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_tema` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(255) NOT NULL,
   `id_materia` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`id_tema`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `tema_ibfk_1`
     FOREIGN KEY (`id_materia`)
-    REFERENCES `smartlearn`.`TBL_MATERIA` (`id_materia`))
+    REFERENCES `smartlearn`.`tbl_materia` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `id_materia` ON `smartlearn`.`TBL_TEMA` (`id_materia` ASC) VISIBLE;
+CREATE INDEX `id_materia` ON `smartlearn`.`tbl_tema` (`id_materia` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `smartlearn`.`TBL_SUBTEMA`
+-- Table `smartlearn`.`tbl_subtema`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `smartlearn`.`TBL_SUBTEMA` ;
+DROP TABLE IF EXISTS `smartlearn`.`tbl_subtema` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_SUBTEMA` (
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_subtema` (
   `id_subtema` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(255) NOT NULL,
   `contenido_id_contenido` INT NOT NULL,
@@ -395,23 +395,19 @@ CREATE TABLE IF NOT EXISTS `smartlearn`.`TBL_SUBTEMA` (
   PRIMARY KEY (`id_subtema`),
   CONSTRAINT `fk_subtema_contenido1`
     FOREIGN KEY (`contenido_id_contenido`)
-    REFERENCES `smartlearn`.`TBL_CONTENIDO` (`id_contenido`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    REFERENCES `smartlearn`.`tbl_contenido` (`id`),
   CONSTRAINT `fk_subtema_tema1`
     FOREIGN KEY (`tema_id_tema`)
-    REFERENCES `smartlearn`.`TBL_TEMA` (`id_tema`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    REFERENCES `smartlearn`.`tbl_tema` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_subtema_contenido1_idx` ON `smartlearn`.`TBL_SUBTEMA` (`contenido_id_contenido` ASC) VISIBLE;
+CREATE INDEX `fk_subtema_contenido1_idx` ON `smartlearn`.`tbl_subtema` (`contenido_id_contenido` ASC) VISIBLE;
 
 SHOW WARNINGS;
-CREATE INDEX `fk_subtema_tema1_idx` ON `smartlearn`.`TBL_SUBTEMA` (`tema_id_tema` ASC) VISIBLE;
+CREATE INDEX `fk_subtema_tema1_idx` ON `smartlearn`.`tbl_subtema` (`tema_id_tema` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
