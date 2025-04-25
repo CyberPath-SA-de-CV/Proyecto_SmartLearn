@@ -11,7 +11,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Entity
-@Table(name = "TBL_CONTENIDO_PRACTICO")//
 public class ContenidoPractico extends Contenido{
     @Column(name = "instrucciones")
     private String instrucciones;

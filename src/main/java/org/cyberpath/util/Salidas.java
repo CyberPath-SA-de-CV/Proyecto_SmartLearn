@@ -51,6 +51,4 @@ public class Salidas {
     public static void errorDato() {
         System.out.println("No es un dato valido");
     }
-
-
 }

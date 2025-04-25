@@ -5,10 +5,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDeDatos.dao.implementacion.DaoImpl;
+import org.cyberpath.modelo.baseDeDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +23,7 @@ import java.util.Objects;
 @Table(name = "TBL_USUARIO")
 public class Usuario extends Entidad {
     @Column(name = "id_rol", nullable = false)
-    private int idRol;
+    private Integer idRol;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -34,7 +38,7 @@ public class Usuario extends Entidad {
     private String discapacidad;
 
     @Column(name = "modo_audio")
-    private boolean modoAudio;
+    private Boolean modoAudio;
 
     public static final DaoImpl<Usuario> usuarioDao = new DaoImpl<>(Usuario.class);
 
@@ -52,6 +56,7 @@ public class Usuario extends Entidad {
 
     public static String realizarVista(){
         List<Usuario> lista = usuarioDao.findAll();
+        System.out.println("tamaño: " + lista.size());
         String cadena = "";
         for (Usuario usuario : lista) {
             cadena += usuario;
@@ -59,6 +64,30 @@ public class Usuario extends Entidad {
         }
         return cadena;
     }
+
+    public static Boolean agregarUsuario(String nombre, String contrasena, String correo, int idRol) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+
+            // Crear el usuario
+            Usuario usuario = new Usuario();
+            usuario.setNombre(nombre);
+            usuario.setContrasena(contrasena);
+            usuario.setCorreo(correo);
+            usuario.setIdRol(idRol); // Asignar relación
+
+            // Guardar en la base
+            session.persist(usuario);
+            tx.commit();
+            System.out.println("Usuario registrado exitosamente.");
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al registrar el usuario: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
 
     public static void main(String[] args) {
         System.out.println(realizarVista());
