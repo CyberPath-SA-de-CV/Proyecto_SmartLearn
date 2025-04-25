@@ -5,10 +5,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDeDatos.dao.implementacion.DaoImpl;
+import org.cyberpath.modelo.baseDeDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,6 +62,30 @@ public class Usuario extends Entidad {
             cadena += "\n";
         }
         return cadena;
+    }
+
+    public static Boolean agregarUsuario(String nombre, String contrasena, String correo, int idRol) {
+        try /*(Session session = HibernateUtil.getSessionFactory().openSession()) */ {
+            //Transaction tx = session.beginTransaction();
+
+            Usuario usuario = new Usuario();
+            usuario.setNombre(nombre);
+            usuario.setContrasena(contrasena);
+            usuario.setCorreo(correo);
+            usuario.setIdRol(idRol); // Asignar relación
+
+            usuarioDao.guardar(usuario);
+
+            //session.persist(usuario);
+            //tx.commit();
+            VariablesGlobales.usuario = usuario;
+            System.out.println("Usuario registrado exitosamente.");
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al registrar el usuario: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
     }
 
     public static void main(String[] args) {

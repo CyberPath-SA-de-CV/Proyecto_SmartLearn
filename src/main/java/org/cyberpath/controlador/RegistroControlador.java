@@ -6,17 +6,13 @@ import org.cyberpath.vista.pantallas.MenuPrincipalVentana;
 
 import javax.swing.*;
 
-public class InicioSesionControlador {
-    public void procesarInicio(String nombre, String contrasena, JFrame ventanaActual){
-        boolean valido = Usuario.validarCredenciales(nombre, contrasena);
-
-        if(valido){
+public class RegistroControlador {
+    public void procesarRegistro(String nombre, String contrasena, String correo, Integer idRol,JFrame ventanaActual){
+        if(Usuario.agregarUsuario(nombre,contrasena,correo,idRol)){
             ventanaActual.dispose();
-            System.out.println("Menu c:");
             new MenuPrincipalVentana().setVisible(true);
-        } else {
+        }  else {
             JOptionPane.showMessageDialog(ventanaActual, Salidas.errorInicioSesion);
         }
-
     }
 }
