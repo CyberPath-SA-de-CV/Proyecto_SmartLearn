@@ -18,9 +18,13 @@ public class InicioSesionVentanta extends JFrame{
         setSize(300, 190);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        Image icono = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Img/logo.png"));
+        Image icono = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/img/logos/logo.png"));
         setIconImage(icono);
         setBackground(new Color(5,100,110));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
 
         campoUsuario = crearCampoTxt(15);
         campoContrasena = new JPasswordField(15);

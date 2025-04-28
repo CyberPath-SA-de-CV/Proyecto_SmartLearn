@@ -14,12 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>marytts</id>
-            <url>https://raw.githubusercontent.com/marytts/marytts-repo/master/</url>
-        </repository>
-    </repositories>
+
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
@@ -76,7 +71,14 @@
             <version>20240303</version>
         </dependency>
 
+        <dependency>
+            <groupId>de.dfki.mary</groupId>
+            <artifactId>marytts</artifactId>
+            <version>5.2</version>
+        </dependency>
+
     </dependencies>
+
     <build>
         <plugins>
             <plugin>

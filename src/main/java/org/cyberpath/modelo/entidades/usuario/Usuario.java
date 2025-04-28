@@ -66,19 +66,33 @@ public class Usuario extends Entidad {
     }
 
     public static Boolean agregarUsuario(String nombre, String contrasena, String correo, int idRol) {
+<<<<<<< HEAD
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
 
             // Crear el usuario
+=======
+        try /*(Session session = HibernateUtil.getSessionFactory().openSession()) */ {
+            //Transaction tx = session.beginTransaction();
+
+>>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
             Usuario usuario = new Usuario();
             usuario.setNombre(nombre);
             usuario.setContrasena(contrasena);
             usuario.setCorreo(correo);
             usuario.setIdRol(idRol); // Asignar relación
 
+<<<<<<< HEAD
             // Guardar en la base
             session.persist(usuario);
             tx.commit();
+=======
+            usuarioDao.guardar(usuario);
+
+            //session.persist(usuario);
+            //tx.commit();
+            VariablesGlobales.usuario = usuario;
+>>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
             System.out.println("Usuario registrado exitosamente.");
             return true;
         } catch (Exception e) {
@@ -88,7 +102,10 @@ public class Usuario extends Entidad {
         }
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
     public static void main(String[] args) {
         System.out.println(realizarVista());
     }

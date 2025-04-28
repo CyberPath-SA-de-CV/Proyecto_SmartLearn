@@ -12,7 +12,14 @@ public class RegistroControlador {
             ventanaActual.dispose();
             new MenuPrincipalVentana().setVisible(true);
         }  else {
+<<<<<<< HEAD
         JOptionPane.showMessageDialog(ventanaActual, Salidas.errorInicioSesion);
         }
     }
 }
+=======
+            JOptionPane.showMessageDialog(ventanaActual, Salidas.errorInicioSesion);
+        }
+    }
+}
+>>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
