@@ -6,9 +6,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import org.cyberpath.controlador.InicioSesionControlador;
-import static org.cyberpath.vista.componentesR.ComponentesReutilizables.*;
+import org.cyberpath.vista.componentesR.ComponentesReutilizables;
 
-public class InicioSesionVentanta extends JFrame{
+public class InicioSesionVentanta extends ComponentesReutilizables {
     private JTextField campoUsuario;
     private JPasswordField campoContrasena;
     private JCheckBox checkboxAccesibilidad;
@@ -21,10 +21,6 @@ public class InicioSesionVentanta extends JFrame{
         Image icono = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/img/logos/logo.png"));
         setIconImage(icono);
         setBackground(new Color(5,100,110));
-<<<<<<< HEAD
-=======
-
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
 
         campoUsuario = crearCampoTxt(15);
         campoContrasena = new JPasswordField(15);

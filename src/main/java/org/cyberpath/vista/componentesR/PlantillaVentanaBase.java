@@ -2,11 +2,6 @@ package org.cyberpath.vista.componentesR;
 
 import javax.swing.*;
 import java.awt.*;
-<<<<<<< HEAD
-import java.awt.event.ActionListener;
-=======
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
-
 /**
  * PlantillaVentanaBase
  * Clase base para pantallas en la aplicación Smart-Learn.
@@ -18,7 +13,7 @@ import java.awt.event.ActionListener;
  * - agregarEventos: vincula acciones a botones y campos.
  * - construirInterfaz: junta los elementos y muestra la interfaz.
  *
- * @author TuNombre
+ * @author MarcoRV
  */
 public abstract class PlantillaVentanaBase extends JFrame {
 
@@ -30,11 +25,7 @@ public abstract class PlantillaVentanaBase extends JFrame {
         inicializarComponentes();
         agregarEventos();
         construirInterfaz();
-<<<<<<< HEAD
-        Image icono = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Img/logo.png"));
-=======
         Image icono = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/img/logos/logo.png"));
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
         setIconImage(icono);
     }
 

@@ -5,12 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDeDatos.dao.implementacion.DaoImpl;
-import org.cyberpath.modelo.baseDeDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import javax.swing.*;
 import java.util.List;
@@ -66,33 +63,16 @@ public class Usuario extends Entidad {
     }
 
     public static Boolean agregarUsuario(String nombre, String contrasena, String correo, int idRol) {
-<<<<<<< HEAD
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
-
-            // Crear el usuario
-=======
         try /*(Session session = HibernateUtil.getSessionFactory().openSession()) */ {
-            //Transaction tx = session.beginTransaction();
-
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
             Usuario usuario = new Usuario();
             usuario.setNombre(nombre);
             usuario.setContrasena(contrasena);
             usuario.setCorreo(correo);
             usuario.setIdRol(idRol); // Asignar relación
 
-<<<<<<< HEAD
-            // Guardar en la base
-            session.persist(usuario);
-            tx.commit();
-=======
             usuarioDao.guardar(usuario);
 
-            //session.persist(usuario);
-            //tx.commit();
             VariablesGlobales.usuario = usuario;
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
             System.out.println("Usuario registrado exitosamente.");
             return true;
         } catch (Exception e) {
@@ -101,11 +81,6 @@ public class Usuario extends Entidad {
             return false;
         }
     }
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
     public static void main(String[] args) {
         System.out.println(realizarVista());
     }

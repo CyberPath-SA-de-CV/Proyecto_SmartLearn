@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.RoundRectangle2D;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -279,48 +278,6 @@ public abstract class ComponentesReutilizables extends JFrame {
         }
 
         return boton;
-    }
-
-    public static JButton crearBoton(String texto, ActionListener accion){
-        JButton boton = new JButton(texto);
-        boton.setFont(new Font("Arial", Font.BOLD, 16));
-        boton.setBackground(new Color(19,36,81));
-        boton.setForeground(Color.WHITE);
-        boton.addActionListener(accion);
-        return boton;
-    }
-
-
-    /// *** Función crearPanel
-    /// Crea un panel con el número de filas y columnas especificadas en los parámetros
-    public static JPanel crearPanel(){
-        return new JPanel(new GridBagLayout());
-    }
-
-
-
-    public static GridBagConstraints crearConstraint(int fila, int columna, int ancho, int alto) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = columna;
-        gbc.gridy = fila;
-        gbc.gridwidth = ancho;
-        gbc.gridheight = alto;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        return gbc;
-    }
-
-    public static GridBagConstraints crearConstraintCentrado(int fila, int columna, int ancho, int alto) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = columna;
-        gbc.gridy = fila;
-        gbc.gridwidth = ancho;
-        gbc.gridheight = alto;
-        gbc.insets = new Insets(10, 5, 10, 5);
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
-        return gbc;
     }
 
     public static JCheckBox crearCheckBox(String texto, boolean seleccionadoPorDefecto) {

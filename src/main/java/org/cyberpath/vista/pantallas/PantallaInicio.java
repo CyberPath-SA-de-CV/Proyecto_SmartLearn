@@ -2,7 +2,6 @@ package org.cyberpath.vista.pantallas;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import static org.cyberpath.vista.componentesR.ComponentesReutilizables.*;
@@ -16,44 +15,15 @@ public class PantallaInicio extends PlantillaVentanaBase {
 
     private JButton botonLogin;
     private JButton botonRegistro;
-<<<<<<< HEAD
-
-    public PantallaInicio() {
-        super("Smart-Learn", 400, 250);
-=======
     private JButton botonSalirApp;
 
     public PantallaInicio() {
         super("Smart-Learn", 450, 300);
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
     }
 
     @Override
     protected void inicializarComponentes() {
         panelPrincipal = crearPanel();
-<<<<<<< HEAD
-        panelPrincipal.setBackground(new Color(230, 230, 230));
-
-        // Etiqueta de bienvenida
-        JLabel mensaje = crearEtiqueta("Bienvenido a Smart Learn¡");
-        mensaje.setFont(new Font("Arial", Font.BOLD, 18));
-        mensaje.setForeground(new Color(40, 40, 40));
-        panelPrincipal.add(mensaje, crearConstraintCentrado(0, 0, 3, 1));
-
-        // Botones
-        botonLogin = crearBoton("Login", null, 16, 10);
-        botonLogin.setMnemonic(KeyEvent.VK_L);
-        botonLogin.setPreferredSize(new Dimension(180, 40));
-
-        botonRegistro = crearBoton("Registrar Usuario", null, 16, 10);
-        botonRegistro.setMnemonic(KeyEvent.VK_R);
-        botonRegistro.setPreferredSize(new Dimension(180, 40));
-
-        panelPrincipal.add(botonLogin, crearConstraintCentrado(1, 1, 2, 1));
-        panelPrincipal.add(botonRegistro, crearConstraintCentrado(2, 1, 2, 1));
-
-        // Tecla Enter activa el botón Login
-=======
         panelPrincipal.setBackground(new Color(245, 245, 245));
         panelPrincipal.setLayout(new GridBagLayout());
 
@@ -90,28 +60,11 @@ public class PantallaInicio extends PlantillaVentanaBase {
         panelPrincipal.add(botonSalirApp, crearConstraintCentrado(3, 1, 2, 1));
 
         // Enter activa el botón Login
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
         getRootPane().setDefaultButton(botonLogin);
     }
 
     @Override
     protected void agregarEventos() {
-<<<<<<< HEAD
-        ActionListener accionLogin = e -> {
-            new InicioSesionVentanta().setVisible(true);
-            System.out.println("Entrando a Login");
-            dispose();
-        };
-
-        ActionListener accionRegistro = e -> {
-            new RegistroUsr().setVisible(true);
-            System.out.println("Entrando a Registro Usr");
-            dispose();
-        };
-
-        botonLogin.addActionListener(accionLogin);
-        botonRegistro.addActionListener(accionRegistro);
-=======
         botonLogin.addActionListener(e -> {
             new InicioSesionVentanta().setVisible(true);
             System.out.println("Entrando a Login");
@@ -128,14 +81,9 @@ public class PantallaInicio extends PlantillaVentanaBase {
             System.out.println("Saliendo de la aplicación");
             System.exit(0);
         });
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new PantallaInicio().setVisible(true));
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 3c12c289a94bd8099422906a985e982ec15a8c0c

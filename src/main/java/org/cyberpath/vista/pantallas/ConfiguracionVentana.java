@@ -1,31 +1,33 @@
 package org.cyberpath.vista.pantallas;
 
+import org.cyberpath.modelo.baseDeDatos.dao.implementacion.DaoImpl;
+import org.cyberpath.modelo.entidades.usuario.Usuario;
 import org.cyberpath.util.VariablesGlobales;
-import org.cyberpath.vista.componentesR.ComponentesReutilizables;
+import org.cyberpath.vista.componentesR.PlantillaVentanaBase;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ConfiguracionVentana extends ComponentesReutilizables {
+import static org.cyberpath.vista.componentesR.ComponentesReutilizables.*;
+
+public class ConfiguracionVentana extends PlantillaVentanaBase {
 
     public ConfiguracionVentana() {
-        setTitle("Configuración");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        super("Configuración", 1200, 800); // Puedes ajustar tamaño a tu gusto
+    }
 
-        // Fondo con diseño degradado y líneas
-        JPanel fondo = crearPanelDegradadoDecorativo();
-        fondo.setLayout(new BorderLayout());
+    @Override
+    protected void inicializarComponentes() {
+        panelPrincipal = crearPanelDegradadoDecorativo(); // Fondo con degradado
+        panelPrincipal.setLayout(new BorderLayout());
 
-        // Panel principal con padding y transparencia
         JPanel contenido = crearPanelTransparenteConPadding(40, 100, 40, 100);
 
-        // Barra superior con usuario y fecha
         JPanel barraSuperior = crearBarraSuperior("Usuario: " + VariablesGlobales.usuario.getNombre());
         contenido.add(barraSuperior);
         contenido.add(Box.createVerticalStrut(30));
 
-        // Panel con logo y título
+        // Título con logo
         JPanel panelTituloConLogo = new JPanel();
         panelTituloConLogo.setOpaque(false);
         panelTituloConLogo.setLayout(new BoxLayout(panelTituloConLogo, BoxLayout.X_AXIS));
@@ -44,7 +46,7 @@ public class ConfiguracionVentana extends ComponentesReutilizables {
         contenido.add(panelTituloConLogo);
         contenido.add(Box.createVerticalStrut(40));
 
-        // Panel de checkboxes u opciones
+        // Panel de opciones
         JPanel opciones = new JPanel();
         opciones.setOpaque(false);
         opciones.setLayout(new BoxLayout(opciones, BoxLayout.Y_AXIS));
@@ -63,23 +65,22 @@ public class ConfiguracionVentana extends ComponentesReutilizables {
         opciones.add(ejemploCheck3);
         opciones.add(Box.createVerticalStrut(30));
 
-        // Botón "Salir"
+        // Botón salir
         JButton botonSalir = new JButton("Salir");
         botonSalir.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        botonSalir.setBackground(new Color(220, 53, 69)); // rojo suave
+        botonSalir.setBackground(new Color(220, 53, 69));
         botonSalir.setForeground(Color.WHITE);
         botonSalir.setFocusPainted(false);
         botonSalir.setAlignmentX(Component.CENTER_ALIGNMENT);
         botonSalir.setMaximumSize(new Dimension(200, 40));
         botonSalir.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        botonSalir.addActionListener(e -> dispose()); // cerrar solo esta ventana
+        botonSalir.addActionListener(e -> dispose());
 
         opciones.add(botonSalir);
 
         contenido.add(opciones);
         contenido.add(Box.createVerticalGlue());
 
-        // Scroll
         JScrollPane scrollPane = new JScrollPane(contenido,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -87,9 +88,12 @@ public class ConfiguracionVentana extends ComponentesReutilizables {
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(null);
 
-        fondo.add(scrollPane, BorderLayout.CENTER);
-        setContentPane(fondo);
-        setVisible(true);
+        panelPrincipal.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    @Override
+    protected void agregarEventos() {
+        // Los listeners ya están integrados directamente
     }
 
     private JCheckBox crearCheckBoxEstilizado(String texto, boolean seleccionado) {
@@ -105,6 +109,8 @@ public class ConfiguracionVentana extends ComponentesReutilizables {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(ConfiguracionVentana::new);
+        DaoImpl<Usuario> usuarioDao = new DaoImpl<>(Usuario.class);
+        VariablesGlobales.usuario = usuarioDao.findById(1);
+        SwingUtilities.invokeLater(() -> new ConfiguracionVentana().setVisible(true));
     }
 }
