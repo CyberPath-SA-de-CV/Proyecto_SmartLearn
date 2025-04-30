@@ -16,11 +16,7 @@ public class Subtema extends Entidad {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    //@ManyToOne(fetch = FetchType.LAZY)
-    /*@JoinColumn*/@Column(name = "id_tema", nullable = false)
-    private Integer id_tema;
-
-    //@OneToMany(fetch = FetchType.LAZY)
-    @Column(name = "id_contenido", nullable = false)
-    private Integer id_contenido;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tema", nullable = false)
+    private Tema tema;
 }

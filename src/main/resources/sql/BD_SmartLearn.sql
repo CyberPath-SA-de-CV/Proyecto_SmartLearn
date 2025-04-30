@@ -403,6 +403,18 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_usuario_materia`(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    id_materia INT NOT NULL,
+    progreso INT DEFAULT 0, -- Porcentaje de avance (0 a 100)
+    fecha_inscripcion DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_usuario) REFERENCES tbl_usuario(id),
+    FOREIGN KEY (id_materia) REFERENCES tbl_materia(id)
+);
+
+
 SHOW WARNINGS;
 CREATE INDEX `fk_subtema_contenido1_idx` ON `smartlearn`.`tbl_subtema` (`contenido_id_contenido` ASC) VISIBLE;
 

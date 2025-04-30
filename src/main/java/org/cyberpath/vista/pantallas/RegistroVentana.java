@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import static org.cyberpath.util.VariablesGlobales.panelGlobal;
 import static org.cyberpath.vista.componentesR.ComponentesReutilizables.*;
 
 public class RegistroVentana extends PlantillaVentanaBase {
@@ -25,19 +26,19 @@ public class RegistroVentana extends PlantillaVentanaBase {
 
     @Override
     protected void inicializarComponentes() {
-        panelPrincipal = crearPanel();
-        panelPrincipal.setBackground(new Color(85, 85, 125));
+        panelGlobal = crearPanel();
+        panelGlobal.setBackground(new Color(85, 85, 125));
 
         // Título
         JLabel etiquetaTitulo = crearEtiqueta("Registro de Usuario");
         etiquetaTitulo.setFont(new Font("Arial", Font.BOLD, 18));
         etiquetaTitulo.setForeground(Color.WHITE);
-        panelPrincipal.add(etiquetaTitulo, crearConstraintCentrado(0, 0, 3, 1));
+        panelGlobal.add(etiquetaTitulo, crearConstraintCentrado(0, 0, 3, 1));
 
         // Instrucciones
         JLabel instrucciones = crearEtiqueta("Complete los siguientes campos:");
         instrucciones.setForeground(Color.WHITE);
-        panelPrincipal.add(instrucciones, crearConstraint(1, 0, 3, 1));
+        panelGlobal.add(instrucciones, crearConstraint(1, 0, 3, 1));
 
         // Etiquetas
         JLabel nombreLabel = crearEtiqueta("Nombre de usuario:");
@@ -58,20 +59,20 @@ public class RegistroVentana extends PlantillaVentanaBase {
         comboRol = new JComboBox<>(new String[]{"Administrador", "Estudiante"});
 
         // Agregar componentes
-        panelPrincipal.add(nombreLabel, crearConstraint(2, 0, 1, 1));
-        panelPrincipal.add(campoNombre, crearConstraint(2, 1, 2, 1));
+        panelGlobal.add(nombreLabel, crearConstraint(2, 0, 1, 1));
+        panelGlobal.add(campoNombre, crearConstraint(2, 1, 2, 1));
 
-        panelPrincipal.add(correoLabel, crearConstraint(3, 0, 1, 1));
-        panelPrincipal.add(campoCorreo, crearConstraint(3, 1, 2, 1));
+        panelGlobal.add(correoLabel, crearConstraint(3, 0, 1, 1));
+        panelGlobal.add(campoCorreo, crearConstraint(3, 1, 2, 1));
 
-        panelPrincipal.add(contrasenaLabel, crearConstraint(4, 0, 1, 1));
-        panelPrincipal.add(campoContrasena, crearConstraint(4, 1, 2, 1));
+        panelGlobal.add(contrasenaLabel, crearConstraint(4, 0, 1, 1));
+        panelGlobal.add(campoContrasena, crearConstraint(4, 1, 2, 1));
 
-        panelPrincipal.add(confirmarLabel, crearConstraint(5, 0, 1, 1));
-        panelPrincipal.add(campoConfirmar, crearConstraint(5, 1, 2, 1));
+        panelGlobal.add(confirmarLabel, crearConstraint(5, 0, 1, 1));
+        panelGlobal.add(campoConfirmar, crearConstraint(5, 1, 2, 1));
 
-        panelPrincipal.add(rolLabel, crearConstraint(6, 0, 1, 1));
-        panelPrincipal.add(comboRol, crearConstraint(6, 1, 2, 1));
+        panelGlobal.add(rolLabel, crearConstraint(6, 0, 1, 1));
+        panelGlobal.add(comboRol, crearConstraint(6, 1, 2, 1));
 
         // Botón Registrar
         botonRegistro = crearBoton("Registrar", null, 16, 10);
@@ -79,7 +80,7 @@ public class RegistroVentana extends PlantillaVentanaBase {
         botonRegistro.setMnemonic(KeyEvent.VK_R);
         getRootPane().setDefaultButton(botonRegistro);
 
-        panelPrincipal.add(botonRegistro, crearConstraintCentrado(7, 0, 3, 1));
+        panelGlobal.add(botonRegistro, crearConstraintCentrado(7, 0, 3, 1));
     }
 
     @Override
@@ -114,6 +115,11 @@ public class RegistroVentana extends PlantillaVentanaBase {
         };
 
         botonRegistro.addActionListener(registrar);
+    }
+
+    @Override
+    public JPanel getContenido() {
+        return null;
     }
 
     private void mostrarMensaje(String mensaje, String titulo, int tipo) {

@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDeDatos.dao.implementacion.DaoImpl;
 import org.cyberpath.modelo.entidades.base.Entidad;
+import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
 
@@ -19,8 +20,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "TBL_USUARIO")
 public class Usuario extends Entidad {
-    @Column(name = "id_rol", nullable = false)
-    private Integer idRol;
+    @ManyToOne
+    @JoinColumn(name = "id_rol", nullable = false)
+    private Rol rol;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -36,6 +38,7 @@ public class Usuario extends Entidad {
 
     @Column(name = "modo_audio")
     private Boolean modoAudio;
+
 
     public static final DaoImpl<Usuario> usuarioDao = new DaoImpl<>(Usuario.class);
 
@@ -68,7 +71,7 @@ public class Usuario extends Entidad {
             usuario.setNombre(nombre);
             usuario.setContrasena(contrasena);
             usuario.setCorreo(correo);
-            usuario.setIdRol(idRol); // Asignar relación
+            usuario.rol.setId(idRol); // Asignar relación
 
             usuarioDao.guardar(usuario);
 

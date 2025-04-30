@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.entidades.base.Entidad;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -14,4 +16,7 @@ import org.cyberpath.modelo.entidades.base.Entidad;
 public class Materia extends Entidad {
     @Column(name = "nombre", nullable = false)
     private String nombre;
+
+    @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL)
+    private List<Tema> temas;
 }
