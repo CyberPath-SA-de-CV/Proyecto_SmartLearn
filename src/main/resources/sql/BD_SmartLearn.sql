@@ -76,19 +76,19 @@ SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `smartlearn`.`tbl_contenido` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipo` ENUM('TEORICO', 'PRACTICO') NOT NULL,
-  `creado_por` INT NULL DEFAULT NULL,
+  `autor` INT NULL DEFAULT NULL,
   `fecha_creacion` DATE NULL DEFAULT NULL,
   `ultima_edicion` DATE NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `contenido_ibfk_2`
-    FOREIGN KEY (`creado_por`)
+    FOREIGN KEY (`autor`)
     REFERENCES `smartlearn`.`tbl_usuario` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `creado_por` ON `smartlearn`.`tbl_contenido` (`creado_por` ASC) VISIBLE;
+CREATE INDEX `autot` ON `smartlearn`.`tbl_contenido` (`autor` ASC) VISIBLE;
 
 SHOW WARNINGS;
 

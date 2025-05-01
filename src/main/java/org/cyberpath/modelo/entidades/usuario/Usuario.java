@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDeDatos.dao.implementacion.DaoImpl;
 import org.cyberpath.modelo.entidades.base.Entidad;
-import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
 
@@ -84,6 +83,13 @@ public class Usuario extends Entidad {
             return false;
         }
     }
+
+    public static Boolean actualizarUsuario(Usuario usuario){
+        usuarioDao.actualizar(usuario);
+        VariablesGlobales.usuario = usuario;
+        return true;
+    }
+
     public static void main(String[] args) {
         System.out.println(realizarVista());
     }

@@ -7,8 +7,10 @@ import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.componentesR.PlantillaVentanaBase;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+import static org.cyberpath.util.VariablesGlobales.panelSuperior;
 import static org.cyberpath.vista.componentesR.ComponentesReutilizables.*;
 
 public class MenuPrincipalPantalla extends PlantillaVentanaBase {
@@ -26,8 +28,9 @@ public class MenuPrincipalPantalla extends PlantillaVentanaBase {
         panelPrincipal.setLayout(new BorderLayout());
 
         // ---------- Panel superior: datos del usuario + combo configuración ----------
-        JPanel panelSuperior = crearPanelTransparenteConPadding(10, 30, 10, 30);
+        panelSuperior = crearPanelDegradadoDecorativo();
         panelSuperior.setLayout(new BorderLayout());
+        panelSuperior.setBorder(new EmptyBorder(10, 30, 10, 30));
 
         JLabel labelUsuario = new JLabel("Usuario: " + VariablesGlobales.usuario.getNombre());
         labelUsuario.setFont(new Font("Arial", Font.BOLD, 16));
@@ -80,17 +83,18 @@ public class MenuPrincipalPantalla extends PlantillaVentanaBase {
         JScrollPane scrollContenido = crearScrollPaneTransparente(contenido);
 
         // ---------- Integración en panel principal ----------
-        panelPrincipal.add(panelSuperior, BorderLayout.NORTH);
         panelPrincipal.add(scrollContenido, BorderLayout.CENTER);
 
         // Se agrega al contenedor interno de la ventana base
         getPanelContenedor().add(panelPrincipal, BorderLayout.CENTER);
+
+        add(panelSuperior, BorderLayout.NORTH);
     }
 
     private void manejarOpcionCombo(String opcion) {
         switch (opcion) {
             case "Configuración del usuario":
-                JOptionPane.showMessageDialog(this, "Configuración del usuario aún no disponible.");
+                ControladorDePantallas.mostrarPantalla(ControladorDePantallas.PANTALLA_CONFIGURACION);
                 break;
             case "Accesibilidad":
                 ControladorDePantallas.mostrarPantalla(ControladorDePantallas.PANTALLA_ACCESIBILIDAD);

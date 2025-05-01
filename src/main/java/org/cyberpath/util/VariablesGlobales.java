@@ -7,5 +7,5 @@ import javax.swing.*;
 public class VariablesGlobales {
     public static boolean reproduccionGlobalAudio = false;
     public static Usuario usuario;
-    public static JPanel panelGlobal;
+    public static JPanel panelSuperior;
 }

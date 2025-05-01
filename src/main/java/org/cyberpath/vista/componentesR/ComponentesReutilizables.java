@@ -180,7 +180,7 @@ public abstract class ComponentesReutilizables extends JFrame {
         };
     }
 
-    // Panel transparente con padding
+    /// Panel transparente con padding
     public static JPanel crearPanelTransparenteConPadding(int top, int left, int bottom, int right) {
         JPanel panel = new JPanel();
         panel.setOpaque(false);

@@ -92,7 +92,7 @@ public class AccesibilidadVentana {
         DaoImpl<Usuario> usuarioDao = new DaoImpl<>(Usuario.class);
         VariablesGlobales.usuario = usuarioDao.findById(1);
 
-        JFrame ventana = new JFrame("Configuración");
+        JFrame ventana = new JFrame("Accesibilidad");
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ventana.setExtendedState(JFrame.MAXIMIZED_BOTH);
         ventana.getContentPane().add(new AccesibilidadVentana().getContenido());
