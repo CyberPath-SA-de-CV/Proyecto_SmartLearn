@@ -13,8 +13,9 @@ import org.cyberpath.modelo.entidades.base.Entidad;
 @Table(name = "TBL_CALIFICACION")
 public class Calificacion extends Entidad {
 
-    @Column(name = "id_intento", nullable = false)
-    private Integer id_intento;
+    @ManyToOne
+    @JoinColumn(name = "id_intento", nullable = false)
+    private IntentoEjercicio intentoEjercicio;
 
     @Column(name = "puntaje", nullable = false)
     private Double puntaje;

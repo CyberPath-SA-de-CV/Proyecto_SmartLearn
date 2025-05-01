@@ -1,25 +1,30 @@
 package org.cyberpath.modelo.entidades.ejercicios;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.entidades.base.Entidad;
+import org.cyberpath.modelo.entidades.usuario.Usuario;
+import org.cyberpath.modelo.entidades.ejercicios.Ejercicio;
+
+import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Entity
-@Table(name = "TBL_INTENTO_EJERCICIO")//
+@Table(name = "TBL_INTENTO_EJERCICIO")
 public class IntentoEjercicio extends Entidad {
-    @Column(name = "id_usuario")
-    private Integer id_contenido;
 
-    @Column(name = "id_ejercicio")//
-    private Integer id_ejericio;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
 
-    @Column(name = "fecha")//
-    private String fecha;
+    @ManyToOne
+    @JoinColumn(name = "id_ejercicio", nullable = false)
+    private Ejercicio ejercicio;
+
+    @Column(name = "fecha", nullable = false)
+    private LocalDateTime fecha;
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.entidades.base.Entidad;
+import org.cyberpath.modelo.entidades.ejercicios.Pregunta;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -13,8 +14,9 @@ import org.cyberpath.modelo.entidades.base.Entidad;
 @Table(name = "TBL_OPCION")
 public class Opcion extends Entidad {
 
-    @Column(name = "id_pregunta", nullable = false)
-    private Integer id_pregunta;
+    @ManyToOne
+    @JoinColumn(name = "id_pregunta", nullable = false)
+    private Pregunta pregunta;
 
     @Column(name = "texto", nullable = false)
     private String texto;

@@ -1,31 +1,32 @@
 package org.cyberpath.modelo.entidades.ejercicios;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.entidades.base.Entidad;
+import org.cyberpath.modelo.entidades.contenido.Contenido;
+import org.cyberpath.modelo.entidades.usuario.Usuario;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Entity
-@Table(name = "TBL_EJERCICIO")//
+@Table(name = "TBL_EJERCICIO")
 public class Ejercicio extends Entidad {
-    @Column(name = "id_contenido")
-    private Integer id_contenido;
 
-    @Column(name = "id_tipo")//
-    private Integer id_tipo;
+    @ManyToOne
+    @JoinColumn(name = "id_contenido")
+    private Contenido contenido;
 
-    @Column(name = "descripcion")//
-    private String descripcion;
+    @ManyToOne
+    @JoinColumn(name = "id_tipo")
+    private TipoEjercicio tipo;
 
-    @Column(name = "creado_por")//
-    private Integer creado_por;
+    @ManyToOne
+    @JoinColumn(name = "creado_por")
+    private Usuario creador;
 
-    @Column(name = "fecha_creacion")//
+    @Column(name = "fecha_creacion")
     private String fecha_creacion;
 }

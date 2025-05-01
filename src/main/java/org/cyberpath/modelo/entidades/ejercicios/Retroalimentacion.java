@@ -13,8 +13,9 @@ import org.cyberpath.modelo.entidades.base.Entidad;
 @Table(name = "TBL_RETROALIMENTACION")
 public class Retroalimentacion extends Entidad {
 
-    @Column(name = "id_intento", nullable = false)
-    private Integer id_intento;
+    @ManyToOne
+    @JoinColumn(name = "id_intento", nullable = false)
+    private IntentoEjercicio intentoEjercicio;
 
     @Column(name = "mensaje", nullable = false)
     private String mensaje;
