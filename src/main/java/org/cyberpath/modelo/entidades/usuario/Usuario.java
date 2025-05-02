@@ -65,12 +65,16 @@ public class Usuario extends Entidad {
     }
 
     public static Boolean agregarUsuario(String nombre, String contrasena, String correo, int idRol) {
-        try /*(Session session = HibernateUtil.getSessionFactory().openSession()) */ {
+        try {
             Usuario usuario = new Usuario();
             usuario.setNombre(nombre);
             usuario.setContrasena(contrasena);
             usuario.setCorreo(correo);
-            usuario.rol.setId(idRol); // Asignar relación
+
+            // Crear e instanciar el rol
+            Rol rol = new Rol();
+            rol.setId(idRol);
+            usuario.setRol(rol); // Asignar el rol instanciado
 
             usuarioDao.guardar(usuario);
 
@@ -83,6 +87,7 @@ public class Usuario extends Entidad {
             return false;
         }
     }
+
 
     public static Boolean actualizarUsuario(Usuario usuario){
         usuarioDao.actualizar(usuario);

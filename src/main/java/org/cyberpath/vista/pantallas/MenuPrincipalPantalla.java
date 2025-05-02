@@ -74,9 +74,40 @@ public class MenuPrincipalPantalla extends PlantillaVentanaBase {
         contenido.add(panelTituloConLogo);
 
         contenido.add(Box.createVerticalStrut(40));
-
         contenido.add(crearBotonEstilizado("Nombre de las materias inscritas", "Img/iconos/icono_materias.png",
                 e -> System.out.println("Mostrar materias inscritas")));
+
+        contenido.add(Box.createVerticalGlue());
+
+        // Panel para botones de materias
+        JPanel panelBotonesMaterias = new JPanel(new GridLayout(1, 2, 20, 0));
+        panelBotonesMaterias.setOpaque(false);
+        panelBotonesMaterias.setBorder(new EmptyBorder(20, 0, 0, 0)); // margen superior
+
+        // Botón estilizado para agregar materia
+        JButton botonAgregar = crearBotonEstilizado("Agregar materia", "Img/iconos/icono_agregar.png",
+                e -> JOptionPane.showMessageDialog(this, "Función en construcción"));
+        panelBotonesMaterias.add(botonAgregar);
+
+        // Botón rojo para eliminar materia con confirmación
+        JButton botonEliminar = new JButton("Retirar materia");
+        botonEliminar.setFocusPainted(false);
+        botonEliminar.setBackground(new Color(220, 53, 69)); // rojo Bootstrap
+        botonEliminar.setForeground(Color.WHITE);
+        botonEliminar.setFont(new Font("Arial", Font.BOLD, 14));
+        botonEliminar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonEliminar.addActionListener(e -> {
+            int confirmacion = JOptionPane.showConfirmDialog(this,
+                    "¿Está seguro que desea retirar esta materia?",
+                    "Confirmar retiro", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (confirmacion == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(this, "Función en construcción");
+            }
+        });
+        panelBotonesMaterias.add(botonEliminar);
+
+        contenido.add(panelBotonesMaterias);
+
 
         contenido.add(Box.createVerticalGlue());
 
