@@ -34,4 +34,6 @@ public class Contenido extends Entidad {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_subtema", nullable = false)
     private Subtema subtema;
+
+
 }

@@ -1,4 +1,4 @@
-package org.cyberpath.modelo.baseDeDatos.dao;
+package org.cyberpath.modelo.baseDatos.dao;
 
 import org.cyberpath.modelo.entidades.base.Entidad;
 

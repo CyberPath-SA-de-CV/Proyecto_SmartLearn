@@ -1,4 +1,4 @@
-package org.cyberpath.modelo.baseDeDatos.hibernate;
+package org.cyberpath.modelo.baseDatos.hibernate;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,7 +15,7 @@ public final class HibernateUtil {
         try {
             System.out.println("HibernateUtil.init()");
             registry = new StandardServiceRegistryBuilder()
-                    .configure("hibernate.cfg.xml") // se carga la configuracion hibernate
+                    .configure("baseDatos/hibernate.cfg.xml") // se carga la configuracion hibernate
                     .build();
             System.out.println("HibernateUtil.registry");
             return registry != null;

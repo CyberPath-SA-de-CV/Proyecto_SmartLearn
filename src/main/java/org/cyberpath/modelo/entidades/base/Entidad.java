@@ -2,6 +2,7 @@ package org.cyberpath.modelo.entidades.base;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
 
 
 @Data
@@ -12,16 +13,5 @@ public abstract class Entidad {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Integer id;
-
-
-    /*
-    public abstract void alta();
-    public abstract void modificacion();
-    public abstract void baja();
-    public abstract void vista();
-
-     */
-
-
 
 }

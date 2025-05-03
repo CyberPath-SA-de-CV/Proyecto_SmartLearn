@@ -1,8 +1,8 @@
-package org.cyberpath.modelo.baseDeDatos.dao.implementacion;
+package org.cyberpath.modelo.baseDatos.dao.implementacion;
 
 import lombok.NoArgsConstructor;
-import org.cyberpath.modelo.baseDeDatos.dao.DaoInterface;
-import org.cyberpath.modelo.baseDeDatos.hibernate.HibernateUtil;
+import org.cyberpath.modelo.baseDatos.dao.DaoInterface;
+import org.cyberpath.modelo.baseDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.hibernate.Session;
 

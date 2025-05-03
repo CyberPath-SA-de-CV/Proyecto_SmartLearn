@@ -2,14 +2,14 @@ package org.cyberpath.util;
 
 public class Salidas {
     //Menus
-    public static String menuPENDIENTE_PRINCIPAL = (
+    public static final String menuPENDIENTE_PRINCIPAL = (
         "Bienvenido al programa!\n" +
         "SELECCIONA UNA OPCION\n" +
         "1.- \n" +
         "2.- \n" +
         "3.- "
     );
-    public static String menuPENDIENTE_COPIAR_PEGAR = (
+    public static final String menuPENDIENTE_COPIAR_PEGAR = (
         "---- Menú PENDIENTE ----\n" +
         "¿Qué operación desea realizar?:\n" +
         "1. \n" +
@@ -24,30 +24,38 @@ public class Salidas {
     );
 
     //Lecturas
-    public static String leerPENDIENTE = "";
+    public static final String leerPENDIENTE = "";
 
     //Peticion de entrada
-    public static String seleccionarOpcion = "Selecciona una opción: ";
-
+    public static final String seleccionarOpcion = "Selecciona una opción: ";
+    //Registro Usuario
+    public static final String registroExitoso = "Usuario registrado exitosamente.";
+    public static final String registroError = "Error al registrar el usuario: ";
+    public static final String contrasenaRol = "Digite la contrasena para Administradores";
+    public static final String contrasenaRolError = "Contrasena incorrecta";
+    public static String elementoNoEncontrado = "No se encontró el elemento";
     //Inicio Sesión
+    public static final String errorInicioSesion = "Usuario o Contraseña Incorrecta";
     public static void errorInicioSesion() {
         System.out.println("Usuario o Contraseña Incorrecta");
     }
-    public static String errorInicioSesion = "Usuario o Contraseña Incorrecta";
+    //Errores con Operaciones
+    public static final String errorActualizarUsuario = "Problema al actualizar el usuario";
+
+
+    //CUESTIONARIOS
 
     //Mensajes generales
-    public static void terminarPrograma(){
+    public static void terminarPrograma() {
         System.out.println("¡Hasta luego!");
         //System.out.println("No olvides cerrar la ventana si aún sigue abierta");
     }
-
-    //CUESTIONARIOS
 
     //Errores Generales
     public static void opcionInvalida() {
         System.out.println("La opción seleccionada es inválida");
     }
-    public static String elementoNoEncontrado = "No se encontró el elemento";
+
     public static void errorDato() {
         System.out.println("No es un dato valido");
     }
