@@ -12,9 +12,11 @@ import java.util.Objects;
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public class ConfiguracionVentana extends PlantillaBaseVentana {
+
     private JButton botonNombre;
     private JButton botonContrasena;
     private JButton botonCorreo;
+    private JPanel contenidoPrincipal;
 
     public ConfiguracionVentana() {
         super("Configuración de Usuario", 1200, 800);
@@ -23,17 +25,16 @@ public class ConfiguracionVentana extends PlantillaBaseVentana {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ConfiguracionVentana().setVisible(true));
-
     }
 
     @Override
     protected void inicializarComponentes() {
-        JPanel contenido = crearPanelDegradadoDecorativo("Configuración");
-        contenido.setLayout(new BoxLayout(contenido, BoxLayout.Y_AXIS));
+        contenidoPrincipal = crearPanelDegradadoDecorativo("Configuración");
+        contenidoPrincipal.setLayout(new BoxLayout(contenidoPrincipal, BoxLayout.Y_AXIS));
 
         JLabel titulo = crearTituloCentrado("¿Qué dato desea cambiar del usuario?");
-        contenido.add(titulo);
-        contenido.add(Box.createVerticalStrut(40));
+        contenidoPrincipal.add(titulo);
+        contenidoPrincipal.add(Box.createVerticalStrut(40));
 
         botonNombre = crearBotonEstilizado("Cambiar nombre", null, null);
         botonContrasena = crearBotonEstilizado("Cambiar contraseña", null, null);
@@ -45,19 +46,17 @@ public class ConfiguracionVentana extends PlantillaBaseVentana {
 
         JButton botonSalir = crearBotonSalirAPantallaPrincipal();
 
-        contenido.add(botonNombre);
-        contenido.add(Box.createVerticalStrut(20));
-        contenido.add(botonContrasena);
-        contenido.add(Box.createVerticalStrut(20));
-        contenido.add(botonCorreo);
-        contenido.add(Box.createVerticalStrut(20));
-        contenido.add(botonSalir);
-        contenido.add(Box.createVerticalGlue());
+        contenidoPrincipal.add(botonNombre);
+        contenidoPrincipal.add(Box.createVerticalStrut(20));
+        contenidoPrincipal.add(botonContrasena);
+        contenidoPrincipal.add(Box.createVerticalStrut(20));
+        contenidoPrincipal.add(botonCorreo);
+        contenidoPrincipal.add(Box.createVerticalStrut(20));
+        contenidoPrincipal.add(botonSalir);
+        contenidoPrincipal.add(Box.createVerticalGlue());
 
-        JScrollPane scrollContenido = crearScrollPaneTransparente(contenido);
-
-        ContenidoConPanelSuperior panelConSuperior = new ContenidoConPanelSuperior(scrollContenido);
-        getPanelContenedor().add(panelConSuperior, BorderLayout.CENTER);
+        JScrollPane scrollContenido = crearScrollPaneTransparente(contenidoPrincipal);
+        establecerContenidoConPanelSuperior(scrollContenido);
     }
 
     @Override
@@ -65,9 +64,9 @@ public class ConfiguracionVentana extends PlantillaBaseVentana {
         botonNombre.addActionListener(e -> {
             String nuevoNombre = JOptionPane.showInputDialog(this,
                     "Ingrese el nuevo nombre de usuario:", VariablesGlobales.usuario.getNombre());
-            if (nuevoNombre != null && !nuevoNombre.trim().isEmpty() && !Objects.equals(nuevoNombre, VariablesGlobales.usuario.getNombre())) {
+            if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()
+                    && !Objects.equals(nuevoNombre, VariablesGlobales.usuario.getNombre())) {
                 VariablesGlobales.usuario.setNombre(nuevoNombre.trim());
-
                 if (Usuario.actualizar(VariablesGlobales.usuario)) {
                     JOptionPane.showMessageDialog(this, "Nombre actualizado con éxito.");
                 } else {
@@ -91,26 +90,27 @@ public class ConfiguracionVentana extends PlantillaBaseVentana {
                     "Cambiar contraseña", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (opcion == JOptionPane.OK_OPTION) {
-                String contrasenaActualIngresada = new String(campoActual.getPassword());
-                String nuevaContrasena = new String(campoNueva.getPassword());
-                String contrasenaActualGuardada = VariablesGlobales.usuario.getContrasena();
+                String actual = new String(campoActual.getPassword());
+                String nueva = new String(campoNueva.getPassword());
+                String guardada = VariablesGlobales.usuario.getContrasena();
 
-                if (!contrasenaActualIngresada.equals(contrasenaActualGuardada)) {
-                    JOptionPane.showMessageDialog(this, "La contraseña actual es incorrecta.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                } else if (nuevaContrasena.isBlank()) {
-                    JOptionPane.showMessageDialog(this, "La nueva contraseña no puede estar vacía.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                    return;
-                } else if (nuevaContrasena.equals(contrasenaActualGuardada)) {
-                    JOptionPane.showMessageDialog(this, "La nueva contraseña no puede ser igual a la actual.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                VariablesGlobales.usuario.setContrasena(nuevaContrasena);
-                if (Usuario.actualizar(VariablesGlobales.usuario)) {
-                    JOptionPane.showMessageDialog(this, "Contraseña actualizada correctamente.");
+                if (!actual.equals(guardada)) {
+                    JOptionPane.showMessageDialog(this, "La contraseña actual es incorrecta.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                } else if (nueva.isBlank()) {
+                    JOptionPane.showMessageDialog(this, "La nueva contraseña no puede estar vacía.",
+                            "Advertencia", JOptionPane.WARNING_MESSAGE);
+                } else if (nueva.equals(guardada)) {
+                    JOptionPane.showMessageDialog(this, "La nueva contraseña no puede ser igual a la actual.",
+                            "Advertencia", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar la contraseña. Intente nuevamente.", "Error", JOptionPane.ERROR_MESSAGE);
+                    VariablesGlobales.usuario.setContrasena(nueva);
+                    if (Usuario.actualizar(VariablesGlobales.usuario)) {
+                        JOptionPane.showMessageDialog(this, "Contraseña actualizada correctamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al actualizar la contraseña.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         });
@@ -121,31 +121,29 @@ public class ConfiguracionVentana extends PlantillaBaseVentana {
 
             if (nuevoCorreo != null) {
                 nuevoCorreo = nuevoCorreo.trim();
-
                 if (nuevoCorreo.isEmpty() || !nuevoCorreo.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
-                    JOptionPane.showMessageDialog(this, "Correo inválido. Intente con un formato correcto.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
+                    JOptionPane.showMessageDialog(this, "Correo inválido. Intente con un formato correcto.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 } else if (nuevoCorreo.equals(VariablesGlobales.usuario.getCorreo())) {
-                    JOptionPane.showMessageDialog(this, "El nuevo correo es igual al actual.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                VariablesGlobales.usuario.setCorreo(nuevoCorreo);
-                if (Usuario.actualizar(VariablesGlobales.usuario)) {
-                    JOptionPane.showMessageDialog(this, "Correo actualizado con éxito.");
+                    JOptionPane.showMessageDialog(this, "El nuevo correo es igual al actual.",
+                            "Advertencia", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar el correo. Intente nuevamente.", "Error", JOptionPane.ERROR_MESSAGE);
+                    VariablesGlobales.usuario.setCorreo(nuevoCorreo);
+                    if (Usuario.actualizar(VariablesGlobales.usuario)) {
+                        JOptionPane.showMessageDialog(this, "Correo actualizado con éxito.");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al actualizar el correo.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
-
             } else {
                 JOptionPane.showMessageDialog(this, "Operación cancelada.");
             }
         });
-
     }
 
     @Override
     public JPanel getContenido() {
-        return null;
+        return contenidoPrincipal;
     }
 }

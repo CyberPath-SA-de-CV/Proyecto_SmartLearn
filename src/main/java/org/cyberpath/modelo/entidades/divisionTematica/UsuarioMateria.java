@@ -1,11 +1,13 @@
 package org.cyberpath.modelo.entidades.divisionTematica;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.modelo.entidades.usuario.Usuario;
 
 import java.time.LocalDate;
 
+@Data
 @Entity
 @Table(name = "TBL_USUARIO_MATERIA")
 public class UsuarioMateria extends Entidad {
@@ -30,38 +32,6 @@ public class UsuarioMateria extends Entidad {
         this.usuario = usuario;
         this.tema = tema;
         this.progreso = progreso;
-        this.fechaInscripcion = fechaInscripcion;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public Tema getTema() {
-        return tema;
-    }
-
-    public void setTema(Tema tema) {
-        this.tema = tema;
-    }
-
-    public Integer getProgreso() {
-        return progreso;
-    }
-
-    public void setProgreso(Integer progreso) {
-        this.progreso = progreso;
-    }
-
-    public LocalDate getFechaInscripcion() {
-        return fechaInscripcion;
-    }
-
-    public void setFechaInscripcion(LocalDate fechaInscripcion) {
         this.fechaInscripcion = fechaInscripcion;
     }
 }

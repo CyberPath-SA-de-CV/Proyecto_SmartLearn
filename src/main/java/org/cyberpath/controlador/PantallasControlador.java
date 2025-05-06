@@ -6,30 +6,45 @@ import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
 import org.cyberpath.vista.pantallas.combo.ModificarContenidoVentana;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class PantallasControlador {
-    private static JFrame ventanaActual;
+    private static JPanel panelContenedor;
+
+    public static void asignarContenedor(JPanel panel){
+        panelContenedor = panel;
+    }
+
+    public static void cambiarContenido(JPanel nuevoContenido) {
+        if (panelContenedor == null) {
+            throw new IllegalStateException("Panel contenedor no ha sido asignado.");
+        }
+        panelContenedor.removeAll();
+        panelContenedor.setLayout(new BorderLayout());
+        panelContenedor.add(nuevoContenido, BorderLayout.CENTER);
+        panelContenedor.revalidate();
+        panelContenedor.repaint();
+    }
 
     public static void mostrarPantalla(PantallasEnum pantalla) {
-        if (ventanaActual != null) {
-            ventanaActual.dispose();
-        }
+//        if (ventanaActual != null) {
+//            ventanaActual.dispose();
+//        }
         switch (pantalla) {
             case MENU_PRINCIPAL:
-                ventanaActual = new MenuPrincipalVentana();
+                cambiarContenido(new MenuPrincipalVentana().getContenido());
                 break;
             case ACCESIBILIDAD:
-                ventanaActual = new AccesibilidadVentana();
+                cambiarContenido(new AccesibilidadVentana().getContenido());
                 break;
             case CONFIGURACION:
-                ventanaActual = new ConfiguracionVentana();
+                cambiarContenido(new ConfiguracionVentana().getContenido());
                 break;
             case MODIFICAR_CONTENIDO:
-                ventanaActual = new ModificarContenidoVentana();
+                cambiarContenido(new ModificarContenidoVentana().getContenido());
                 break;
             default:
                 throw new IllegalArgumentException("Pantalla desconocida: " + pantalla);
         }
-        SwingUtilities.invokeLater(() -> ventanaActual.setVisible(true));;
     }
 }

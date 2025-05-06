@@ -236,7 +236,7 @@ public abstract class ComponentesReutilizables extends JFrame {
 
     ///  **** Crear etiqueta(2)
     /// Crea una etiqueta centrada tomando como parámetro tan solo el texto de esta
-    public static JLabel crearEtiqueta(String texto) {
+    public static JLabel    crearEtiqueta(String texto) {
         JLabel etiqueta = new JLabel(texto, SwingConstants.CENTER);
         etiqueta.setFont(new Font("Arial", Font.PLAIN, 12));
         return etiqueta;

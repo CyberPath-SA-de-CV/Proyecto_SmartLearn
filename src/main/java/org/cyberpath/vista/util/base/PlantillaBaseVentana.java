@@ -10,6 +10,7 @@ public abstract class PlantillaBaseVentana extends JFrame {
     public PlantillaBaseVentana(String tituloVentana, int ancho, int alto) {
         super(tituloVentana);
         configurarVentana(ancho, alto);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         panelContenedor = new JPanel(); // inicializamos el contenedor
         panelContenedor.setLayout(new BorderLayout());
         add(panelContenedor, BorderLayout.CENTER); // lo agregamos al frame

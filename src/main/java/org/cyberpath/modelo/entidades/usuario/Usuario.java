@@ -36,11 +36,16 @@ public class Usuario extends Entidad {
 
     public static Boolean agregar(String nombre, String contrasena, String correo, int id_rol) {
         try {
+            Rol rolExistente = new DaoImpl<>(Rol.class).findById(id_rol);
+            if (rolExistente == null) {
+                throw new IllegalArgumentException("El rol con ID " + id_rol + " no existe en la base de datos.");
+            }
+
             Usuario usuario = new Usuario();
             usuario.setNombre(nombre);
             usuario.setContrasena(contrasena);
             usuario.setCorreo(correo);
-            usuario.rol.setId(id_rol);
+            usuario.setRol(rolExistente); // aquí asignas el objeto gestionado
 
             usuarioDao.guardar(usuario);
 
@@ -53,6 +58,7 @@ public class Usuario extends Entidad {
             return false;
         }
     }
+
 
     public static Boolean actualizar(Usuario usuario) {
         try {

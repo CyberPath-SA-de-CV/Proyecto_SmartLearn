@@ -1,9 +1,12 @@
 package org.cyberpath.vista.pantallas.combo;
 
+import org.cyberpath.controlador.PantallasControlador;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
 import org.cyberpath.modelo.entidades.divisionTematica.Tema;
-import org.cyberpath.vista.util.base.ContenidoConPanelSuperior;
+import org.cyberpath.modelo.entidades.usuario.Usuario;
+import org.cyberpath.util.VariablesGlobales;
+import org.cyberpath.vista.util.base.PlantillaBaseVentana;
 import org.cyberpath.vista.util.materias.ContenidoPracticoVentana;
 import org.cyberpath.vista.util.materias.ContenidoTeoricoVentana;
 import org.cyberpath.vista.util.materias.SubtemaVentana;
@@ -11,41 +14,60 @@ import org.cyberpath.vista.util.materias.TemaVentana;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.util.Stack;
 
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
-public class MenuPrincipalVentana extends JFrame {
-    private final CardLayout cardLayout;
-    private final JPanel mainPanel;
+public class MenuPrincipalVentana extends PlantillaBaseVentana {
+    private  CardLayout cardLayout;
+    private static JPanel mainPanel;
     private final Stack<PanelHistorial> historial = new Stack<>();
 
     public MenuPrincipalVentana() {
-        super("Menú Principal");
+        super("Menú Principal", 1200, 800);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
 
+    @Override
+    protected void inicializarComponentes() {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-
-        ContenidoConPanelSuperior panelConEncabezado = new ContenidoConPanelSuperior(mainPanel);
-        getContentPane().add(panelConEncabezado, BorderLayout.CENTER);
-
+        establecerContenidoConPanelSuperior(mainPanel);
         mostrarMenuMaterias();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MenuPrincipalVentana().setVisible(true));
+    @Override
+    protected void agregarEventos() {
+        // Aquí puedes agregar eventos globales si los necesitas
+    }
+
+    @Override
+    public JPanel getContenido() {
+        return mainPanel;
+    }
+
+    @Override
+    public JPanel getPanelContenedor() {
+        return super.getPanelContenedor();
     }
 
     private void mostrarMenuMaterias() {
         JPanel panelMaterias = crearPanelDegradadoDecorativo("Materias");
         panelMaterias.setLayout(new BoxLayout(panelMaterias, BoxLayout.Y_AXIS));
 
-        java.util.List<Materia> materias = Materia.materiaDao.findAll();
-        for (Materia materia : materias) {
-            JButton btnMateria = crearBotonEstilizado(materia.getNombre(), null, e -> mostrarTemas(materia));
-            panelMaterias.add(btnMateria, crearConstraintBotonAncho(3, 0, 3, 1, 200));
+        List<Materia> materias = Materia.materiaDao.findAll();
+        if (!materias.isEmpty()){
+            for (Materia materia : materias) {
+                JButton btnMateria = crearBotonEstilizado(materia.getNombre(), null, e -> mostrarTemas(materia));
+                panelMaterias.add(btnMateria, crearConstraintBotonAncho(3, 0, 3, 1, 200));
+                panelMaterias.add(Box.createVerticalStrut(5));
+            }
+        }
+        else{
+            JLabel mensaje = crearTituloCentrado("No ha materias inscritas aún");
+            mensaje.setFont(new Font("Segoe UI", Font.ITALIC, 22));
+            panelMaterias.add(mensaje,crearConstraint(0,0,1,1,1));
             panelMaterias.add(Box.createVerticalStrut(5));
         }
 
@@ -63,7 +85,7 @@ public class MenuPrincipalVentana extends JFrame {
 
     public void mostrarSubtemas(Tema tema) {
         SubtemaVentana subtemaVentana = new SubtemaVentana(tema, this);
-        String nombre = "Subtemas" + historial.size();
+        String nombre = "Subtemas_" + historial.size();
         historial.push(new PanelHistorial(subtemaVentana, nombre));
         mainPanel.add(subtemaVentana, nombre);
         cardLayout.show(mainPanel, nombre);
@@ -71,7 +93,7 @@ public class MenuPrincipalVentana extends JFrame {
 
     public void mostrarContenidoTeorico(Subtema subtema) {
         ContenidoTeoricoVentana contenidoTeoricoVentana = new ContenidoTeoricoVentana(subtema, this);
-        String nombre = "Contenido" + historial.size();
+        String nombre = "ContenidoT_" + historial.size();
         historial.push(new PanelHistorial(contenidoTeoricoVentana, nombre));
         mainPanel.add(contenidoTeoricoVentana, nombre);
         cardLayout.show(mainPanel, nombre);
@@ -79,7 +101,7 @@ public class MenuPrincipalVentana extends JFrame {
 
     public void mostrarContenidoPractico(Subtema subtema) {
         ContenidoPracticoVentana contenidoPracticoVentana = new ContenidoPracticoVentana(subtema, this);
-        String nombre = "Contenido" + historial.size();
+        String nombre = "ContenidoP_" + historial.size();
         historial.push(new PanelHistorial(contenidoPracticoVentana, nombre));
         mainPanel.add(contenidoPracticoVentana, nombre);
         cardLayout.show(mainPanel, nombre);
@@ -91,8 +113,7 @@ public class MenuPrincipalVentana extends JFrame {
             mainPanel.remove(panelActual.panel);
 
             if (!historial.isEmpty()) {
-                PanelHistorial panelAnterior = historial.peek();
-                cardLayout.show(mainPanel, panelAnterior.nombre);
+                cardLayout.show(mainPanel, historial.peek().nombre);
             } else {
                 cardLayout.show(mainPanel, "Materias");
             }
@@ -100,6 +121,13 @@ public class MenuPrincipalVentana extends JFrame {
             mainPanel.revalidate();
             mainPanel.repaint();
         }
+    }
+
+    public static void main(String[] args) {
+
+        Usuario ejemplo = Usuario.usuarioDao.findById(4);
+        VariablesGlobales.usuario = ejemplo;
+        SwingUtilities.invokeLater(() -> new MenuPrincipalVentana().setVisible(true));
     }
 
     private static class PanelHistorial {
@@ -111,5 +139,4 @@ public class MenuPrincipalVentana extends JFrame {
             this.nombre = nombre;
         }
     }
-
 }
