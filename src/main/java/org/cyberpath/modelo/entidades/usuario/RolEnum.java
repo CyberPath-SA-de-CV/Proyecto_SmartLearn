@@ -12,8 +12,8 @@ public enum RolEnum {
 
     public static RolEnum getId(Integer id_rol){
         return switch (id_rol) {
-            case 3 -> ADMINISTRADOR;
-            case 4 -> ALUMNO;
+            case 1 -> ADMINISTRADOR;
+            case 2 -> ALUMNO;
             default -> null;
         };
     }

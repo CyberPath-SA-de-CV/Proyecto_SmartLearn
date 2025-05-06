@@ -27,6 +27,14 @@ public class DaoImpl<T extends Entidad> implements DaoInterface<T> {
     }
 
     @Override
+    public List<T> findAllWithFetch(String fetchQuery) {
+        Session session = HibernateUtil.getSession();
+        List<T> lista = session.createQuery(fetchQuery, clase).getResultList();
+        session.close();
+        return lista;
+    }
+
+    @Override
     public boolean guardar(T e) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction();

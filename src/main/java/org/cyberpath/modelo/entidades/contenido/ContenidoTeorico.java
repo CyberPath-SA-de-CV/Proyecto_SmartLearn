@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
 import org.cyberpath.modelo.entidades.base.Entidad;
+import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
 
 import javax.swing.*;
+import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -23,13 +25,16 @@ public class ContenidoTeorico extends Entidad {
 
     @Column(name = "texto", nullable = false)
     private String texto;
-    /*
-    @Column(name = "tiene_audio", nullable = false)
-    private boolean audio;
-    */
-    @OneToOne(mappedBy = "contenidoTeorico", fetch = FetchType.LAZY)
+
+    @OneToOne(mappedBy = "contenidoTeorico", fetch = FetchType.EAGER)
     @ToString.Exclude
     private Subtema subtema;
+
+    @Column(name = "fecha_creacion")
+    private String fecha_creacion;
+
+    @Column(name = "ultima_edicion")
+    private String ultima_edicion;
 
     public void agregarSubtema(Subtema subtema){
         this.subtema = subtema;
@@ -37,11 +42,12 @@ public class ContenidoTeorico extends Entidad {
     }
 
     // Métodos de negocio
-    public static Boolean agregar(String texto/*, boolean tieneAudio*/) {
+    public static Boolean agregar(String texto) {
+        String fechaSql = LocalDate.now().toString();
         try {
             ContenidoTeorico contenidoTeorico = new ContenidoTeorico();
+            contenidoTeorico.setFecha_creacion(fechaSql);
             contenidoTeorico.setTexto(texto);
-            //contenido.setAudio(tieneAudio);
             contenidoTeoricoDao.guardar(contenidoTeorico);
             return true;
         } catch (Exception e) {
@@ -50,26 +56,22 @@ public class ContenidoTeorico extends Entidad {
             return false;
         }
     }
-
-    public static Boolean actualizar(ContenidoTeorico contenido, String nuevoTexto, boolean nuevoAudio) {
-        try {
-            contenido.setTexto(nuevoTexto);
-            //contenido.setAudio(nuevoAudio);
-            return contenidoTeoricoDao.actualizar(contenido);
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al actualizar contenido teórico: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
+    ///
+    public static Boolean actualizar(Integer id, String texto) {
+        String fechaSql = LocalDate.now().toString();
+        ContenidoTeorico contenidoTeorico;
+        contenidoTeorico = (ContenidoTeorico) buscarElemento(contenidoTeoricoDao, id);
+        contenidoTeorico.setTexto(texto);
+        contenidoTeorico.setUltima_edicion(fechaSql);
+        contenidoTeoricoDao.actualizar(contenidoTeorico);
+        return true;
+    }
+    public static Boolean eliminar(Integer id) {
+        ContenidoTeorico contenidoTeorico;
+        contenidoTeorico = (ContenidoTeorico) buscarElemento(contenidoTeoricoDao, id);
+        contenidoTeoricoDao.eliminar(contenidoTeorico);
+        return true;
     }
 
-    public static Boolean eliminar(ContenidoTeorico contenido) {
-        try {
-            return contenidoTeoricoDao.eliminar(contenido);
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al eliminar contenido teórico: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-    }
+    ///
 }

@@ -25,8 +25,6 @@
 
 		<mapping class="org.cyberpath.modelo.entidades.usuario.Usuario"/>
 		<mapping class="org.cyberpath.modelo.entidades.usuario.Rol"/>
-		<mapping class="org.cyberpath.modelo.entidades.contenido.Contenido"/>
-		<mapping class="org.cyberpath.modelo.entidades.contenido.ContenidoPractico"/>
 		<mapping class="org.cyberpath.modelo.entidades.contenido.ContenidoTeorico"/>
 		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.Materia"/>
 		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.Tema"/>

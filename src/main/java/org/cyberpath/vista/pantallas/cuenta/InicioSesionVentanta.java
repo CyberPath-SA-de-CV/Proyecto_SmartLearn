@@ -61,7 +61,11 @@ public class InicioSesionVentanta extends JFrame {
 
         panel.add(botonLogin, crearConstraintBotonAncho(2, 0, 3, 1, 200));
         JButton botonVolver = crearBotonEstilizado("Volver a Inicio", null, e -> {
-            new InicioVentana().setVisible(true);
+            try {
+                new InicioVentana().setVisible(true);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             dispose();
         });
         panel.add(botonVolver, crearConstraintBotonAncho(3, 0, 3, 1, 200));

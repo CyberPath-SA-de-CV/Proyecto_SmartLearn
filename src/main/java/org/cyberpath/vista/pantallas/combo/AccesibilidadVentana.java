@@ -35,8 +35,8 @@ public class AccesibilidadVentana extends PlantillaBaseVentana {
         opciones.setOpaque(false);
         opciones.setLayout(new BoxLayout(opciones, BoxLayout.Y_AXIS));
         opciones.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JCheckBox activarVoz = crearCheckBox("Activar Voz", VariablesGlobales.reproduccionGlobalAudio);
-        activarVoz.addActionListener(e -> VariablesGlobales.reproduccionGlobalAudio = activarVoz.isSelected());
+        JCheckBox activarVoz = crearCheckBox("Activar Voz", VariablesGlobales.usuario.getModoAudio());
+        activarVoz.addActionListener(e -> VariablesGlobales.usuario.setModoAudio(activarVoz.isSelected()));
         JCheckBox modoAccesible = crearCheckBox("Opción 2", false); // Cambiar si es necesario
         opciones.add(activarVoz);
         opciones.add(Box.createVerticalStrut(15));

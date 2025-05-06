@@ -11,9 +11,8 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-@NoArgsConstructor  // Para JPA
-@AllArgsConstructor // Para crear fácilmente objetos completos
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "TBL_TEMA")
 public class Tema extends Entidad {
@@ -22,15 +21,14 @@ public class Tema extends Entidad {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_materia", nullable = false)
-    @ToString.Exclude  // Evita recursión infinita en logs
+    @ToString.Exclude
     private Materia materia;
 
     @OneToMany(mappedBy = "tema", fetch = FetchType.EAGER, orphanRemoval = true)
-    @ToString.Exclude  // Evita recursión infinita en logs
+    @ToString.Exclude
     private List<Subtema> subtemas = new ArrayList<>();
-
 
     public static Boolean agregar(String nombre, Materia materia) {
         try {
@@ -41,23 +39,59 @@ public class Tema extends Entidad {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar tema" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al agregar tema: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
-    public static Boolean actualizar(/*Pendinete*/) {
-        throw new UnsupportedOperationException("Método actualizar aún no implementado");
+
+    public static Boolean actualizar(Integer id, String nombre) {
+        Tema tema = (Tema) buscarElemento(temaDao, id);
+        if (tema != null) {
+            tema.setNombre(nombre);
+            tema.getMateria().actualizarTema(tema);
+            temaDao.actualizar(tema);
+            return true;
+        }
+        return false;
     }
-    public static Boolean eliminar(/*Pendinete*/) {
-        throw new UnsupportedOperationException("Método eliminar aún no implementado");
+    public static Boolean actualizar(Integer id, Materia materia) {
+        Tema tema;
+        tema = (Tema) buscarElemento(temaDao, id);
+        assert tema != null;
+        tema.getMateria().eliminarTema(tema);
+        materia.agregarTema(tema);
+        temaDao.actualizar(tema);
+        return true;
     }
 
-    public void agregarSubtema(Subtema subtema) {
+    public static Boolean eliminar(Integer id) {
+        Tema tema = (Tema) buscarElemento(temaDao, id);
+        if (tema != null) {
+            tema.getMateria().eliminarTema(tema);
+            temaDao.eliminar(tema);
+            return true;
+        }
+        return false;
+    }
+
+    public void agregarSubtema(Subtema subtema ) {
         subtemas.add(subtema);
         subtema.setTema(this);
     }
+
     public void eliminarSubtema(Subtema subtema) {
         subtemas.remove(subtema);
         subtema.setTema(null);
+    }
+
+    public void actualizarSubtema(Subtema subtemaActualizado) {
+        subtemas.removeIf(subtema -> subtema.getId().equals(subtemaActualizado.getId()));
+        subtemas.add(subtemaActualizado);
+        subtemaActualizado.setTema(this);
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

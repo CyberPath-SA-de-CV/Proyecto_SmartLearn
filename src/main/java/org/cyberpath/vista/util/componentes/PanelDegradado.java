@@ -3,7 +3,7 @@ package org.cyberpath.vista.util.componentes;
 import javax.swing.*;
 import java.awt.*;
 
-public abstract class PanelDegradado extends JPanel {
+public class PanelDegradado extends JPanel {
     public PanelDegradado() {
         setOpaque(false); // Permite que se pinte el degradado
     }

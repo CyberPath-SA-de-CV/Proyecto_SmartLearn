@@ -4,19 +4,21 @@ import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
 import org.cyberpath.modelo.entidades.divisionTematica.Tema;
 import org.cyberpath.vista.util.base.ContenidoConPanelSuperior;
-import org.cyberpath.vista.util.materias.ContenidoVentana;
+import org.cyberpath.vista.util.materias.ContenidoPracticoVentana;
+import org.cyberpath.vista.util.materias.ContenidoTeoricoVentana;
 import org.cyberpath.vista.util.materias.SubtemaVentana;
 import org.cyberpath.vista.util.materias.TemaVentana;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Stack;
 
-import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.crearBotonEstilizado;
-import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.crearPanelDegradadoDecorativo;
+import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public class MenuPrincipalVentana extends JFrame {
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
+    private final Stack<PanelHistorial> historial = new Stack<>();
 
     public MenuPrincipalVentana() {
         super("Menú Principal");
@@ -43,7 +45,7 @@ public class MenuPrincipalVentana extends JFrame {
         java.util.List<Materia> materias = Materia.materiaDao.findAll();
         for (Materia materia : materias) {
             JButton btnMateria = crearBotonEstilizado(materia.getNombre(), null, e -> mostrarTemas(materia));
-            panelMaterias.add(btnMateria);
+            panelMaterias.add(btnMateria, crearConstraintBotonAncho(3, 0, 3, 1, 200));
             panelMaterias.add(Box.createVerticalStrut(5));
         }
 
@@ -53,23 +55,61 @@ public class MenuPrincipalVentana extends JFrame {
 
     private void mostrarTemas(Materia materia) {
         TemaVentana temaVentana = new TemaVentana(materia, this);
-        mainPanel.add(temaVentana, "Temas");
-        cardLayout.show(mainPanel, "Temas");
+        String nombre = "Temas_" + historial.size();
+        historial.push(new PanelHistorial(temaVentana, nombre));
+        mainPanel.add(temaVentana, nombre);
+        cardLayout.show(mainPanel, nombre);
     }
 
     public void mostrarSubtemas(Tema tema) {
         SubtemaVentana subtemaVentana = new SubtemaVentana(tema, this);
-        mainPanel.add(subtemaVentana, "Subtemas");
-        cardLayout.show(mainPanel, "Subtemas");
+        String nombre = "Subtemas" + historial.size();
+        historial.push(new PanelHistorial(subtemaVentana, nombre));
+        mainPanel.add(subtemaVentana, nombre);
+        cardLayout.show(mainPanel, nombre);
     }
 
-    public void mostrarContenido(Subtema subtema) {
-        ContenidoVentana contenidoVentana = new ContenidoVentana(subtema, this);
-        mainPanel.add(contenidoVentana, "Contenido");
-        cardLayout.show(mainPanel, "Contenido");
+    public void mostrarContenidoTeorico(Subtema subtema) {
+        ContenidoTeoricoVentana contenidoTeoricoVentana = new ContenidoTeoricoVentana(subtema, this);
+        String nombre = "Contenido" + historial.size();
+        historial.push(new PanelHistorial(contenidoTeoricoVentana, nombre));
+        mainPanel.add(contenidoTeoricoVentana, nombre);
+        cardLayout.show(mainPanel, nombre);
+    }
+
+    public void mostrarContenidoPractico(Subtema subtema) {
+        ContenidoPracticoVentana contenidoPracticoVentana = new ContenidoPracticoVentana(subtema, this);
+        String nombre = "Contenido" + historial.size();
+        historial.push(new PanelHistorial(contenidoPracticoVentana, nombre));
+        mainPanel.add(contenidoPracticoVentana, nombre);
+        cardLayout.show(mainPanel, nombre);
     }
 
     public void regresar() {
-        cardLayout.previous(mainPanel);
+        if (!historial.isEmpty()) {
+            PanelHistorial panelActual = historial.pop();
+            mainPanel.remove(panelActual.panel);
+
+            if (!historial.isEmpty()) {
+                PanelHistorial panelAnterior = historial.peek();
+                cardLayout.show(mainPanel, panelAnterior.nombre);
+            } else {
+                cardLayout.show(mainPanel, "Materias");
+            }
+
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        }
     }
+
+    private static class PanelHistorial {
+        JPanel panel;
+        String nombre;
+
+        PanelHistorial(JPanel panel, String nombre) {
+            this.panel = panel;
+            this.nombre = nombre;
+        }
+    }
+
 }

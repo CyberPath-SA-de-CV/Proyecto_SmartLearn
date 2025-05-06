@@ -5,12 +5,14 @@ import lombok.*;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.modelo.entidades.contenido.ContenidoTeorico;
+import org.cyberpath.modelo.entidades.ejercicios.Ejercicio;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -22,24 +24,26 @@ public class Subtema extends Entidad {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_tema", nullable = false)
     @ToString.Exclude
     private Tema tema;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_contenido_teorico", nullable = false, unique = true)
+    @JoinColumn(name = "id_contenido", nullable = false, unique = true)
     @ToString.Exclude
     private ContenidoTeorico contenidoTeorico;
 
-    /// Método para agregar subtema
+    @OneToMany(mappedBy = "subtema", fetch = FetchType.EAGER, orphanRemoval = true)
+    @ToString.Exclude
+    private List<Ejercicio> ejercicios = new ArrayList<>();
+
     public static Boolean agregar(String nombre, Tema tema, ContenidoTeorico contenidoTeorico) {
         try {
             Subtema subtema = new Subtema();
             subtema.setNombre(nombre);
             tema.agregarSubtema(subtema);
             contenidoTeorico.agregarSubtema(subtema);
-
             subtemaDao.guardar(subtema);
             return true;
         } catch (Exception e) {
@@ -49,28 +53,55 @@ public class Subtema extends Entidad {
         }
     }
 
-    // Método para actualizar un subtema
-    public static Boolean actualizar(Subtema subtema, String nuevoNombre, Tema nuevoTema, ContenidoTeorico nuevoContenidoTeorico) {
-        try {
-            subtema.setNombre(nuevoNombre);
-            subtema.setTema(nuevoTema);
-            subtema.setContenidoTeorico(nuevoContenidoTeorico);
-            return subtemaDao.actualizar(subtema);
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al actualizar subtema: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+    public static Boolean actualizar(Integer id, String nombre) {
+        Subtema subtema = (Subtema) buscarElemento(subtemaDao, id);
+        if (subtema != null) {
+            subtema.setNombre(nombre);
+            subtema.getTema().actualizarSubtema(subtema);
+            subtemaDao.actualizar(subtema);
+            return true;
         }
+        return false;
+    }
+    public static Boolean actualizar(Integer id, Tema tema) {
+        Subtema subtema = (Subtema) buscarElemento(subtemaDao, id);
+        if (subtema != null) {
+            subtema.getTema().eliminarSubtema(subtema);
+            tema.agregarSubtema(subtema);
+            subtemaDao.actualizar(subtema);
+            return true;
+        }
+        return false;
     }
 
-    // Método para eliminar un subtema
-    public static Boolean eliminar(Subtema subtema) {
-        try {
-            return subtemaDao.eliminar(subtema);
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al eliminar subtema: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+    public static Boolean eliminar(Integer id) {
+        Subtema subtema = (Subtema) buscarElemento(subtemaDao, id);
+        if (subtema != null) {
+            subtema.getTema().eliminarSubtema(subtema);
+            subtemaDao.eliminar(subtema);
+            return true;
         }
+        return false;
+    }
+
+    public void agregarEjercicio(Ejercicio ejercicio) {
+        ejercicios.add(ejercicio);
+        ejercicio.setSubtema(this);
+    }
+
+    public void eliminarEjercicio(Ejercicio ejercicio) {
+        ejercicios.remove(ejercicio);
+        ejercicio.setSubtema(null);
+    }
+
+    public void actualizarEjercicio(Ejercicio ejercicioActualizado) {
+        ejercicios.removeIf(ejercicio -> ejercicio.getId().equals(ejercicioActualizado.getId()));
+        ejercicios.add(ejercicioActualizado);
+        ejercicioActualizado.setSubtema(this);
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

@@ -22,7 +22,6 @@ public class ContenidoConPanelSuperior extends JPanel {
     @Getter
     private final JPanel panelSuperior;
 
-
     public final String  POR_DEFECTO = "VENTANAS";
     public final String  MENU_PRINCIPAL = "Menu Principal";
     public final String  CONFIGURACION = "Configuración del usuario";
@@ -63,12 +62,21 @@ public class ContenidoConPanelSuperior extends JPanel {
 
         add(panelSuperior, BorderLayout.NORTH);
         add(panelContenido, BorderLayout.CENTER);
+
     }
 
     private JComboBox<String> getStringJComboBox() {
-        JComboBox<String> comboConfiguracion = new JComboBox<>(new String[]{
-                POR_DEFECTO, MENU_PRINCIPAL, CONFIGURACION, ACCESIBILIDAD, MODIFICAR_CONTENIDO, CERRAR_SESION
-        });
+        JComboBox<String> comboConfiguracion;
+        if(Objects.equals(VariablesGlobales.usuario.getRol().getId(), 1)){
+            comboConfiguracion = new JComboBox<>(new String[]{
+                    POR_DEFECTO, MENU_PRINCIPAL, CONFIGURACION, ACCESIBILIDAD, MODIFICAR_CONTENIDO, CERRAR_SESION
+            });
+        } else {
+            comboConfiguracion = new JComboBox<>(new String[]{
+                    POR_DEFECTO, MENU_PRINCIPAL, CONFIGURACION, ACCESIBILIDAD, CERRAR_SESION
+            });
+        }
+
 
         comboConfiguracion.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         comboConfiguracion.setForeground(new Color(60, 63, 65));
@@ -95,22 +103,49 @@ public class ContenidoConPanelSuperior extends JPanel {
             }
         });
 
-        comboConfiguracion.addActionListener(e -> manejarOpcionCombo((String) Objects.requireNonNull(comboConfiguracion.getSelectedItem())));
+        comboConfiguracion.addActionListener(e -> {
+            try {
+                manejarOpcionCombo((String) Objects.requireNonNull(comboConfiguracion.getSelectedItem()));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         return comboConfiguracion;
     }
 
-    public void manejarOpcionCombo(String opcion) {
+    public void manejarOpcionCombo(String opcion) throws Exception {
+
         switch (opcion) {
             case POR_DEFECTO ->
                 System.out.println(" ");
-            case MENU_PRINCIPAL ->
+            case MENU_PRINCIPAL ->{
+                Window ventanaActual = SwingUtilities.getWindowAncestor(this);
+                if (ventanaActual != null) {
+                    ventanaActual.dispose(); // Cierra la ventana actual
+                }
                 PantallasControlador.mostrarPantalla(PantallasEnum.MENU_PRINCIPAL);
-            case CONFIGURACION ->
+            }
+            case CONFIGURACION ->{
+                Window ventanaActual = SwingUtilities.getWindowAncestor(this);
+                if (ventanaActual != null) {
+                    ventanaActual.dispose(); // Cierra la ventana actual
+                }
                 PantallasControlador.mostrarPantalla(PantallasEnum.CONFIGURACION);
-            case ACCESIBILIDAD ->
+            }
+            case ACCESIBILIDAD ->{
+                Window ventanaActual = SwingUtilities.getWindowAncestor(this);
+                if (ventanaActual != null) {
+                    ventanaActual.dispose(); // Cierra la ventana actual
+                }
                 PantallasControlador.mostrarPantalla(PantallasEnum.ACCESIBILIDAD);
-            case MODIFICAR_CONTENIDO ->
+            }
+            case MODIFICAR_CONTENIDO ->{
+                Window ventanaActual = SwingUtilities.getWindowAncestor(this);
+                if (ventanaActual != null) {
+                    ventanaActual.dispose(); // Cierra la ventana actual
+                }
                 PantallasControlador.mostrarPantalla(PantallasEnum.MODIFICAR_CONTENIDO);
+            }
             case CERRAR_SESION ->
                 {
                     int confirmacion = JOptionPane.showConfirmDialog(this,

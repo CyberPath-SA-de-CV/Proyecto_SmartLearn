@@ -144,7 +144,7 @@ public class RegistroVentana extends PlantillaBaseVentana {
             String correo = campoCorreo.getText().trim();
             String contra = new String(campoContrasena.getPassword());
             String confirmar = new String(campoConfirmar.getPassword());
-            int idRol = comboRol.getSelectedIndex() == 0 ? 3 : 4;
+            int idRol = comboRol.getSelectedIndex() == 0 ? 1 : 2;
 
             if (nombre.isEmpty() || correo.isEmpty() || contra.isEmpty() || confirmar.isEmpty()) {
                 mostrarMensaje("Por favor complete todos los campos.", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
@@ -155,9 +155,15 @@ public class RegistroVentana extends PlantillaBaseVentana {
             } else if (!contra.equals(confirmar)) {
                 mostrarMensaje("Las contraseñas no coinciden.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 return;
-            } else if (new RegistroControlador().procesarRegistro(nombre, contra, correo, idRol, this)) {
-                System.out.printf("Registrando: %s, %s, Rol: %d%n", nombre, correo, idRol);
-                mostrarMensaje("¡Registro exitoso!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                try {
+                    if (new RegistroControlador().procesarRegistro(nombre, contra, correo, idRol, this)) {
+                        System.out.printf("Registrando: %s, %s, Rol: %d%n", nombre, correo, idRol);
+                        mostrarMensaje("¡Registro exitoso!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
             dispose();
         };
@@ -165,7 +171,11 @@ public class RegistroVentana extends PlantillaBaseVentana {
         botonRegistro.addActionListener(registrar);
 
         botonVolver.addActionListener(e -> {
-            new InicioVentana().setVisible(true);
+            try {
+                new InicioVentana().setVisible(true);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             dispose();
         });
 

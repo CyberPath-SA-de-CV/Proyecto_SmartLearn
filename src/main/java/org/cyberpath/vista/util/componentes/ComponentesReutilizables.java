@@ -147,7 +147,7 @@ public abstract class ComponentesReutilizables extends JFrame {
     }
 
 
-    // Botón con estilo suave y esquinas redondeadas
+    // Metodo estático que crea un Botón con estilo suave y esquinas redondeadas
     public static JButton crearBotonEstilizado(String texto, String iconoRuta, ActionListener accion) {
         JButton boton = new JButton(texto);
         boton.setFont(new Font("Segoe UI", Font.BOLD, 18));  // Aumentamos el tamaño de la fuente
@@ -160,7 +160,8 @@ public abstract class ComponentesReutilizables extends JFrame {
         boton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Ajustar el tamaño preferido para los botones
-        boton.setPreferredSize(new Dimension(10, 40));  // Aumentamos el tamaño del botón
+        boton.setPreferredSize(new Dimension(10, 40));
+        boton.setMaximumSize(new Dimension(750, 40));
 
         // Ajustamos el tamaño del texto para que se ajuste dentro del botón
         boton.setHorizontalAlignment(SwingConstants.CENTER);  // Asegura que el texto esté centrado
@@ -322,6 +323,9 @@ public abstract class ComponentesReutilizables extends JFrame {
         JScrollPane scroll = new JScrollPane(componente,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.getVerticalScrollBar().setUnitIncrement(25);
+        scroll.getHorizontalScrollBar().setUnitIncrement(20);
         scroll.setOpaque(false);
         scroll.getViewport().setOpaque(false);
         scroll.setBorder(null);

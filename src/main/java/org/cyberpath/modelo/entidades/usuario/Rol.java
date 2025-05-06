@@ -1,9 +1,7 @@
 package org.cyberpath.modelo.entidades.usuario;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.vista.pantallas.cuenta.RegistroVentana;
 
@@ -11,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Entity

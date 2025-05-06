@@ -1,15 +1,9 @@
 package org.cyberpath.modelo.entidades.divisionTematica;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
 import org.cyberpath.modelo.entidades.base.Entidad;
-import org.cyberpath.modelo.entidades.usuario.Usuario;
-import org.cyberpath.util.Salidas;
-import org.cyberpath.util.VariablesGlobales;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -26,12 +20,9 @@ public class Materia extends Entidad {
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
+
     @OneToMany(mappedBy = "materia", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Tema> temas = new ArrayList<>();
-
-    public List<Tema> getTemas() {
-        return temas;
-    }
 
     public static Boolean agregar(String nombre) {
         try {
@@ -41,20 +32,48 @@ public class Materia extends Entidad {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar materia" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al agregar materia: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
-    public static Boolean actualizar(/*Pendinete*/) {return true;/*Pendiente*/}
-    public static Boolean eliminar(/*Pendinete*/) {return true;/*Pendiente*/}
 
+    public static Boolean actualizar(Integer id, String nombre) {
+        Materia materia = (Materia) buscarElemento(materiaDao, id);
+        if (materia != null) {
+            materia.setNombre(nombre);
+            materiaDao.actualizar(materia);
+            return true;
+        }
+        return false;
+    }
+
+    public static Boolean eliminar(Integer id) {
+        Materia materia = (Materia) buscarElemento(materiaDao, id);
+        if (materia != null) {
+            materiaDao.eliminar(materia);
+            return true;
+        }
+        return false;
+    }
 
     public void agregarTema(Tema tema) {
         temas.add(tema);
         tema.setMateria(this);
     }
+
     public void eliminarTema(Tema tema) {
         temas.remove(tema);
         tema.setMateria(null);
+    }
+
+    public void actualizarTema(Tema temaActualizado) {
+        temas.removeIf(tema -> tema.getId().equals(temaActualizado.getId()));
+        temas.add(temaActualizado);
+        temaActualizado.setMateria(this);
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

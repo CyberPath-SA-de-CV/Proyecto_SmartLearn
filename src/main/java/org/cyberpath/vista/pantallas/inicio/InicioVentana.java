@@ -1,5 +1,6 @@
 package org.cyberpath.vista.pantallas.inicio;
 
+import org.cyberpath.controlador.InicioControlador;
 import org.cyberpath.vista.pantallas.cuenta.InicioSesionVentanta;
 import org.cyberpath.vista.pantallas.cuenta.RegistroVentana;
 import org.cyberpath.vista.util.componentes.PanelConRayasVerticales;
@@ -16,7 +17,7 @@ public class InicioVentana extends JFrame {
     private JButton botonRegistro;
     private JButton botonSalirApp;
 
-    public InicioVentana() {
+    public InicioVentana() throws Exception {
         super("Smart-Learn");
         setSize(750, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -26,10 +27,16 @@ public class InicioVentana extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new InicioVentana().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new InicioVentana().setVisible(true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
-    private void inicializarComponentes() {
+    private void inicializarComponentes() throws Exception {
         panelPrincipal = new PanelConRayasVerticales();
         panelPrincipal.setLayout(new GridBagLayout());
 
@@ -53,6 +60,21 @@ public class InicioVentana extends JFrame {
 
         getRootPane().setDefaultButton(botonLogin);
         setContentPane(panelPrincipal);
+
+        // Ejecutar lógica al abrir la ventana
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        InicioControlador.procesarInicio();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }
+        });
+
     }
 
     private void agregarEventos() {

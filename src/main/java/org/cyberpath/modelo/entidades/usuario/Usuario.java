@@ -32,7 +32,7 @@ public class Usuario extends Entidad {
     @Column(name = "discapacidad")
     private String discapacidad;
     @Column(name = "modo_audio")
-    private Boolean modoAudio;
+    private Boolean modoAudio = false;
 
     public static Boolean agregar(String nombre, String contrasena, String correo, int id_rol) {
         try {

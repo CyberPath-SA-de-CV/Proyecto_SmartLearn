@@ -9,7 +9,7 @@ import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
 import javax.swing.*;
 
 public class RegistroControlador {
-    public Boolean procesarRegistro(String nombre, String contrasena, String correo, Integer id_rol, JFrame ventanaActual) {
+    public Boolean procesarRegistro(String nombre, String contrasena, String correo, Integer id_rol, JFrame ventanaActual) throws Exception {
         if (Rol.registroRolVerificacion(id_rol)) {
             //La contraseña es 123, solo es para que un usuario normal no pueda crear una cuenta de adminsitrador
             if (Usuario.agregar(nombre, contrasena, correo, id_rol)) {
