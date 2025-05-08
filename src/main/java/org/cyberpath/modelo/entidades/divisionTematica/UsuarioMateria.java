@@ -17,8 +17,8 @@ public class UsuarioMateria extends Entidad {
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_tema", nullable = false)
-    private Tema tema;
+    @JoinColumn(name = "id_materia", nullable = false)
+    private Materia materia;
 
     @Column(name = "progreso")
     private Integer progreso;
@@ -28,9 +28,9 @@ public class UsuarioMateria extends Entidad {
 
     public UsuarioMateria() {}
 
-    public UsuarioMateria(Usuario usuario, Tema tema, Integer progreso, LocalDate fechaInscripcion) {
+    public UsuarioMateria(Usuario usuario, Materia materia, Integer progreso, LocalDate fechaInscripcion) {
         this.usuario = usuario;
-        this.tema = tema;
+        this.materia = materia;
         this.progreso = progreso;
         this.fechaInscripcion = fechaInscripcion;
     }

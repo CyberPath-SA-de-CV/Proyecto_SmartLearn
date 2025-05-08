@@ -4,7 +4,6 @@ import org.cyberpath.controlador.RegistroControlador;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.pantallas.inicio.InicioVentana;
-import org.cyberpath.vista.util.base.PlantillaBaseVentana;
 import org.cyberpath.vista.util.componentes.PanelConRayasVerticales;
 
 import javax.swing.*;
@@ -15,7 +14,7 @@ import java.util.Objects;
 
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
-public class RegistroVentana extends PlantillaBaseVentana {
+public class RegistroVentana extends JFrame {
 
     private JPanel panelPrincipal;
     private JButton botonRegistro;
@@ -27,9 +26,13 @@ public class RegistroVentana extends PlantillaBaseVentana {
     private JComboBox<String> comboRol;
 
     public RegistroVentana() {
-        super("Registro de Usuario", 700, 550);
-        setLocationRelativeTo(null); // Centrar ventana
-        setContentPane(panelPrincipal); // Establecer contenido
+        super("Registro de Usuario");
+        setSize(700, 550);
+        setLocationRelativeTo(null); // Centrar
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        inicializarComponentes();
+        agregarEventos();
+        setContentPane(panelPrincipal);
     }
 
     public static Boolean pedirContrasenaRol() {
@@ -60,17 +63,14 @@ public class RegistroVentana extends PlantillaBaseVentana {
 
         dialog.getContentPane().add(panel);
         dialog.pack();
-        dialog.setLocationRelativeTo(null); // Centrado en la pantalla
+        dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
 
         return Objects.equals(contrasenaIngresada[0], VariablesGlobales.contrasenaRol);
     }
 
-    @Override
-    protected void inicializarComponentes() {
+    private void inicializarComponentes() {
         panelPrincipal = new PanelConRayasVerticales();
-        panelPrincipal.setLayout(new GridBagLayout());
-
         panelPrincipal.setLayout(new GridBagLayout());
 
         // Título
@@ -79,36 +79,28 @@ public class RegistroVentana extends PlantillaBaseVentana {
         etiquetaTitulo.setForeground(Color.WHITE);
         panelPrincipal.add(etiquetaTitulo, crearConstraintCentrado(0, 0, 3, 1, 10));
 
-        // Instrucciones
         JLabel instrucciones = crearEtiqueta("Complete los siguientes campos:");
         instrucciones.setForeground(Color.WHITE);
         instrucciones.setFont(instrucciones.getFont().deriveFont(15f));
         panelPrincipal.add(instrucciones, crearConstraint(1, 0, 3, 1, 10));
 
-        // Etiquetas
         JLabel nombreLabel = crearEtiqueta("Nombre de usuario:");
-        nombreLabel.setFont(nombreLabel.getFont().deriveFont(15f));
         JLabel correoLabel = crearEtiqueta("Correo electrónico:");
-        correoLabel.setFont(correoLabel.getFont().deriveFont(15f));
         JLabel contrasenaLabel = crearEtiqueta("Contraseña:");
-        contrasenaLabel.setFont(contrasenaLabel.getFont().deriveFont(15f));
         JLabel confirmarLabel = crearEtiqueta("Confirmar contraseña:");
-        confirmarLabel.setFont(confirmarLabel.getFont().deriveFont(15f));
         JLabel rolLabel = crearEtiqueta("Rol:");
-        rolLabel.setFont(rolLabel.getFont().deriveFont(15f));
 
         for (JLabel lbl : new JLabel[]{nombreLabel, correoLabel, contrasenaLabel, confirmarLabel, rolLabel}) {
+            lbl.setFont(lbl.getFont().deriveFont(15f));
             lbl.setForeground(Color.WHITE);
         }
 
-        // Campos
         campoNombre = crearCampoTxt(15);
         campoCorreo = crearCampoTxt(15);
         campoContrasena = new JPasswordField(15);
         campoConfirmar = new JPasswordField(15);
         comboRol = new JComboBox<>(new String[]{"Administrador", "Estudiante"});
 
-        // Agregar componentes
         panelPrincipal.add(nombreLabel, crearConstraint(2, 0, 1, 1, 20));
         panelPrincipal.add(campoNombre, crearConstraint(2, 1, 2, 1, 100));
 
@@ -124,10 +116,8 @@ public class RegistroVentana extends PlantillaBaseVentana {
         panelPrincipal.add(rolLabel, crearConstraint(6, 0, 1, 1, 20));
         panelPrincipal.add(comboRol, crearConstraint(6, 1, 2, 1, 100));
 
-        // Botón Registrar
         botonRegistro = crearBotonEstilizado("Registrar", null, null);
         botonRegistro.setMnemonic(KeyEvent.VK_R);
-
 
         botonVolver = crearBotonEstilizado("Volver a Inicio", null, null);
 
@@ -137,8 +127,7 @@ public class RegistroVentana extends PlantillaBaseVentana {
         getRootPane().setDefaultButton(botonRegistro);
     }
 
-    @Override
-    protected void agregarEventos() {
+    private void agregarEventos() {
         ActionListener registrar = e -> {
             String nombre = campoNombre.getText().trim();
             String correo = campoCorreo.getText().trim();
@@ -158,7 +147,6 @@ public class RegistroVentana extends PlantillaBaseVentana {
             } else {
                 try {
                     if (new RegistroControlador().procesarRegistro(nombre, contra, correo, idRol, this)) {
-                        System.out.printf("Registrando: %s, %s, Rol: %d%n", nombre, correo, idRol);
                         mostrarMensaje("¡Registro exitoso!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (Exception ex) {
@@ -178,16 +166,7 @@ public class RegistroVentana extends PlantillaBaseVentana {
             }
             dispose();
         });
-
-
     }
-
-    @Override
-    public JPanel getContenido() {
-        return panelPrincipal;
-    }
-
-    //----
 
     private void mostrarMensaje(String mensaje, String titulo, int tipo) {
         JOptionPane.showMessageDialog(this, mensaje, titulo, tipo);

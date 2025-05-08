@@ -4,6 +4,7 @@ import org.cyberpath.vista.pantallas.combo.AccesibilidadVentana;
 import org.cyberpath.vista.pantallas.combo.ConfiguracionVentana;
 import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
 import org.cyberpath.vista.pantallas.combo.ModificarContenidoVentana;
+import org.cyberpath.vista.util.materias.InscribirMateriasVentana;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,6 +43,9 @@ public class PantallasControlador {
                 break;
             case MODIFICAR_CONTENIDO:
                 cambiarContenido(new ModificarContenidoVentana().getContenido());
+                break;
+            case INSCRIBIR_MATERIA:
+                cambiarContenido(new InscribirMateriasVentana().getContenido());
                 break;
             default:
                 throw new IllegalArgumentException("Pantalla desconocida: " + pantalla);

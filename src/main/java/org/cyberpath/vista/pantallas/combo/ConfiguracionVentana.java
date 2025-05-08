@@ -2,7 +2,6 @@ package org.cyberpath.vista.pantallas.combo;
 
 import org.cyberpath.modelo.entidades.usuario.Usuario;
 import org.cyberpath.util.VariablesGlobales;
-import org.cyberpath.vista.util.base.ContenidoConPanelSuperior;
 import org.cyberpath.vista.util.base.PlantillaBaseVentana;
 
 import javax.swing.*;
@@ -55,8 +54,8 @@ public class ConfiguracionVentana extends PlantillaBaseVentana {
         contenidoPrincipal.add(botonSalir);
         contenidoPrincipal.add(Box.createVerticalGlue());
 
-        JScrollPane scrollContenido = crearScrollPaneTransparente(contenidoPrincipal);
-        establecerContenidoConPanelSuperior(scrollContenido);
+        // Agregar al panel central de la plantilla
+        getPanelCentral().add(contenidoPrincipal, BorderLayout.CENTER);
     }
 
     @Override

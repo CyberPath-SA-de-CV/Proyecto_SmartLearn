@@ -41,6 +41,8 @@ public class Salidas {
     }
     //Errores con Operaciones
     public static final String errorActualizarUsuario = "Problema al actualizar el usuario";
+    //Inscripcion de materias
+    public static final String inscribirMateria = "Está seguro que quiere inscribir la materia: ";
 
 
     //CUESTIONARIOS

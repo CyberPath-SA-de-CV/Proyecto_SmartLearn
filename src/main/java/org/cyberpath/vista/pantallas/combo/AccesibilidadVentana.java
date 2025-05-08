@@ -53,7 +53,7 @@ public class AccesibilidadVentana extends PlantillaBaseVentana {
         contenidoPrincipal.add(Box.createVerticalGlue());
 
         JScrollPane scrollContenido = crearScrollPaneTransparente(contenidoPrincipal);
-        establecerContenidoConPanelSuperior(scrollContenido);
+        getPanelCentral().add(scrollContenido, BorderLayout.CENTER); // Cambio aquí
     }
 
     @Override

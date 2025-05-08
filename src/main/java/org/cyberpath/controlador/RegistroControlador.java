@@ -14,7 +14,9 @@ public class RegistroControlador {
             //La contraseña es 123, solo es para que un usuario normal no pueda crear una cuenta de adminsitrador
             if (Usuario.agregar(nombre, contrasena, correo, id_rol)) {
                 ventanaActual.dispose();
-                new MenuPrincipalVentana().setVisible(true);
+                MenuPrincipalVentana menuPrincipalPantalla =new MenuPrincipalVentana();
+                PantallasControlador.asignarContenedor(menuPrincipalPantalla.getPanelContenedor());
+                menuPrincipalPantalla.setVisible(true);
                 return true;
             } else {
                 JOptionPane.showMessageDialog(ventanaActual, Salidas.registroError);

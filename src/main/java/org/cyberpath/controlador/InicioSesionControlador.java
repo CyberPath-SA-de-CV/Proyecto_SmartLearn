@@ -16,7 +16,7 @@ public class InicioSesionControlador {
             Usuario.actualizar(VariablesGlobales.usuario);
             MenuPrincipalVentana menuPrincipalPantalla =new MenuPrincipalVentana();
             PantallasControlador.asignarContenedor(menuPrincipalPantalla.getPanelContenedor());
-            PantallasControlador.mostrarPantalla(PantallasEnum.MENU_PRINCIPAL);
+            menuPrincipalPantalla.setVisible(true);
             System.out.println(VariablesGlobales.usuario.getModoAudio());
         } else {
             JOptionPane.showMessageDialog(ventanaActual, Salidas.errorInicioSesion);

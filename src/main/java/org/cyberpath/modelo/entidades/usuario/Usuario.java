@@ -6,10 +6,13 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
 import org.cyberpath.modelo.entidades.base.Entidad;
+import org.cyberpath.modelo.entidades.divisionTematica.Materia;
+import org.cyberpath.modelo.entidades.divisionTematica.UsuarioMateria;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 

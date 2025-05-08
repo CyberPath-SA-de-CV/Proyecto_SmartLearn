@@ -1,6 +1,7 @@
 package org.cyberpath.vista.pantallas.combo;
 
 import org.cyberpath.controlador.PantallasControlador;
+import org.cyberpath.controlador.PantallasEnum;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
 import org.cyberpath.modelo.entidades.divisionTematica.Tema;
@@ -20,8 +21,8 @@ import java.util.Stack;
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public class MenuPrincipalVentana extends PlantillaBaseVentana {
-    private  CardLayout cardLayout;
-    private static JPanel mainPanel;
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
     private final Stack<PanelHistorial> historial = new Stack<>();
 
     public MenuPrincipalVentana() {
@@ -33,13 +34,13 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
     protected void inicializarComponentes() {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-        establecerContenidoConPanelSuperior(mainPanel);
+        getPanelCentral().add(mainPanel, BorderLayout.CENTER);  // Cambio aquí
         mostrarMenuMaterias();
     }
 
     @Override
     protected void agregarEventos() {
-        // Aquí puedes agregar eventos globales si los necesitas
+        // Puedes añadir eventos generales aquí si los necesitas
     }
 
     @Override
@@ -47,9 +48,8 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
         return mainPanel;
     }
 
-    @Override
     public JPanel getPanelContenedor() {
-        return super.getPanelContenedor();
+        return super.getPanelCentral();
     }
 
     private void mostrarMenuMaterias() {
@@ -57,23 +57,29 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
         panelMaterias.setLayout(new BoxLayout(panelMaterias, BoxLayout.Y_AXIS));
 
         List<Materia> materias = Materia.materiaDao.findAll();
-        if (!materias.isEmpty()){
+        if (!materias.isEmpty()) {
             for (Materia materia : materias) {
                 JButton btnMateria = crearBotonEstilizado(materia.getNombre(), null, e -> mostrarTemas(materia));
                 panelMaterias.add(btnMateria, crearConstraintBotonAncho(3, 0, 3, 1, 200));
                 panelMaterias.add(Box.createVerticalStrut(5));
             }
-        }
-        else{
-            JLabel mensaje = crearTituloCentrado("No ha materias inscritas aún");
+        } else {
+            JLabel mensaje = crearTituloCentrado("No hay materias inscritas aún");
             mensaje.setFont(new Font("Segoe UI", Font.ITALIC, 22));
-            panelMaterias.add(mensaje,crearConstraint(0,0,1,1,1));
+            panelMaterias.add(mensaje, crearConstraint(0, 0, 1, 1, 1));
             panelMaterias.add(Box.createVerticalStrut(5));
         }
 
+        // Boton inscribir materias
+        JButton btnInscribirMateria = crearBotonEstilizado("Inscribir Materia", null, e -> {
+            PantallasControlador.mostrarPantalla(PantallasEnum.INSCRIBIR_MATERIA);
+        });
+
+        panelMaterias.add(btnInscribirMateria, crearConstraintCentrado(2,2,1,1,1));
         mainPanel.add(panelMaterias, "Materias");
         cardLayout.show(mainPanel, "Materias");
     }
+
 
     private void mostrarTemas(Materia materia) {
         TemaVentana temaVentana = new TemaVentana(materia, this);
@@ -124,9 +130,9 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
     }
 
     public static void main(String[] args) {
-
-        Usuario ejemplo = Usuario.usuarioDao.findById(4);
+        Usuario ejemplo = Usuario.usuarioDao.findById(18);
         VariablesGlobales.usuario = ejemplo;
+
         SwingUtilities.invokeLater(() -> new MenuPrincipalVentana().setVisible(true));
     }
 

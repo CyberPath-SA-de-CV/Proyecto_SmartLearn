@@ -343,5 +343,4 @@ public abstract class ComponentesReutilizables extends JFrame {
         c.weightx = 1.0;
         return c;
     }
-
 }
