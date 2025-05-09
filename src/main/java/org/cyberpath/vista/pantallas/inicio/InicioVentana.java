@@ -1,12 +1,13 @@
 package org.cyberpath.vista.pantallas.inicio;
 
-import org.cyberpath.controlador.InicioControlador;
+import org.cyberpath.controlador.Usuario.InicioControlador;
 import org.cyberpath.vista.pantallas.cuenta.InicioSesionVentanta;
 import org.cyberpath.vista.pantallas.cuenta.RegistroVentana;
 import org.cyberpath.vista.util.componentes.PanelConRayasVerticales;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
@@ -48,14 +49,17 @@ public class InicioVentana extends JFrame {
 
         // Botón Login
         botonLogin = crearBotonEstilizado("Iniciar Sesion", null, null);
+        botonLogin.setMnemonic(KeyEvent.VK_L);
         panelPrincipal.add(botonLogin, crearConstraintBotonAncho(1, 0, 3, 1, 100));
 
         // Botón Registro
         botonRegistro = crearBotonEstilizado("Registrar Usuario", null, null);
+        botonRegistro.setMnemonic(KeyEvent.VK_R);
         panelPrincipal.add(botonRegistro, crearConstraintBotonAncho(2, 0, 3, 1, 100));
 
         // Botón Salir
         botonSalirApp = crearBotonEstilizado("Salir de la App", null, null);
+        botonSalirApp.setMnemonic(KeyEvent.VK_S);
         panelPrincipal.add(botonSalirApp, crearConstraintBotonAncho(3, 0, 3, 1, 100));
 
         getRootPane().setDefaultButton(botonLogin);

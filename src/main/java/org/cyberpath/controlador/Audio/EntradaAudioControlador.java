@@ -1,4 +1,4 @@
-package org.cyberpath.controlador;
+package org.cyberpath.controlador.Audio;
 
 import org.vosk.LibVosk;
 import org.vosk.LogLevel;
@@ -6,7 +6,6 @@ import org.vosk.Model;
 import org.vosk.Recognizer;
 
 import javax.sound.sampled.*;
-import java.io.IOException;
 
 public class EntradaAudioControlador {
 

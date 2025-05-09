@@ -37,6 +37,7 @@
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.RespuestaUsuario"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.Retroalimentacion"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.TipoEjercicio"/>
+		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.UsuarioMateria"/>
 
 	</session-factory>
 </hibernate-configuration>

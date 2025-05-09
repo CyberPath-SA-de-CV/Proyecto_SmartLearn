@@ -1,5 +1,6 @@
-package org.cyberpath.controlador;
+package org.cyberpath.controlador.Usuario;
 
+import org.cyberpath.controlador.Pantallas.PantallasControlador;
 import org.cyberpath.modelo.entidades.usuario.Usuario;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;

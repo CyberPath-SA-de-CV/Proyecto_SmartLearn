@@ -1,7 +1,7 @@
 package org.cyberpath.vista.util.componentes;
 
-import org.cyberpath.controlador.PantallasControlador;
-import org.cyberpath.controlador.PantallasEnum;
+import org.cyberpath.controlador.Pantallas.PantallasControlador;
+import org.cyberpath.controlador.Pantallas.PantallasEnum;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

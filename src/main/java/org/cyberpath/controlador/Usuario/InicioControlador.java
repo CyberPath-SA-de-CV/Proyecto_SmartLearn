@@ -1,10 +1,9 @@
-package org.cyberpath.controlador;
+package org.cyberpath.controlador.Usuario;
 
+import org.cyberpath.controlador.Audio.EntradaAudioControlador;
 import org.cyberpath.util.VariablesGlobales;
 
-import java.io.IOException;
-
-import static org.cyberpath.controlador.SalidaAudioControlador.hablar;
+import static org.cyberpath.controlador.Audio.SalidaAudioControlador.hablar;
 
 public class InicioControlador {
 

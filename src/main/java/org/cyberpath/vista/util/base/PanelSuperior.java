@@ -1,7 +1,7 @@
 package org.cyberpath.vista.util.base;
 
-import org.cyberpath.controlador.PantallasControlador;
-import org.cyberpath.controlador.PantallasEnum;
+import org.cyberpath.controlador.Pantallas.PantallasControlador;
+import org.cyberpath.controlador.Pantallas.PantallasEnum;
 import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.pantallas.inicio.InicioVentana;
 

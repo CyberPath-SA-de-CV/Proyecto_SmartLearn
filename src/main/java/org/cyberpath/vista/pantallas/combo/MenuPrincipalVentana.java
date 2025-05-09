@@ -1,7 +1,8 @@
 package org.cyberpath.vista.pantallas.combo;
 
-import org.cyberpath.controlador.PantallasControlador;
-import org.cyberpath.controlador.PantallasEnum;
+import org.cyberpath.controlador.Pantallas.PantallasControlador;
+import org.cyberpath.controlador.Pantallas.PantallasEnum;
+import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
 import org.cyberpath.modelo.entidades.divisionTematica.Tema;
@@ -56,10 +57,14 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
         JPanel panelMaterias = crearPanelDegradadoDecorativo("Materias");
         panelMaterias.setLayout(new BoxLayout(panelMaterias, BoxLayout.Y_AXIS));
 
-        List<Materia> materias = Materia.materiaDao.findAll();
-        if (!materias.isEmpty()) {
-            for (Materia materia : materias) {
-                JButton btnMateria = crearBotonEstilizado(materia.getNombre(), null, e -> mostrarTemas(materia));
+        // Usa la implementación que inicializa correctamente las relaciones
+        List<Materia> materiasInscritas = new DaoImpl<Usuario>().obtenerMateriasInscritasPorUsuario(
+                VariablesGlobales.usuario.getId());
+
+        if (!materiasInscritas.isEmpty()) {
+            for (Materia materia : materiasInscritas) {
+                JButton btnMateria = crearBotonEstilizado(
+                        materia.getNombre(), null, e -> mostrarTemas(materia));
                 panelMaterias.add(btnMateria, crearConstraintBotonAncho(3, 0, 3, 1, 200));
                 panelMaterias.add(Box.createVerticalStrut(5));
             }
@@ -70,15 +75,16 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
             panelMaterias.add(Box.createVerticalStrut(5));
         }
 
-        // Boton inscribir materias
         JButton btnInscribirMateria = crearBotonEstilizado("Inscribir Materia", null, e -> {
             PantallasControlador.mostrarPantalla(PantallasEnum.INSCRIBIR_MATERIA);
         });
+        panelMaterias.add(btnInscribirMateria, crearConstraintCentrado(2, 2, 1, 1, 1));
 
-        panelMaterias.add(btnInscribirMateria, crearConstraintCentrado(2,2,1,1,1));
         mainPanel.add(panelMaterias, "Materias");
         cardLayout.show(mainPanel, "Materias");
     }
+
+
 
 
     private void mostrarTemas(Materia materia) {

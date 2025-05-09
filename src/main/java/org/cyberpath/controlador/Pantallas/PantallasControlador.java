@@ -1,4 +1,4 @@
-package org.cyberpath.controlador;
+package org.cyberpath.controlador.Pantallas;
 
 import org.cyberpath.vista.pantallas.combo.AccesibilidadVentana;
 import org.cyberpath.vista.pantallas.combo.ConfiguracionVentana;

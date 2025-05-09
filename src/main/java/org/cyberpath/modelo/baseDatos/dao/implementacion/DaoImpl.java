@@ -4,10 +4,15 @@ import lombok.NoArgsConstructor;
 import org.cyberpath.modelo.baseDatos.dao.DaoInterface;
 import org.cyberpath.modelo.baseDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
+import org.cyberpath.modelo.entidades.divisionTematica.Materia;
+import org.cyberpath.modelo.entidades.divisionTematica.UsuarioMateria;
+import org.cyberpath.modelo.entidades.usuario.Usuario;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class DaoImpl<T extends Entidad> implements DaoInterface<T> {
@@ -70,5 +75,30 @@ public class DaoImpl<T extends Entidad> implements DaoInterface<T> {
         T obj = session.get(clase, id);
         session.close();
         return obj;
+    }
+
+    public List<Materia> obtenerMateriasInscritasPorUsuario(int idUsuario) {
+        try (Session session = HibernateUtil.getSession()) {
+            Usuario usuario = session.get(Usuario.class, idUsuario);
+            Hibernate.initialize(usuario.getMateriasInscritas());
+
+            return usuario.getMateriasInscritas().stream()
+                    .map(um -> {
+                        Materia materia = um.getMateria();
+                        Hibernate.initialize(materia); // <- esto es clave
+                        return materia;
+                    })
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public Usuario findUsuarioConMaterias(int idUsuario) {
+        Session session = HibernateUtil.getSession();
+        Usuario usuario = session.createQuery(
+                "SELECT u FROM Usuario u LEFT JOIN FETCH u.materiasInscritas mi LEFT JOIN FETCH mi.materia WHERE u.id = :id",
+                Usuario.class
+        ).setParameter("id", idUsuario).uniqueResult();
+        session.close();
+        return usuario;
     }
 }

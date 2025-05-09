@@ -1,6 +1,6 @@
 package org.cyberpath.vista.pantallas.cuenta;
 
-import org.cyberpath.controlador.InicioSesionControlador;
+import org.cyberpath.controlador.Usuario.InicioSesionControlador;
 import org.cyberpath.vista.pantallas.inicio.InicioVentana;
 import org.cyberpath.vista.util.componentes.PanelConRayasVerticales;
 

@@ -1,11 +1,10 @@
 package org.cyberpath.vista.util.materias;
 
-import org.cyberpath.controlador.PantallasControlador;
+import org.cyberpath.controlador.Pantallas.PantallasControlador;
+import org.cyberpath.controlador.materias.InscripcionMateriasControlador;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.usuario.Usuario;
-import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
-import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
 import org.cyberpath.vista.util.base.PlantillaBaseVentana;
 
 import javax.swing.*;
@@ -28,7 +27,8 @@ public class InscribirMateriasVentana extends PlantillaBaseVentana {
     @Override
     protected void inicializarComponentes() {
         panelInscripciones = crearPanelDegradadoDecorativo();
-        panelInscripciones.setOpaque(false); // Si usas fondo decorativo
+        panelInscripciones.setLayout(new GridBagLayout());
+        panelInscripciones.setOpaque(false);
 
         // --- Panel superior con campo de búsqueda ---
         JPanel panelBusqueda = new JPanel();
@@ -46,19 +46,15 @@ public class InscribirMateriasVentana extends PlantillaBaseVentana {
         filaCampo.add(buscar);
         filaCampo.add(campoBusqueda);
 
-        JPanel filaBoton = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        filaBoton.setOpaque(false);
         JButton botonBuscar = crearBotonEstilizado("Buscar", null, e -> cargarMateriasFiltradas());
         botonBuscar.setPreferredSize(new Dimension(120, 30));
-        filaBoton.add(botonBuscar);
+        filaCampo.add(botonBuscar);
 
         panelBusqueda.add(filaCampo);
         panelBusqueda.add(Box.createVerticalStrut(5)); // Espacio entre campo y botón
-        panelBusqueda.add(filaBoton);
 
         // --- Panel central con botones de materias ---
-        panelMaterias = new JPanel();
-        panelMaterias.setLayout(new BoxLayout(panelMaterias, BoxLayout.Y_AXIS));
+        panelMaterias = new JPanel(new GridBagLayout());
         panelMaterias.setOpaque(false);
 
         JScrollPane scrollMaterias = new JScrollPane(panelMaterias);
@@ -66,8 +62,8 @@ public class InscribirMateriasVentana extends PlantillaBaseVentana {
         scrollMaterias.getViewport().setOpaque(false);
         scrollMaterias.setBorder(BorderFactory.createEmptyBorder());
 
-        panelInscripciones.add(panelBusqueda, BorderLayout.NORTH);
-        panelInscripciones.add(scrollMaterias, BorderLayout.CENTER);
+        panelInscripciones.add(panelBusqueda, crearConstraintCentrado(0,0,1,1,100));
+        panelInscripciones.add(scrollMaterias, crearConstraintCentrado(1,0,1,1,100));
 
         // Cargar materias al iniciar
         cargarMateriasFiltradas();
@@ -84,10 +80,12 @@ public class InscribirMateriasVentana extends PlantillaBaseVentana {
         if (materiasFiltradas.isEmpty()) {
             JLabel sinResultados = new JLabel("No se encontraron materias.");
             sinResultados.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+            sinResultados.setForeground(Color.WHITE);
             sinResultados.setAlignmentX(Component.CENTER_ALIGNMENT);
             panelMaterias.add(Box.createVerticalStrut(20));
             panelMaterias.add(sinResultados);
         } else {
+            int i = 1;
             for (Materia materia : materiasFiltradas) {
                 JButton btnMateria = crearBotonEstilizado(materia.getNombre(), null, e -> {
                     int confirmacion = JOptionPane.showConfirmDialog(this,
@@ -95,15 +93,16 @@ public class InscribirMateriasVentana extends PlantillaBaseVentana {
                             "Confirmar inscripción", JOptionPane.YES_NO_OPTION);
 
                     if (confirmacion == JOptionPane.YES_OPTION) {
-                        // Aquí puedes llamar a un servicio o controlador para guardar la inscripción
+                        new InscripcionMateriasControlador().procesarInscripcion(materia);
                         JOptionPane.showMessageDialog(this,
                                 "Materia '" + materia.getNombre() + "' inscrita con éxito.",
                                 "Inscripción exitosa", JOptionPane.INFORMATION_MESSAGE);
                     }
                 });
-                btnMateria.setPreferredSize(new Dimension(120,30));
-                panelMaterias.add(btnMateria);
+                panelMaterias.add(btnMateria, crearConstraintCentrado(i,0,1,1,100));
                 panelMaterias.add(Box.createVerticalStrut(10));
+                btnMateria.setPreferredSize(new Dimension(600, 40));
+                i++;
             }
         }
 

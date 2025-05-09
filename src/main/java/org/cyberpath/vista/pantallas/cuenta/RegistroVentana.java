@@ -1,6 +1,6 @@
 package org.cyberpath.vista.pantallas.cuenta;
 
-import org.cyberpath.controlador.RegistroControlador;
+import org.cyberpath.controlador.Usuario.RegistroControlador;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.pantallas.inicio.InicioVentana;
