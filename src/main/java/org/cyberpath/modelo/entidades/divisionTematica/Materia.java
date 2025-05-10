@@ -24,6 +24,9 @@ public class Materia extends Entidad {
     @OneToMany(mappedBy = "materia", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Tema> temas = new ArrayList<>();
 
+    @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UsuarioMateria> usuarioMaterias = new ArrayList<>();
+
     public static Boolean agregar(String nombre) {
         try {
             Materia materia = new Materia();
@@ -74,6 +77,6 @@ public class Materia extends Entidad {
 
     @Override
     public String toString() {
-        return nombre;
+        return this.nombre;
     }
 }

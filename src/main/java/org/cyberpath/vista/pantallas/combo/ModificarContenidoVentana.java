@@ -115,8 +115,13 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
         panelContenido.add(crearBotonSalirAPantallaPrincipal());
         panelContenido.add(Box.createVerticalGlue());
 
-        getPanelCentral().add(panelContenido);
-}
+        // Agregar el panel de contenido a un JScrollPane
+        JScrollPane scrollPane = new JScrollPane(panelContenido);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        panelContenido.setPreferredSize(new Dimension(1000, 1500)); // Ajusta según sea necesario
+        getPanelCentral().add(scrollPane);
+    }
 
     @Override
     protected void agregarEventos() {

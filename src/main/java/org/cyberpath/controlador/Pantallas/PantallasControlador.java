@@ -46,6 +46,9 @@ public class PantallasControlador {
                 break;
             case INSCRIBIR_MATERIA:
                 cambiarContenido(new InscribirMateriasVentana().getContenido());
+                JScrollPane scrollPane = new JScrollPane(panelContenedor);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
                 break;
             default:
                 throw new IllegalArgumentException("Pantalla desconocida: " + pantalla);
