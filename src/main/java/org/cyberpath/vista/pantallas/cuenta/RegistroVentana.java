@@ -1,8 +1,10 @@
 package org.cyberpath.vista.pantallas.cuenta;
 
-import org.cyberpath.controlador.Usuario.RegistroControlador;
+import org.cyberpath.controlador.usuario.RegistroControlador;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
+import org.cyberpath.util.audio.EntradaAudioControlador;
+import org.cyberpath.util.audio.SalidaAudioControlador;
 import org.cyberpath.vista.pantallas.inicio.InicioVentana;
 import org.cyberpath.vista.util.componentes.PanelConRayasVerticales;
 
@@ -10,11 +12,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.Objects;
 
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
-public class RegistroVentana extends JFrame {
+public class RegistroVentana extends JFrame { //QUITAR EL ROL DEL FOCO Y QUE ESTE POR DETERMINADO EN ROL ESTUDIANTE
+
+    private static final EntradaAudioControlador sttControlador;
+    private static final SalidaAudioControlador ttsControlador = SalidaAudioControlador.getInstance();
+
+    static {
+        try {
+            sttControlador = EntradaAudioControlador.getInstance();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //---
 
     private JPanel panelPrincipal;
     private JButton botonRegistro;
@@ -33,6 +49,7 @@ public class RegistroVentana extends JFrame {
         inicializarComponentes();
         agregarEventos();
         setContentPane(panelPrincipal);
+        if (VariablesGlobales.auxModoAudio) inicializarAccesibilidad();
     }
 
     public static Boolean pedirContrasenaRol() {
@@ -45,6 +62,7 @@ public class RegistroVentana extends JFrame {
 
         JLabel label = new JLabel(Salidas.contrasenaRol);
         JButton botonAceptar = new JButton("Aceptar");
+        botonAceptar.setFocusable(false);
 
         botonAceptar.addActionListener(e -> {
             contrasenaIngresada[0] = new String(passwordField.getPassword());
@@ -117,9 +135,10 @@ public class RegistroVentana extends JFrame {
         panelPrincipal.add(comboRol, crearConstraint(6, 1, 2, 1, 100));
 
         botonRegistro = crearBotonEstilizado("Registrar", null, null);
-        botonRegistro.setMnemonic(KeyEvent.VK_R);
+        botonRegistro.setMnemonic(KeyEvent.VK_R); // ALT + R
 
         botonVolver = crearBotonEstilizado("Volver a Inicio", null, null);
+        botonVolver.setMnemonic(KeyEvent.VK_V); // ALT + V
 
         panelPrincipal.add(botonRegistro, crearConstraintBotonAncho(7, 0, 3, 1, 200));
         panelPrincipal.add(botonVolver, crearConstraintBotonAncho(8, 0, 3, 1, 200));
@@ -127,7 +146,9 @@ public class RegistroVentana extends JFrame {
         getRootPane().setDefaultButton(botonRegistro);
     }
 
+
     private void agregarEventos() {
+
         ActionListener registrar = e -> {
             String nombre = campoNombre.getText().trim();
             String correo = campoCorreo.getText().trim();
@@ -144,17 +165,37 @@ public class RegistroVentana extends JFrame {
             } else if (!contra.equals(confirmar)) {
                 mostrarMensaje("Las contraseñas no coinciden.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 return;
-            } else {
+            }
+
+            // Confirmación por voz (si el modo audio está activado)
+            if (VariablesGlobales.auxModoAudio) {
+                String mensajeConfirmacion = "¿Está seguro de registrar al usuario con nombre " + nombre + " y correo " + correo + "? Responda sí o no.";
+                ttsControlador.hablar(mensajeConfirmacion);
+
+                Boolean respuesta = null;
                 try {
-                    if (new RegistroControlador().procesarRegistro(nombre, contra, correo, idRol, this)) {
-                        mostrarMensaje("¡Registro exitoso!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                    }
+                    respuesta = sttControlador.entradaAfirmacionNegacion();
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
+
+                if (!respuesta) {
+                    ttsControlador.hablar("Registro cancelado.");
+                    return;
+                }
             }
+
+            try {
+                if (new RegistroControlador().procesarRegistro(nombre, contra, correo, idRol, this)) {
+                    mostrarMensaje("¡Registro exitoso!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+
             dispose();
         };
+
 
         botonRegistro.addActionListener(registrar);
 
@@ -171,4 +212,52 @@ public class RegistroVentana extends JFrame {
     private void mostrarMensaje(String mensaje, String titulo, int tipo) {
         JOptionPane.showMessageDialog(this, mensaje, titulo, tipo);
     }
+
+    private void inicializarAccesibilidad() {
+        ttsControlador.hablar("Bienvenido al registro de usuario. Complete los campos requeridos. Presione Alt más R para registrar, o Tab para moverse entre campos.");
+
+        campoNombre.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent e) {
+                ttsControlador.hablar("Campo: Nombre de usuario");
+            }
+        });
+
+        campoCorreo.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent e) {
+                ttsControlador.hablar("Campo: Correo electrónico");
+            }
+        });
+
+        campoContrasena.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent e) {
+                ttsControlador.hablar("Campo: Contraseña");
+            }
+        });
+
+        campoConfirmar.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent e) {
+                ttsControlador.hablar("Campo: Confirmar contraseña");
+            }
+        });
+
+        comboRol.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent e) {
+                ttsControlador.hablar("Seleccione un rol: Administrador o Estudiante");
+            }
+        });
+
+        botonRegistro.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent e) {
+                ttsControlador.hablar("Botón: Registrar. Presione Enter para continuar");
+            }
+        });
+
+        botonVolver.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent e) {
+                ttsControlador.hablar("Botón: Volver a Inicio. Presione Enter para regresar");
+            }
+        });
+    }
+
+
 }

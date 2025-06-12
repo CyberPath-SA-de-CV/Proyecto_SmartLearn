@@ -1,9 +1,10 @@
-package org.cyberpath.vista.util.materias;
+package org.cyberpath.vista.pantallas.materias;
 
-import org.cyberpath.controlador.Pantallas.PantallasControlador;
-import org.cyberpath.controlador.materias.InscripcionMateriasControlador;
+import org.cyberpath.controlador.materias.InscribirMateriasControlador;
+import org.cyberpath.controlador.pantallas.PantallasControlador;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.usuario.Usuario;
+import org.cyberpath.util.Sistema;
 import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.util.base.PlantillaBaseVentana;
 
@@ -15,13 +16,29 @@ import java.util.stream.Collectors;
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public class InscribirMateriasVentana extends PlantillaBaseVentana {
-
+    private Sistema sistema = Sistema.getInstance();
     private JPanel panelInscripciones;
     private JTextField campoBusqueda;
     private JPanel panelMaterias;
 
-    public InscribirMateriasVentana() {
+    public InscribirMateriasVentana() throws Exception {
         super("Inscripción de Materias", 1000, 700);
+        new Thread(() -> {
+            sistema.pausa(2);
+            try {
+                InscribirMateriasControlador.procesarAccesibilidad(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public static void main(String[] args) throws Exception {
+        Usuario ejemplo = Usuario.usuarioDao.findById(18);
+        VariablesGlobales.usuario = ejemplo;
+        InscribirMateriasVentana inscribirMateriasVentana = new InscribirMateriasVentana();
+        PantallasControlador.asignarContenedor(inscribirMateriasVentana.getContenido());
+        SwingUtilities.invokeLater(() -> inscribirMateriasVentana.setVisible(true));
     }
 
     @Override
@@ -62,8 +79,8 @@ public class InscribirMateriasVentana extends PlantillaBaseVentana {
         scrollMaterias.getViewport().setOpaque(false);
         scrollMaterias.setBorder(BorderFactory.createEmptyBorder());
 
-        panelInscripciones.add(panelBusqueda, crearConstraintCentrado(0,0,1,1,100));
-        panelInscripciones.add(scrollMaterias, crearConstraintCentrado(1,0,1,1,100));
+        panelInscripciones.add(panelBusqueda, crearConstraintCentrado(0, 0, 1, 1, 100));
+        panelInscripciones.add(scrollMaterias, crearConstraintCentrado(1, 0, 1, 1, 100));
 
         // Cargar materias al iniciar
         cargarMateriasFiltradas();
@@ -93,13 +110,13 @@ public class InscribirMateriasVentana extends PlantillaBaseVentana {
                             "Confirmar inscripción", JOptionPane.YES_NO_OPTION);
 
                     if (confirmacion == JOptionPane.YES_OPTION) {
-                        new InscripcionMateriasControlador().procesarInscripcion(materia);
+                        InscribirMateriasControlador.procesarInscripcion(materia);
                         JOptionPane.showMessageDialog(this,
                                 "Materia '" + materia.getNombre() + "' inscrita con éxito.",
                                 "Inscripción exitosa", JOptionPane.INFORMATION_MESSAGE);
                     }
                 });
-                panelMaterias.add(btnMateria, crearConstraintCentrado(i,0,1,1,100));
+                panelMaterias.add(btnMateria, crearConstraintCentrado(i, 0, 1, 1, 100));
                 panelMaterias.add(Box.createVerticalStrut(10));
                 btnMateria.setPreferredSize(new Dimension(600, 40));
                 i++;
@@ -118,13 +135,5 @@ public class InscribirMateriasVentana extends PlantillaBaseVentana {
     @Override
     public JPanel getContenido() {
         return panelInscripciones;
-    }
-
-    public static void main(String[] args) {
-        Usuario ejemplo = Usuario.usuarioDao.findById(18);
-        VariablesGlobales.usuario = ejemplo;
-        InscribirMateriasVentana inscribirMateriasVentana = new InscribirMateriasVentana();
-        PantallasControlador.asignarContenedor(inscribirMateriasVentana.getContenido());
-        SwingUtilities.invokeLater(() -> inscribirMateriasVentana.setVisible(true));
     }
 }

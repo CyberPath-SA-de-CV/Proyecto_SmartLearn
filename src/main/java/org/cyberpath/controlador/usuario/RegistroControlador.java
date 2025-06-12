@@ -1,6 +1,6 @@
-package org.cyberpath.controlador.Usuario;
+package org.cyberpath.controlador.usuario;
 
-import org.cyberpath.controlador.Pantallas.PantallasControlador;
+import org.cyberpath.controlador.pantallas.PantallasControlador;
 import org.cyberpath.modelo.entidades.usuario.Rol;
 import org.cyberpath.modelo.entidades.usuario.Usuario;
 import org.cyberpath.util.Salidas;

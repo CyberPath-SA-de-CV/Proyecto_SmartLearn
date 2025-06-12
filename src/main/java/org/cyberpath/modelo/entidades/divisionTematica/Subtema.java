@@ -26,12 +26,10 @@ public class Subtema extends Entidad {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_tema", nullable = false)
-    @ToString.Exclude
     private Tema tema;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_contenido", nullable = false, unique = true)
-    @ToString.Exclude
     private ContenidoTeorico contenidoTeorico;
 
     @OneToMany(mappedBy = "subtema", fetch = FetchType.EAGER, orphanRemoval = true)
@@ -42,6 +40,8 @@ public class Subtema extends Entidad {
         try {
             Subtema subtema = new Subtema();
             subtema.setNombre(nombre);
+            subtema.setTema(tema);
+            subtema.setContenidoTeorico(contenidoTeorico);
             tema.agregarSubtema(subtema);
             contenidoTeorico.agregarSubtema(subtema);
             subtemaDao.guardar(subtema);
@@ -63,6 +63,7 @@ public class Subtema extends Entidad {
         }
         return false;
     }
+
     public static Boolean actualizar(Integer id, Tema tema) {
         Subtema subtema = (Subtema) buscarElemento(subtemaDao, id);
         if (subtema != null) {
@@ -79,6 +80,14 @@ public class Subtema extends Entidad {
         if (subtema != null) {
             subtema.getTema().eliminarSubtema(subtema);
             subtemaDao.eliminar(subtema);
+            return true;
+        }
+        return false;
+    }
+    public static Boolean eliminar(Subtema subtema) {
+        if (subtema != null) {
+            subtemaDao.eliminar(subtema);
+            subtema.getTema().eliminarSubtema(subtema);
             return true;
         }
         return false;

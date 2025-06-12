@@ -1,5 +1,6 @@
-package org.cyberpath.vista.util.materias;
+package org.cyberpath.vista.pantallas.materias;
 
+import org.cyberpath.controlador.materias.SubtemaControlador;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
 import org.cyberpath.modelo.entidades.divisionTematica.Tema;
 import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
@@ -8,14 +9,15 @@ import org.cyberpath.vista.util.componentes.PanelDegradado;
 import javax.swing.*;
 import java.awt.*;
 
-import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
+import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.crearBotonEstilizado;
+import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.crearPanelTituloConLogo;
 
 public class SubtemaVentana extends PanelDegradado {
     public SubtemaVentana(Tema tema, MenuPrincipalVentana menu) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         add(Box.createVerticalStrut(20));
-        JPanel panelTituloConLogo = crearPanelTituloConLogo("Subtemas | " + tema.getNombre());
+        JPanel panelTituloConLogo = crearPanelTituloConLogo("Subtemas | " + tema.getNombre(), "src/main/resources/recursosGraficos/titulos/subtema.jpg");
         add(panelTituloConLogo);
         add(Box.createVerticalStrut(20));
 
@@ -39,6 +41,14 @@ public class SubtemaVentana extends PanelDegradado {
         btnRegresar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegresar.addActionListener(e -> menu.regresar());
         add(btnRegresar);
+
+        new Thread(() -> {
+            try {
+                SubtemaControlador.procesarAccesibilidad(tema, menu);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void mostrarVentanaSeleccion(Subtema subtema, MenuPrincipalVentana menu) {
@@ -80,5 +90,7 @@ public class SubtemaVentana extends PanelDegradado {
         dialog.setUndecorated(true); // si quieres un estilo más moderno sin bordes
         dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
         dialog.setVisible(true);
+
+
     }
 }

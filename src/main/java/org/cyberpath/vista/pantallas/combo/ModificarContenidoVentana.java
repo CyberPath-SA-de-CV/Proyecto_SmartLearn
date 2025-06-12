@@ -44,7 +44,7 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
 
     private JPanel panelContenido;
 
-    public ModificarContenidoVentana() {
+    public ModificarContenidoVentana() throws Exception {
         super("Gestión de Contenido", 1200, 800);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -52,7 +52,7 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
 
     @Override
     protected void inicializarComponentes() {
-        panelContenido = crearPanelDegradadoDecorativo("Gestión de Contenido");
+        panelContenido = crearPanelDegradadoDecorativo("Gestión de Contenido", "src/main/resources/recursosGraficos/titulos/modificacion.jpg");
         panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
 
         panelContenido.add(crearTituloCentrado("Gestión de Materias"));
@@ -385,7 +385,8 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
                         "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
                 if (confirmacion == JOptionPane.YES_OPTION) {
-                    Subtema.eliminar(subtema.getId());
+                    System.out.println(subtema.getTema().getNombre());
+                    Subtema.eliminar(subtema);
                     ContenidoTeorico.eliminar(subtema.getContenidoTeorico().getId());
                     JOptionPane.showMessageDialog(null, "Subtema eliminado correctamente.");
                 }
@@ -606,6 +607,12 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
     public static void main(String[] args) {
         Usuario ejemplo = Usuario.usuarioDao.findById(4);
         VariablesGlobales.usuario = ejemplo;
-        SwingUtilities.invokeLater(() -> new ModificarContenidoVentana().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new ModificarContenidoVentana().setVisible(true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

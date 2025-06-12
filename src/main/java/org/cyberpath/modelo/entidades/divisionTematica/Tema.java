@@ -54,6 +54,7 @@ public class Tema extends Entidad {
         }
         return false;
     }
+
     public static Boolean actualizar(Integer id, Materia materia) {
         Tema tema;
         tema = (Tema) buscarElemento(temaDao, id);
@@ -67,20 +68,19 @@ public class Tema extends Entidad {
     public static Boolean eliminar(Integer id) {
         Tema tema = (Tema) buscarElemento(temaDao, id);
         if (tema != null) {
-            tema.getMateria().eliminarTema(tema);
             temaDao.eliminar(tema);
+            tema.getMateria().eliminarTema(tema);
             return true;
         }
         return false;
     }
 
-    public void agregarSubtema(Subtema subtema ) {
+    public void agregarSubtema(Subtema subtema) {
         subtemas.add(subtema);
         subtema.setTema(this);
     }
 
     public void eliminarSubtema(Subtema subtema) {
-        subtemas.remove(subtema);
         subtema.setTema(null);
     }
 

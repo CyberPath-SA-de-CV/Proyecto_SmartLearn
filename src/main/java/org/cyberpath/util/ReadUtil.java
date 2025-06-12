@@ -1,4 +1,10 @@
 package org.cyberpath.util;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+
 import java.util.Scanner;
 
 public class ReadUtil {
@@ -84,5 +90,24 @@ public class ReadUtil {
         catch (Exception e) {
         }
         return null;
+    }
+
+    public static void imprimirImagen() throws IOException {
+        BufferedImage imagen = ImageIO.read(new File("src/main/resources/recursosGraficos/iconos/imgIconImp/img_1.jpg"));
+        String caracteres = "@%#*+=-:. "; // del más oscuro al más claro
+
+        for (int y = 0; y < imagen.getHeight(); y += 4) { // Salto vertical más grande para compensar proporción
+            for (int x = 0; x < imagen.getWidth(); x += 2) {
+                Color pixel = new Color(imagen.getRGB(x, y));
+                int gris = (pixel.getRed() + pixel.getGreen() + pixel.getBlue()) / 3;
+                int indice = gris * (caracteres.length() - 1) / 255;
+                System.out.print(caracteres.charAt(indice));
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        imprimirImagen();
     }
 }

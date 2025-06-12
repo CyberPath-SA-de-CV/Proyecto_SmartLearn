@@ -1,9 +1,13 @@
 package org.cyberpath.modelo.entidades.divisionTematica;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
 import org.cyberpath.modelo.entidades.base.Entidad;
+import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioMateria;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -23,6 +27,11 @@ public class Materia extends Entidad {
 
     @OneToMany(mappedBy = "materia", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Tema> temas = new ArrayList<>();
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "materia", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UsuarioMateria> inscripciones = new ArrayList<>();
 
     public static Boolean agregar(String nombre) {
         try {
@@ -66,10 +75,28 @@ public class Materia extends Entidad {
         tema.setMateria(null);
     }
 
-    public void actualizarTema(Tema temaActualizado) {
-        temas.removeIf(tema -> tema.getId().equals(temaActualizado.getId()));
-        temas.add(temaActualizado);
-        temaActualizado.setMateria(this);
+    public void actualizarTema(Tema tema) {
+        temas.removeIf(temaAux -> temaAux.getId().equals(tema.getId()));
+        temas.add(tema);
+        tema.setMateria(this);
+    }
+
+    ///---
+
+    public void agregarInscripcion(UsuarioMateria inscripcion) {
+        inscripciones.add(inscripcion);
+        inscripcion.setMateria(this);
+    }
+
+    public void eliminarInscripcion(UsuarioMateria inscripcion) {
+        inscripciones.remove(inscripcion);
+        inscripcion.setMateria(null);
+    }
+
+    public void actualizarInscripcion(UsuarioMateria inscripcion) {
+        inscripciones.removeIf(inscAux -> inscAux.getId().equals(inscripcion.getId()));
+        inscripciones.add(inscripcion);
+        inscripcion.setMateria(this);
     }
 
     @Override

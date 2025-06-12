@@ -1,5 +1,8 @@
 package org.cyberpath.vista.pantallas.combo;
 
+import org.cyberpath.controlador.combo.AccesibilidadControlador;
+import org.cyberpath.controlador.combo.MenuPrincipalControlador;
+import org.cyberpath.controlador.pantallas.PantallasControlador;
 import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.util.base.PlantillaBaseVentana;
 
@@ -12,18 +15,33 @@ public class AccesibilidadVentana extends PlantillaBaseVentana {
 
     private JPanel contenidoPrincipal;
 
-    public AccesibilidadVentana() {
+    public AccesibilidadVentana() throws Exception {
         super("Accesibilidad", 1200, 800);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        new Thread(() -> {
+            try {
+                if(PantallasControlador.menuAccesibilidad("Accesibilidad", this) ){
+                    AccesibilidadControlador.procesarAccesibilidad(this);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new AccesibilidadVentana().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new AccesibilidadVentana().setVisible(true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     protected void inicializarComponentes() {
-        contenidoPrincipal = crearPanelDegradadoDecorativo("Accesibilidad");
+        contenidoPrincipal = crearPanelDegradadoDecorativo("Accesibilidad", "src/main/resources/recursosGraficos/titulos/accesibilidad.jpg");
         contenidoPrincipal.setLayout(new BoxLayout(contenidoPrincipal, BoxLayout.Y_AXIS));
 
         contenidoPrincipal.add(Box.createVerticalStrut(30));
@@ -36,8 +54,8 @@ public class AccesibilidadVentana extends PlantillaBaseVentana {
         opciones.setLayout(new BoxLayout(opciones, BoxLayout.Y_AXIS));
         opciones.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JCheckBox activarVoz = crearCheckBox("Activar Voz", VariablesGlobales.usuario.getModoAudio());
-        activarVoz.addActionListener(e -> VariablesGlobales.usuario.setModoAudio(activarVoz.isSelected()));
+        JCheckBox activarVoz = crearCheckBox("Activar Voz", VariablesGlobales.auxModoAudio);
+        activarVoz.addActionListener(e -> VariablesGlobales.auxModoAudio = activarVoz.isSelected());
 
         JCheckBox modoAccesible = crearCheckBox("Opción 2", false); // Puedes reemplazar por funcionalidad real
 

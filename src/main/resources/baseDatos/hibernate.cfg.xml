@@ -8,7 +8,7 @@
 		<property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
 		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/smartlearn</property>
 		<property name="hibernate.connection.username">root</property>
-		<property name="hibernate.connection.password">admin</property>
+		<property name="hibernate.connection.password">n0m3l0</property>
 		<property name="hibernate.default_schema">smartlearn</property>
 		<!-- <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property> -->
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
@@ -29,6 +29,8 @@
 		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.Materia"/>
 		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.Tema"/>
 		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.Subtema"/>
+		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioMateria"/>
+		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioEjercicio"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.Calificacion"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.Ejercicio"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.IntentoEjercicio"/>
@@ -37,7 +39,7 @@
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.RespuestaUsuario"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.Retroalimentacion"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.TipoEjercicio"/>
-		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.UsuarioMateria"/>
+		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioMateria"/>
 
 	</session-factory>
 </hibernate-configuration>

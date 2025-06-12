@@ -1,9 +1,15 @@
-package org.cyberpath.vista.util.materias;
+package org.cyberpath.vista.pantallas.materias;
 
+import org.cyberpath.controlador.materias.ContenidoPracticoControlador;
+import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
+import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioEjercicio;
+import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioMateria;
 import org.cyberpath.modelo.entidades.ejercicios.Ejercicio;
 import org.cyberpath.modelo.entidades.ejercicios.Opcion;
 import org.cyberpath.modelo.entidades.ejercicios.Pregunta;
+import org.cyberpath.modelo.entidades.usuario.Usuario;
+import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
 import org.cyberpath.vista.util.componentes.PanelDegradado;
 
@@ -22,7 +28,7 @@ public class ContenidoPracticoVentana extends PanelDegradado {
 
         add(Box.createVerticalStrut(20));
 
-        JPanel panelTituloConLogo = crearPanelTituloConLogo("Práctica. Subtema | " + subtema.getNombre());
+        JPanel panelTituloConLogo = crearPanelTituloConLogo("Práctica. Subtema | " + subtema.getNombre(), "src/main/resources/recursosGraficos/titulos/practica.jpg");
         panelTituloConLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(panelTituloConLogo);
 
@@ -68,9 +74,17 @@ public class ContenidoPracticoVentana extends PanelDegradado {
         add(btnRegresar);
 
         add(Box.createVerticalStrut(20));
+
+        new Thread(() -> {
+            try {
+                ContenidoPracticoControlador.procesarAccesibilidad(subtema, menu);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
-    private void ejecutarEjercicio(Ejercicio ejercicio, MenuPrincipalVentana menu) {
+    public void ejecutarEjercicio(Ejercicio ejercicio, MenuPrincipalVentana menu) {
         if (ejercicio.getTipo().getId() == 1) {
             JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Ejercicio", true);
             dialog.setSize(600, 300);
@@ -111,7 +125,6 @@ public class ContenidoPracticoVentana extends PanelDegradado {
                         menu.mostrarContenidoTeorico(ejercicio.getSubtema());
                     }
                 }
-
             });
 
             panelContenido.add(lblInstruccion);
@@ -125,7 +138,9 @@ public class ContenidoPracticoVentana extends PanelDegradado {
         } else if (ejercicio.getTipo().getId() == 2) {
             ejecutarCuestionario(ejercicio, menu);
         }
+        UsuarioEjercicio.agregar(VariablesGlobales.usuario, ejercicio);
     }
+
 
     private boolean validarRespuestaEjercicio(Ejercicio ejercicio, String respuesta) {
         return Objects.equals(ejercicio.getPreguntas().get(0).getOpciones().get(0).getTexto(), respuesta);
@@ -209,6 +224,8 @@ public class ContenidoPracticoVentana extends PanelDegradado {
         if (respuestaTeoria == JOptionPane.YES_OPTION) {
             menu.mostrarContenidoTeorico(ejercicio.getSubtema());
         }
+
+
     }
 
     //------

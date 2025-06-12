@@ -1,5 +1,8 @@
 package org.cyberpath.vista.pantallas.combo;
 
+import org.cyberpath.controlador.combo.AccesibilidadControlador;
+import org.cyberpath.controlador.combo.ConfiguracionControlador;
+import org.cyberpath.controlador.pantallas.PantallasControlador;
 import org.cyberpath.modelo.entidades.usuario.Usuario;
 import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.util.base.PlantillaBaseVentana;
@@ -17,18 +20,33 @@ public class ConfiguracionVentana extends PlantillaBaseVentana {
     private JButton botonCorreo;
     private JPanel contenidoPrincipal;
 
-    public ConfiguracionVentana() {
+    public ConfiguracionVentana() throws Exception {
         super("Configuración de Usuario", 1200, 800);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        new Thread(() -> {
+            try {
+                if(PantallasControlador.menuAccesibilidad("Configuración", this) ){
+                    ConfiguracionControlador.procesarAccesibilidad(this);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ConfiguracionVentana().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new ConfiguracionVentana().setVisible(true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     protected void inicializarComponentes() {
-        contenidoPrincipal = crearPanelDegradadoDecorativo("Configuración");
+        contenidoPrincipal = crearPanelDegradadoDecorativo("Configuración", "src/main/resources/recursosGraficos/titulos/configuracion.jpg");
         contenidoPrincipal.setLayout(new BoxLayout(contenidoPrincipal, BoxLayout.Y_AXIS));
 
         JLabel titulo = crearTituloCentrado("¿Qué dato desea cambiar del usuario?");

@@ -1,4 +1,4 @@
-package org.cyberpath.controlador.Pantallas;
+package org.cyberpath.controlador.pantallas;
 
 public enum PantallasEnum {
     MENU_PRINCIPAL,

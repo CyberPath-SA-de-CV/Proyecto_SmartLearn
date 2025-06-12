@@ -1,0 +1,96 @@
+package org.cyberpath.controlador.pantallas;
+
+import org.cyberpath.util.Salidas;
+import org.cyberpath.util.VariablesGlobales;
+import org.cyberpath.util.audio.EntradaAudioControlador;
+import org.cyberpath.util.audio.SalidaAudioControlador;
+import org.cyberpath.vista.pantallas.combo.AccesibilidadVentana;
+import org.cyberpath.vista.pantallas.combo.ConfiguracionVentana;
+import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
+import org.cyberpath.vista.pantallas.combo.ModificarContenidoVentana;
+import org.cyberpath.vista.pantallas.inicio.InicioVentana;
+import org.cyberpath.vista.pantallas.materias.InscribirMateriasVentana;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class PantallasControlador {
+    public static final String[] sttLista = {"menú principal", "configuración cuenta", "configuración accesibilidad", "cerrar sesión", "no cambiar"};
+    private static JPanel panelContenedor;
+
+    public static void asignarContenedor(JPanel panel) {
+        panelContenedor = panel;
+    }
+
+    public static void cambiarContenido(JPanel nuevoContenido) {
+        if (panelContenedor == null) {
+            throw new IllegalStateException("Panel contenedor no ha sido asignado.");
+        }
+        panelContenedor.removeAll();
+        panelContenedor.setLayout(new BorderLayout());
+        panelContenedor.add(nuevoContenido, BorderLayout.CENTER);
+        panelContenedor.revalidate();
+        panelContenedor.repaint();
+    }
+
+    public static void mostrarPantalla(PantallasEnum pantalla) throws Exception {
+//        if (ventanaActual != null) {
+//            ventanaActual.dispose();
+//        }
+        switch (pantalla) {
+            case MENU_PRINCIPAL:
+                cambiarContenido(new MenuPrincipalVentana().getContenido());
+                break;
+            case ACCESIBILIDAD:
+                cambiarContenido(new AccesibilidadVentana().getContenido());
+                break;
+            case CONFIGURACION:
+                cambiarContenido(new ConfiguracionVentana().getContenido());
+                break;
+            case MODIFICAR_CONTENIDO:
+                cambiarContenido(new ModificarContenidoVentana().getContenido());
+                break;
+            case INSCRIBIR_MATERIA:
+                cambiarContenido(new InscribirMateriasVentana().getContenido());
+                break;
+            default:
+                throw new IllegalArgumentException("Pantalla desconocida: " + pantalla);
+        }
+    }
+
+    public static Boolean menuAccesibilidad(String nombreVentana, Window window) throws Exception {
+        EntradaAudioControlador sttControlador = EntradaAudioControlador.getInstance();
+        SalidaAudioControlador ttsControlador = SalidaAudioControlador.getInstance();
+        if (VariablesGlobales.auxModoAudio) {
+            ttsControlador.hablar("Estás en la ventana " + nombreVentana, 2);
+            ttsControlador.hablar(Salidas.menu, 10);
+            String ventana = sttControlador.esperarPorPalabrasClave(sttLista);
+
+            switch (ventana) {
+                case "menú principal" -> {
+                    mostrarPantalla(PantallasEnum.MENU_PRINCIPAL);
+                }
+                case "configuración cuenta" -> {
+                    mostrarPantalla(PantallasEnum.CONFIGURACION);
+                }
+                case "configuración accesibilidad" -> {
+                    mostrarPantalla(PantallasEnum.ACCESIBILIDAD);
+                }
+                case "cerrar sesión" -> {
+                    ttsControlador.hablar("¿Seguro que desea cerrar sesión? Diga sí o no.");
+                    boolean confirmacion = sttControlador.entradaAfirmacionNegacion();
+                    if (window != null && confirmacion) {
+                        window.dispose();
+                        new InicioVentana().setVisible(true);
+                    } else {
+                        menuAccesibilidad(nombreVentana, window);
+                    }
+                }
+                case "no cambiar" -> {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}

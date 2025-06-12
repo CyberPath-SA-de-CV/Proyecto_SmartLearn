@@ -1,38 +1,71 @@
 package org.cyberpath.vista.pantallas.combo;
 
-import org.cyberpath.controlador.Pantallas.PantallasControlador;
-import org.cyberpath.controlador.Pantallas.PantallasEnum;
+import jdk.swing.interop.SwingInterOpUtils;
+import org.cyberpath.controlador.combo.MenuPrincipalControlador;
+import org.cyberpath.controlador.pantallas.PantallasControlador;
+import org.cyberpath.controlador.pantallas.PantallasEnum;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
 import org.cyberpath.modelo.entidades.divisionTematica.Tema;
+import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioEjercicio;
+import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioMateria;
+import org.cyberpath.modelo.entidades.ejercicios.Ejercicio;
 import org.cyberpath.modelo.entidades.usuario.Usuario;
+import org.cyberpath.util.Sistema;
 import org.cyberpath.util.VariablesGlobales;
+import org.cyberpath.vista.pantallas.materias.ContenidoPracticoVentana;
+import org.cyberpath.vista.pantallas.materias.ContenidoTeoricoVentana;
+import org.cyberpath.vista.pantallas.materias.SubtemaVentana;
+import org.cyberpath.vista.pantallas.materias.TemaVentana;
 import org.cyberpath.vista.util.base.PlantillaBaseVentana;
-import org.cyberpath.vista.util.materias.ContenidoPracticoVentana;
-import org.cyberpath.vista.util.materias.ContenidoTeoricoVentana;
-import org.cyberpath.vista.util.materias.SubtemaVentana;
-import org.cyberpath.vista.util.materias.TemaVentana;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public class MenuPrincipalVentana extends PlantillaBaseVentana {
+    private static final Sistema sistema = Sistema.getInstance();
+    private final Stack<PanelHistorial> historial = new Stack<>();
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private final Stack<PanelHistorial> historial = new Stack<>();
 
-    public MenuPrincipalVentana() {
+    public MenuPrincipalVentana() throws Exception {
         super("Menú Principal", 1200, 800);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        new Thread(() -> {
+            try {
+                if (PantallasControlador.menuAccesibilidad("Materias", this)) {
+                    mostrarTemas(MenuPrincipalControlador.procesarAccesibilidad(this));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public static void main(String[] args) {
+        Usuario ejemplo = Usuario.usuarioDao.findById(19);
+        VariablesGlobales.usuario = ejemplo;
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new MenuPrincipalVentana().setVisible(true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
     }
 
     @Override
-    protected void inicializarComponentes() {
+    protected void inicializarComponentes() throws Exception {
+
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
         getPanelCentral().add(mainPanel, BorderLayout.CENTER);  // Cambio aquí
@@ -53,46 +86,96 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
         return super.getPanelCentral();
     }
 
-    private void mostrarMenuMaterias() {
-        JPanel panelMaterias = crearPanelDegradadoDecorativo("Materias");
-        panelMaterias.setLayout(new BoxLayout(panelMaterias, BoxLayout.Y_AXIS));
+    public void mostrarMenuMaterias() {
 
-        // Usa la implementación que inicializa correctamente las relaciones
+        JPanel panelMaterias = crearPanelDegradadoDecorativo("Materias", "src/main/resources/recursosGraficos/titulos/materias.jpg");
+
+        JPanel panelBotones = new JPanel();
+        panelBotones.setOpaque(false);
+        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
+
         List<Materia> materiasInscritas = new DaoImpl<Usuario>().obtenerMateriasInscritasPorUsuario(
                 VariablesGlobales.usuario.getId());
-
         if (!materiasInscritas.isEmpty()) {
             for (Materia materia : materiasInscritas) {
-                JButton btnMateria = crearBotonEstilizado(
-                        materia.getNombre(), null, e -> mostrarTemas(materia));
-                panelMaterias.add(btnMateria, crearConstraintBotonAncho(3, 0, 3, 1, 200));
-                panelMaterias.add(Box.createVerticalStrut(5));
+
+                for(Tema tema : materia.getTemas()){
+                    System.out.println(tema.getNombre());
+                }
+                System.out.println(materia.getNombre());
+                UsuarioMateria usuarioMateria = null;
+
+                // Buscar la inscripción del usuario a la materia
+                for (UsuarioMateria inscripcion : materia.getInscripciones()) {
+                    if (inscripcion.getUsuario().getId().equals(VariablesGlobales.usuario.getId())) {
+                        usuarioMateria = inscripcion;
+                        break; // Salir del bucle una vez que encontramos la inscripción
+                    }
+                }
+
+                // Verificar si se encontró la inscripción
+                if (usuarioMateria != null) {
+                    int totalEjercicios = 0;
+                    for(Ejercicio ejercicio : Ejercicio.ejercicioDao.findAll()){
+                        if(Objects.equals(ejercicio.getSubtema().getTema().getMateria().getId(), materia.getId())) totalEjercicios++;
+                    }
+                    System.out.println(totalEjercicios);
+                    int ejerciciosRealizados = 0;
+                    for(UsuarioEjercicio usuarioEjercicio : VariablesGlobales.usuario.getEjercicios()){
+                        if(Objects.equals(usuarioEjercicio.getEjercicio().getSubtema().getTema().getMateria().getId(), materia.getId())) ejerciciosRealizados ++;
+                    }
+                    System.out.println(ejerciciosRealizados);
+                    double progreso = 0;
+                    if ( totalEjercicios != 0 )  progreso = (double) ejerciciosRealizados / totalEjercicios * 100;
+
+                    // Crear el botón
+                    JButton btnMateria = crearBotonEstilizado(
+                            materia.getNombre(), null, e -> mostrarTemas(materia));
+                    panelBotones.add(btnMateria);
+
+                    // Crear JProgressBar
+                    BarraProgresoTransparente progressBar = new BarraProgresoTransparente(0, 100);
+                    progressBar.setValue((int) progreso);
+                    progressBar.setStringPainted(true);
+                    panelBotones.add(progressBar);
+                    progressBar.setMaximumSize(new Dimension(750, 30));
+                    panelBotones.add(progressBar);
+                    panelBotones.add(Box.createVerticalStrut(5));
+                }
             }
         } else {
             JLabel mensaje = crearTituloCentrado("No hay materias inscritas aún");
             mensaje.setFont(new Font("Segoe UI", Font.ITALIC, 22));
-            panelMaterias.add(mensaje, crearConstraint(0, 0, 1, 1, 1));
-            panelMaterias.add(Box.createVerticalStrut(5));
+            panelBotones.add(mensaje);
+            panelBotones.add(Box.createVerticalStrut(5));
         }
 
-        JButton btnInscribirMateria = crearBotonEstilizado("Inscribir Materia", null, e -> {
-            PantallasControlador.mostrarPantalla(PantallasEnum.INSCRIBIR_MATERIA);
-        });
-        panelMaterias.add(btnInscribirMateria, crearConstraintCentrado(2, 2, 1, 1, 1));
 
+        JButton btnInscribirMateria = crearBotonEstilizado("Inscribir Materia", null, e -> {
+            try {
+                PantallasControlador.mostrarPantalla(PantallasEnum.INSCRIBIR_MATERIA);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        panelBotones.add(Box.createVerticalStrut(10));
+        panelBotones.add(btnInscribirMateria);
+
+        panelMaterias.add(panelBotones, BorderLayout.CENTER);
         mainPanel.add(panelMaterias, "Materias");
         cardLayout.show(mainPanel, "Materias");
     }
 
 
-
-
-    private void mostrarTemas(Materia materia) {
-        TemaVentana temaVentana = new TemaVentana(materia, this);
-        String nombre = "Temas_" + historial.size();
-        historial.push(new PanelHistorial(temaVentana, nombre));
-        mainPanel.add(temaVentana, nombre);
-        cardLayout.show(mainPanel, nombre);
+    public void mostrarTemas(Materia materia) {
+        if (materia != null) {
+            TemaVentana temaVentana = new TemaVentana(materia, this);
+            String nombre = "Temas_" + historial.size();
+            historial.push(new PanelHistorial(temaVentana, nombre));
+            mainPanel.add(temaVentana, nombre);
+            cardLayout.show(mainPanel, nombre);
+        } else {
+        }
     }
 
     public void mostrarSubtemas(Tema tema) {
@@ -135,13 +218,6 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
         }
     }
 
-    public static void main(String[] args) {
-        Usuario ejemplo = Usuario.usuarioDao.findById(18);
-        VariablesGlobales.usuario = ejemplo;
-
-        SwingUtilities.invokeLater(() -> new MenuPrincipalVentana().setVisible(true));
-    }
-
     private static class PanelHistorial {
         JPanel panel;
         String nombre;
@@ -151,4 +227,50 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
             this.nombre = nombre;
         }
     }
+
+    public class BarraProgresoTransparente extends JProgressBar {
+        public BarraProgresoTransparente(int min, int max) {
+            super(min, max);
+            setOpaque(false);
+            setBorderPainted(false);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // Bordes suaves
+
+            int arc = 20; // Radio del redondeo
+            int width = getWidth();
+            int height = getHeight();
+            int progressWidth = (int) (width * getPercentComplete());
+
+            // Fondo redondeado semitransparente
+            g2.setColor(new Color(0, 122, 204, 80));
+            g2.fillRoundRect(0, 0, width, height, arc, arc);
+
+            // Barra de progreso redondeada (recorte para que no sobresalga)
+            g2.setClip(new RoundRectangle2D.Double(0, 0, progressWidth, height, arc, arc));
+            g2.setColor(new Color(0, 204, 102, 180));
+            g2.fillRoundRect(0, 0, width, height, arc, arc); // Dibuja sobre toda la barra, pero se recorta
+            g2.setClip(null); // Elimina el recorte
+
+            // Texto del progreso centrado
+            if (isStringPainted()) {
+                String texto = getString();
+                FontMetrics fm = g2.getFontMetrics();
+                int textoAncho = fm.stringWidth(texto);
+                int textoAlto = fm.getAscent();
+                int x = (width - textoAncho) / 2;
+                int y = (height + textoAlto) / 2 - 2;
+
+                g2.setColor(new Color(0, 0, 0, 200));
+                g2.drawString(texto, x, y);
+            }
+
+            g2.dispose();
+        }
+
+    }
+
 }

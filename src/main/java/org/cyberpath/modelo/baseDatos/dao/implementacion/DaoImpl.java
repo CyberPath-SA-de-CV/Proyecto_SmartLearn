@@ -5,7 +5,6 @@ import org.cyberpath.modelo.baseDatos.dao.DaoInterface;
 import org.cyberpath.modelo.baseDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
-import org.cyberpath.modelo.entidades.divisionTematica.UsuarioMateria;
 import org.cyberpath.modelo.entidades.usuario.Usuario;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;

@@ -1,8 +1,9 @@
 package org.cyberpath.vista.util.componentes;
 
-import org.cyberpath.controlador.Pantallas.PantallasControlador;
-import org.cyberpath.controlador.Pantallas.PantallasEnum;
+import org.cyberpath.controlador.pantallas.PantallasControlador;
+import org.cyberpath.controlador.pantallas.PantallasEnum;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -10,6 +11,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -42,25 +47,29 @@ public abstract class ComponentesReutilizables extends JFrame {
             }
         };
     }
-    public static JPanel crearPanelDegradadoDecorativo(String titulo) {
-        return new JPanel() {
+    public static JPanel crearPanelDegradadoDecorativo(String titulo, String rutaImagen) {
+        return new JPanel(new BorderLayout()) {
             {
                 setOpaque(false);
-                setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-                setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // márgenes opcionales
+                setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-                // Cargar el logo
-                ImageIcon iconoLogo = new ImageIcon("recursosGraficos/logos/logo_smartlearn.png");
-                Image imagenEscalada = iconoLogo.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                JLabel labelLogo = new JLabel(new ImageIcon(imagenEscalada));
-                labelLogo.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+                JPanel panelTitulo = new JPanel();
+                panelTitulo.setOpaque(false);
+                panelTitulo.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-                // Crear título centrado
-                JLabel labelTexto = crearTituloCentrado(titulo);
+                // Imagen circular (si se proporciona la ruta)
+                if (rutaImagen != null && !rutaImagen.isBlank()) {
+                    JLabel imagenLabel = new JLabel(crearIconoCircular(rutaImagen, 150));
+                    panelTitulo.add(imagenLabel);
+                }
 
-                // Añadir componentes al panel
-                add(labelLogo);
-                add(labelTexto);
+                // Título estilizado
+                JLabel lblTitulo = new JLabel(titulo);
+                lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 35));
+                lblTitulo.setForeground(Color.WHITE);
+                panelTitulo.add(lblTitulo);
+
+                add(panelTitulo, BorderLayout.NORTH);
             }
 
             @Override
@@ -81,6 +90,7 @@ public abstract class ComponentesReutilizables extends JFrame {
             }
         };
     }
+
     public static JPanel crearPanelTituloConLogo(String titulo){
         JPanel panelTituloConLogo = new JPanel();
         panelTituloConLogo.setOpaque(false);
@@ -97,6 +107,36 @@ public abstract class ComponentesReutilizables extends JFrame {
 
         return panelTituloConLogo;
     }
+    public static JPanel crearPanelTituloConLogo(String titulo, String rutaImagenCircular) {
+        JPanel panelTituloConLogo = new JPanel();
+        panelTituloConLogo.setOpaque(false);
+        panelTituloConLogo.setLayout(new BoxLayout(panelTituloConLogo, BoxLayout.X_AXIS));
+
+        // Imagen circular proporcionada
+        if (rutaImagenCircular != null && !rutaImagenCircular.isBlank()) {
+            ImageIcon iconoCircular = crearIconoCircular(rutaImagenCircular, 150);
+            if (iconoCircular != null) {
+                JLabel labelCircular = new JLabel(iconoCircular);
+                labelCircular.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+                panelTituloConLogo.add(labelCircular);
+            }
+        }
+
+        // Logo SmartLearn
+        ImageIcon iconoLogo = new ImageIcon("recursosGraficos/logos/logo_smartlearn.png");
+        Image imagenEscalada = iconoLogo.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+        JLabel labelLogo = new JLabel(new ImageIcon(imagenEscalada));
+        labelLogo.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+        panelTituloConLogo.add(labelLogo);
+
+        // Título centrado
+        JLabel labelTexto = crearTituloCentrado(titulo);
+        labelTexto.setFont(new Font("Segoe UI", Font.BOLD, 35));
+        panelTituloConLogo.add(labelTexto);
+
+        return panelTituloConLogo;
+    }
+
 
     /// Panel transparente con padding
     public static JPanel crearPanelTransparenteConPadding(int top, int left, int bottom, int right) {
@@ -220,7 +260,13 @@ public abstract class ComponentesReutilizables extends JFrame {
         botonSalir.setMaximumSize(new Dimension(200, 40));
         botonSalir.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        botonSalir.addActionListener(e -> PantallasControlador.mostrarPantalla(PantallasEnum.MENU_PRINCIPAL));
+        botonSalir.addActionListener(e -> {
+            try {
+                PantallasControlador.mostrarPantalla(PantallasEnum.MENU_PRINCIPAL);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         return botonSalir;
     }
@@ -343,4 +389,24 @@ public abstract class ComponentesReutilizables extends JFrame {
         c.weightx = 1.0;
         return c;
     }
+
+    public static ImageIcon crearIconoCircular(String rutaImagen, int diametro) {
+        try {
+            BufferedImage original = ImageIO.read(new File(rutaImagen));
+            BufferedImage circular = new BufferedImage(diametro, diametro, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = circular.createGraphics();
+
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            Ellipse2D.Double clip = new Ellipse2D.Double(0, 0, diametro, diametro);
+            g2.setClip(clip);
+            g2.drawImage(original, 0, 0, diametro, diametro, null);
+            g2.dispose();
+
+            return new ImageIcon(circular);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

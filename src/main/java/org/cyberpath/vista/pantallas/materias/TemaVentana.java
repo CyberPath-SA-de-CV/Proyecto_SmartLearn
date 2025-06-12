@@ -1,7 +1,11 @@
-package org.cyberpath.vista.util.materias;
+package org.cyberpath.vista.pantallas.materias;
 
+import org.cyberpath.controlador.combo.MenuPrincipalControlador;
+import org.cyberpath.controlador.materias.TemaControlador;
+import org.cyberpath.controlador.pantallas.PantallasControlador;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Tema;
+import org.cyberpath.util.Sistema;
 import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
 import org.cyberpath.vista.util.componentes.PanelDegradado;
 
@@ -16,7 +20,7 @@ public class TemaVentana extends PanelDegradado {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         add(Box.createVerticalStrut(20));
-        JPanel panelTituloConLogo = crearPanelTituloConLogo("Temas | " + materia.getNombre());
+        JPanel panelTituloConLogo = crearPanelTituloConLogo("Temas | " + materia.getNombre(), "src/main/resources/recursosGraficos/titulos/temas.jpg");
         add(panelTituloConLogo);
         add(Box.createVerticalStrut(20));
 
@@ -38,5 +42,15 @@ public class TemaVentana extends PanelDegradado {
         btnRegresar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegresar.addActionListener(e -> menu.regresar());
         add(btnRegresar);
+
+        new Thread(() -> {
+            try {
+                //PantallasControlador.menuAccesibilidad("Temas", menu);
+                //Sistema.pausa(2);
+                menu.mostrarSubtemas(TemaControlador.procesarAccesibilidad(materia, menu));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }

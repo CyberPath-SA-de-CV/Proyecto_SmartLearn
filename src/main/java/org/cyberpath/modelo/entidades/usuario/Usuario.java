@@ -5,20 +5,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
-import org.cyberpath.modelo.baseDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
-import org.cyberpath.modelo.entidades.divisionTematica.Materia;
-import org.cyberpath.modelo.entidades.divisionTematica.UsuarioMateria;
+import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioEjercicio;
+import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioMateria;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
-import org.hibernate.Hibernate;
-import org.hibernate.Session;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -40,8 +35,15 @@ public class Usuario extends Entidad {
     private String discapacidad;
     @Column(name = "modo_audio")
     private Boolean modoAudio = false;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UsuarioMateria> materiasInscritas;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UsuarioEjercicio> ejercicios;
+
 
     public static Boolean agregar(String nombre, String contrasena, String correo, int id_rol) {
         try {
@@ -82,6 +84,36 @@ public class Usuario extends Entidad {
     }
 
     public static Boolean eliminar(){return true;}
+
+    ///---
+
+    public void agregarInscripcion(UsuarioMateria inscripcion) {
+        materiasInscritas.add(inscripcion);
+        inscripcion.setUsuario(this);
+    }
+    public void eliminarInscripcion(UsuarioMateria inscripcion) {
+        materiasInscritas.remove(inscripcion);
+        inscripcion.setUsuario(null);
+    }
+    public void actualizarInscripcion(UsuarioMateria inscripcion) {
+        materiasInscritas.removeIf(inscAux -> inscAux.getId().equals(inscripcion.getId()));
+        materiasInscritas.add(inscripcion);
+        inscripcion.setUsuario(this);
+    }
+
+    public void agregarEjercicios(UsuarioEjercicio usuarioEjercicio) {
+        ejercicios.add(usuarioEjercicio);
+        usuarioEjercicio.setUsuario(this);
+    }
+    public void eliminarEjercicios(UsuarioEjercicio usuarioEjercicio) {
+        ejercicios.remove(usuarioEjercicio);
+        usuarioEjercicio.setUsuario(null);
+    }
+    public void actualizarEjercicios(UsuarioEjercicio usuarioEjercicio) {
+        ejercicios.removeIf(ejercicioAux -> ejercicioAux.getId().equals(usuarioEjercicio.getId()));
+        ejercicios.add(usuarioEjercicio);
+        usuarioEjercicio.setUsuario(this);
+    }
 
 
 

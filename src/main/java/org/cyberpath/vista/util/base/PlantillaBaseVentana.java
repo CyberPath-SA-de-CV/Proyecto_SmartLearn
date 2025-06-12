@@ -9,8 +9,9 @@ public abstract class PlantillaBaseVentana extends JFrame {
 
     private JPanel panelSuperior;
     private JPanel panelCentral;  // Panel con CardLayout
+    private JScrollPane scrollPaneCentral;
 
-    public PlantillaBaseVentana(String tituloVentana, int ancho, int alto) {
+    public PlantillaBaseVentana(String tituloVentana, int ancho, int alto) throws Exception {
         super(tituloVentana);
         configurarVentana(ancho, alto);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -21,9 +22,15 @@ public abstract class PlantillaBaseVentana extends JFrame {
         panelSuperior = crearPanelSuperior();
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel central que cambia
+        // Panel central con CardLayout y scroll
         panelCentral = new JPanel(new CardLayout());
-        add(panelCentral, BorderLayout.CENTER);
+
+        scrollPaneCentral = new JScrollPane(panelCentral);
+        scrollPaneCentral.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPaneCentral.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPaneCentral.getVerticalScrollBar().setUnitIncrement(50);  // ← Desplazamiento aumentado
+
+        add(scrollPaneCentral, BorderLayout.CENTER);
 
         inicializarComponentes();  // Lo que quieras mostrar al inicio
         agregarEventos();
@@ -44,6 +51,8 @@ public abstract class PlantillaBaseVentana extends JFrame {
     public void mostrarPantalla(String nombre, JPanel pantalla) {
         panelCentral.add(pantalla, nombre);
         ((CardLayout) panelCentral.getLayout()).show(panelCentral, nombre);
+        panelCentral.revalidate();
+        panelCentral.repaint();
     }
 
     /**
@@ -68,7 +77,7 @@ public abstract class PlantillaBaseVentana extends JFrame {
         return new PanelSuperior();
     }
 
-    protected abstract void inicializarComponentes();
+    protected abstract void inicializarComponentes() throws Exception;
     protected abstract void agregarEventos();
     public abstract JPanel getContenido();  // Podrías eliminar esto si ya no lo necesitas
 }
