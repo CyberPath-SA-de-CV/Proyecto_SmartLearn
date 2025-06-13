@@ -114,8 +114,12 @@ public class InicioSesionVentanta extends JFrame {
         actionMap.put("salir", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ttsControlador.hablar("Cerrando la aplicación.");
-                System.exit(0);  // Cierra la aplicación
+                try {
+                    new InicioVentana().setVisible(true);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+                dispose();
             }
         });
 

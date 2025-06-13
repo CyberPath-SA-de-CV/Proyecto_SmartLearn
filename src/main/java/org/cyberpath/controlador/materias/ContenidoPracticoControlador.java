@@ -1,6 +1,7 @@
 package org.cyberpath.controlador.materias;
 
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
+import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioEjercicio;
 import org.cyberpath.modelo.entidades.ejercicios.Ejercicio;
 import org.cyberpath.modelo.entidades.ejercicios.Opcion;
 import org.cyberpath.modelo.entidades.ejercicios.Pregunta;
@@ -61,6 +62,7 @@ public class ContenidoPracticoControlador {
 
         for (Ejercicio ejercicio : ejercicios) {
             if (nombreEjercicio.equals(ejercicio.getInstrucciones().toLowerCase())) {
+                ttsControlador.hablar("A continuación se leerá el enunciado de la pregunta y sus posibles respuestas, al final escoja una de ellas");
                 ejecutarEjercicio(ejercicio, menu);
                 break;
             }
@@ -95,6 +97,8 @@ public class ContenidoPracticoControlador {
         } else if (ejercicio.getTipo().getId() == 2) {
             ejecutarCuestionario(ejercicio, menu);
         }
+
+        UsuarioEjercicio.agregar(VariablesGlobales.usuario, ejercicio);
     }
 
     private static boolean validarRespuestaEjercicio(Ejercicio ejercicio, String respuesta) {
@@ -108,7 +112,7 @@ public class ContenidoPracticoControlador {
         StringBuilder resumenIncorrectas = new StringBuilder();
 
         for (Pregunta pregunta : preguntas) {
-            ttsControlador.hablar(pregunta.getEnunciado(), 5);
+            ttsControlador.hablar(pregunta.getEnunciado(), 1);
             ArrayList<String> opcionesTexto = new ArrayList<>();
             String[] li = {"a", "b", "c", "d"};
 
@@ -159,7 +163,7 @@ public class ContenidoPracticoControlador {
         if (sttControlador.entradaAfirmacionNegacion()) {
             banderaTeoria = true;
             menu.mostrarContenidoTeorico(ejercicio.getSubtema());
-            ContenidoTeoricoControlador.procesarAccesibilidad(ejercicio.getSubtema(), menu);
+            //ContenidoTeoricoControlador.procesarAccesibilidad(ejercicio.getSubtema(), menu);
         } else {
             banderaTeoria = false;
             menu.regresar();

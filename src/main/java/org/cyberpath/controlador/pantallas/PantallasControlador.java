@@ -1,5 +1,6 @@
 package org.cyberpath.controlador.pantallas;
 
+import org.cyberpath.controlador.combo.MenuPrincipalControlador;
 import org.cyberpath.util.Salidas;
 import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.util.audio.EntradaAudioControlador;
@@ -79,11 +80,21 @@ public class PantallasControlador {
                 case "cerrar sesión" -> {
                     ttsControlador.hablar("¿Seguro que desea cerrar sesión? Diga sí o no.");
                     boolean confirmacion = sttControlador.entradaAfirmacionNegacion();
-                    if (window != null && confirmacion) {
-                        window.dispose();
-                        new InicioVentana().setVisible(true);
-                    } else {
-                        menuAccesibilidad(nombreVentana, window);
+                    if (confirmacion) {
+                        for (Window w : Window.getWindows()) {
+                            if (w.isDisplayable()) {
+                                w.dispose();
+                            }
+                        }
+
+                        // Abrir la ventana de inicio
+                        SwingUtilities.invokeLater(() -> {
+                            try {
+                                new InicioVentana().setVisible(true);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                     }
                 }
                 case "no cambiar" -> {

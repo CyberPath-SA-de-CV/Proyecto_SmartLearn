@@ -31,7 +31,7 @@ public class ConfiguracionControlador {
         }
     }
 
-    public static void procesarAccesibilidad(Window ventana) throws Exception {
+    public static void procesarAccesibilidad(JFrame ventana) throws Exception {
         if (VariablesGlobales.auxModoAudio) {
             ttsControlador.hablar("Bienvenido a la configuración de usuario. ¿Qué dato desea cambiar? Diga 'nombre', 'contraseña' o 'correo'. O repetir el menu principal", 5);
             String[] opciones = {"nombre", "contraseña", "correo", "repetir el menu principal", "repetir menu", "repetir"};
@@ -68,7 +68,7 @@ public class ConfiguracionControlador {
         }
     }
 
-    private static void cambiarNombre(Window ventana) {
+    private static void cambiarNombre(JFrame ventana) {
         JDialog dialog = new JDialog(ventana, "Cambio de Nombre", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setSize(700, 350);
         dialog.setLocationRelativeTo(ventana);
@@ -161,7 +161,7 @@ public class ConfiguracionControlador {
 
     }
 
-    private static void cambiarCorreo(Window ventana) {
+    private static void cambiarCorreo(JFrame ventana) {
         JDialog dialog = new JDialog(ventana, "Cambio de Correo", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setSize(700, 350);
         dialog.setLocationRelativeTo(ventana);
@@ -257,7 +257,7 @@ public class ConfiguracionControlador {
 
     }
 
-    private static void cambiarContrasena(Window ventana) {
+    private static void cambiarContrasena(JFrame ventana) {
         JDialog dialog = new JDialog(ventana, "Cambio de Contraseña", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setSize(700, 350);
         dialog.setLocationRelativeTo(ventana);
@@ -367,9 +367,4 @@ public class ConfiguracionControlador {
 
     }
 
-    public static void main(String[] args) throws Exception {
-        Window window = new InicioVentana();
-        window.setVisible(true);
-        cambiarNombre(window);
-    }
 }

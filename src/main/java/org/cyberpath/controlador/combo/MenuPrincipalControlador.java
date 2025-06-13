@@ -9,6 +9,7 @@ import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.util.audio.EntradaAudioControlador;
 import org.cyberpath.util.audio.SalidaAudioControlador;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class MenuPrincipalControlador {
-    public static Materia procesarAccesibilidad(Window window) throws Exception {
+    public static Materia procesarAccesibilidad(JFrame window) throws Exception {
         EntradaAudioControlador sttControlador = EntradaAudioControlador.getInstance();
         SalidaAudioControlador ttsControlador = SalidaAudioControlador.getInstance();
         String[] sttLista = {"materias", "lista materias", "materias inscritas", "lista de materias inscritas", "inscribir materias", "inscribir una materia", "inscribir", "repetir", "repetir el menu", "menu"};

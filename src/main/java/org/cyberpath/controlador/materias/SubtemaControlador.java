@@ -40,7 +40,7 @@ public class SubtemaControlador {
                     if (Objects.equals(nombreSubtema, s.getNombre().toLowerCase())) subtema = s;
                 }
 
-                ttsControlador.hablar("¿A que sección desesas acceder? Teoría o Práctica ");
+                ttsControlador.hablar("¿A que sección deseas acceder? Teoría o Práctica ");
                 String opcion2 = sttControlador.esperarPorPalabrasClave(sttListaTeoriaPractica);
                 if (Objects.equals(opcion2, "práctica")) {
                     menu.mostrarContenidoPractico(subtema);

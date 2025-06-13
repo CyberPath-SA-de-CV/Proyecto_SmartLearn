@@ -23,7 +23,7 @@ public class AccesibilidadControlador {
     }
     public static SalidaAudioControlador ttsControlador = SalidaAudioControlador.getInstance();
 
-    public static void procesarAccesibilidad(Window window) throws Exception {
+    public static void procesarAccesibilidad(JFrame window) throws Exception {
         if (VariablesGlobales.auxModoAudio) {
             String[] opciones = {"cambiar", "cambiar modo audio", "audio", "volver", "volver a presentar"};
             ttsControlador.hablar("¿Qué deseas hacer?, cambiar el modo de audio o volver a presentar el menú", 5);
