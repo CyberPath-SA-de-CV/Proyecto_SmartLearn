@@ -21,33 +21,25 @@ public class SalidaAudioControlador {
     }
 
     public void hablar(String texto) {
-        detener();  // Interrumpe cualquier audio en curso
+        detener();
         try {
-            ProcessBuilder pb = new ProcessBuilder("espeak-ng", "-v", "es", texto);
+            ProcessBuilder pb = new ProcessBuilder("espeak-ng", "-s 145", "-v", "es", texto);
             procesoVoz = pb.start();
-            System.out.println("🔊 Reproduciendo: " + texto);
+            System.out.println("Reproduciendo: " + texto);
         } catch (IOException e) {
-            System.err.println("❌ Error al reproducir el audio: " + e.getMessage());
+            System.err.println("Error al reproducir el audio: " + e.getMessage());
         }
-
     }
 
     public void hablar(String texto, Integer tiempoPausa) {
-        detener();  // Interrumpe cualquier audio en curso
-        try {
-            ProcessBuilder pb = new ProcessBuilder("espeak-ng", "-v", "es", texto);
-            procesoVoz = pb.start();
-            System.out.println("🔊 Reproduciendo: " + texto);
-        } catch (IOException e) {
-            System.err.println("❌ Error al reproducir el audio: " + e.getMessage());
-        }
+        hablar(texto);
         sistema.pausa(tiempoPausa);
     }
 
     public void detener() {
         if (procesoVoz != null && procesoVoz.isAlive()) {
             procesoVoz.destroy();
-            System.out.println("🔇 Reproducción interrumpida");
+            System.out.println("Reproducción de audio interrumpida");
         }
     }
 

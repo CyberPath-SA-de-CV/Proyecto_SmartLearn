@@ -107,7 +107,7 @@ public class SplashVentana extends JFrame {
                         ? "Muy bien, continuemos con el modo de guía con audio activado."
                         : "Perfecto, continuemos sin modo de guía por voz.";
 
-                ttsControlador.hablar(confirmacion);
+                ttsControlador.hablar(confirmacion, 4);
                 try {
                     Thread.sleep(3000); // 2000 milisegundos = 2 segundos
                 } catch (InterruptedException e) {

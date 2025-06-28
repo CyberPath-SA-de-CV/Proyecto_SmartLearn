@@ -1,8 +1,8 @@
 package org.cyberpath.vista.pantallas.combo;
 
 import org.cyberpath.controlador.combo.AccesibilidadControlador;
-import org.cyberpath.controlador.combo.MenuPrincipalControlador;
 import org.cyberpath.controlador.pantallas.PantallasControlador;
+import org.cyberpath.modelo.entidades.usuario.Usuario;
 import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.util.base.PlantillaBaseVentana;
 
@@ -17,10 +17,79 @@ public class AccesibilidadVentana extends PlantillaBaseVentana {
 
     public AccesibilidadVentana() throws Exception {
         super("Accesibilidad", 1200, 800);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        iniciarAccesibilidad();
+    }
+
+    @Override
+    protected void inicializarComponentes() {
+        contenidoPrincipal = crearPanelDegradadoDecorativo("Accesibilidad", "src/main/resources/recursosGraficos/titulos/accesibilidad.jpg");
+
+        JPanel panelTitulo = crearPanelTitulo();
+        JPanel panelOpciones = crearPanelOpciones();
+
+        JPanel panelInterno = new JPanel();
+        panelInterno.setOpaque(false);
+        panelInterno.setLayout(new BoxLayout(panelInterno, BoxLayout.Y_AXIS));
+
+        panelInterno.add(Box.createVerticalStrut(20));
+        panelInterno.add(panelTitulo);
+        panelInterno.add(Box.createVerticalStrut(30));
+        panelInterno.add(panelOpciones);
+        panelInterno.add(Box.createVerticalGlue());
+
+        contenidoPrincipal.add(panelInterno, BorderLayout.CENTER);
+        getPanelCentral().add(contenidoPrincipal);
+    }
+
+    private JPanel crearPanelTitulo() {
+        JPanel titulo = new JPanel();
+        JLabel labelTexto = crearTituloCentrado("Configuración de Accesibilidad");
+        titulo.add(labelTexto);
+        titulo.setOpaque(false);
+        titulo.setLayout(new BoxLayout(titulo, BoxLayout.Y_AXIS));
+        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        return titulo;
+    }
+    private JPanel crearPanelOpciones() {
+        JPanel opciones = new JPanel();
+        opciones.setOpaque(false);
+        opciones.setLayout(new BoxLayout(opciones, BoxLayout.Y_AXIS));
+        opciones.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JCheckBox activarVoz = crearCheckBox("Activar Voz", VariablesGlobales.auxModoAudio);
+        activarVoz.addActionListener(e -> VariablesGlobales.auxModoAudio = activarVoz.isSelected());
+        JCheckBox modoAccesible = crearCheckBox("Opción 2", false);
+
+        opciones.add(activarVoz);
+        opciones.add(Box.createVerticalStrut(30));
+        opciones.add(modoAccesible);
+        opciones.add(Box.createVerticalStrut(30));
+
+        JButton botonSalir = crearBotonSalirAPantallaPrincipal();
+        JPanel contenedorBoton = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        contenedorBoton.setOpaque(false);
+        contenedorBoton.add(botonSalir);
+
+        opciones.add(contenedorBoton);
+
+        return opciones;
+    }
+
+
+
+    @Override
+    protected void agregarEventos() {
+    }
+
+    @Override
+    public JPanel getContenido() {
+        return contenidoPrincipal;
+    }
+
+    private void iniciarAccesibilidad() {
         new Thread(() -> {
             try {
-                if(PantallasControlador.menuAccesibilidad("Accesibilidad", this) ){
+                if (PantallasControlador.menuAccesibilidad("Accesibilidad", this)) {
                     AccesibilidadControlador.procesarAccesibilidad(this);
                 }
             } catch (Exception e) {
@@ -30,6 +99,8 @@ public class AccesibilidadVentana extends PlantillaBaseVentana {
     }
 
     public static void main(String[] args) {
+        Usuario ejemplo = Usuario.usuarioDao.findById(33);
+        VariablesGlobales.usuario = ejemplo;
         SwingUtilities.invokeLater(() -> {
             try {
                 new AccesibilidadVentana().setVisible(true);
@@ -37,50 +108,5 @@ public class AccesibilidadVentana extends PlantillaBaseVentana {
                 throw new RuntimeException(e);
             }
         });
-    }
-
-    @Override
-    protected void inicializarComponentes() {
-        contenidoPrincipal = crearPanelDegradadoDecorativo("Accesibilidad", "src/main/resources/recursosGraficos/titulos/accesibilidad.jpg");
-        contenidoPrincipal.setLayout(new BoxLayout(contenidoPrincipal, BoxLayout.Y_AXIS));
-
-        contenidoPrincipal.add(Box.createVerticalStrut(30));
-        JPanel panelTituloConLogo = crearPanelTituloConLogo("Configuración del sistema");
-        contenidoPrincipal.add(panelTituloConLogo);
-        contenidoPrincipal.add(Box.createVerticalStrut(40));
-
-        JPanel opciones = new JPanel();
-        opciones.setOpaque(false);
-        opciones.setLayout(new BoxLayout(opciones, BoxLayout.Y_AXIS));
-        opciones.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JCheckBox activarVoz = crearCheckBox("Activar Voz", VariablesGlobales.auxModoAudio);
-        activarVoz.addActionListener(e -> VariablesGlobales.auxModoAudio = activarVoz.isSelected());
-
-        JCheckBox modoAccesible = crearCheckBox("Opción 2", false); // Puedes reemplazar por funcionalidad real
-
-        opciones.add(activarVoz);
-        opciones.add(Box.createVerticalStrut(15));
-        opciones.add(modoAccesible);
-        opciones.add(Box.createVerticalStrut(50));
-
-        JButton botonSalir = crearBotonSalirAPantallaPrincipal();
-        opciones.add(botonSalir);
-
-        contenidoPrincipal.add(opciones);
-        contenidoPrincipal.add(Box.createVerticalGlue());
-
-        JScrollPane scrollContenido = crearScrollPaneTransparente(contenidoPrincipal);
-        getPanelCentral().add(scrollContenido, BorderLayout.CENTER); // Cambio aquí
-    }
-
-    @Override
-    protected void agregarEventos() {
-        // Eventos adicionales si los necesitas
-    }
-
-    @Override
-    public JPanel getContenido() {
-        return contenidoPrincipal;
     }
 }

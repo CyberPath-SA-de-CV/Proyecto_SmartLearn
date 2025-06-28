@@ -5,10 +5,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
+import org.cyberpath.modelo.baseDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
+import org.cyberpath.modelo.entidades.divisionTematica.Tema;
 import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioEjercicio;
 import org.cyberpath.modelo.entidades.usuario.Usuario;
+import org.hibernate.Session;
 
 import javax.swing.*;
 import java.time.LocalDate;
@@ -122,7 +125,15 @@ public class Ejercicio extends Entidad {
         usuarios.add(usuarioEjercicio);
         usuarioEjercicio.setEjercicio(this);
     }
-
+/*
+    public static List<Ejercicio> findBySubtema(Subtema subtema) {
+        try (Session session = HibernateUtil.getSession()) {
+            return session.createQuery("FROM Ejercicio m WHERE m.subtema = :subtema", Ejercicio.class)
+                    .setParameter("subtema", subtema)
+                    .getResultList();
+        }
+    }
+*/
     @Override
     public String toString() {
         return instrucciones;

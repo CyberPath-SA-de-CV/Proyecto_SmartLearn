@@ -17,7 +17,7 @@ import java.util.Objects;
 
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
-public class RegistroVentana extends JFrame { //QUITAR EL ROL DEL FOCO Y QUE ESTE POR DETERMINADO EN ROL ESTUDIANTE
+public class RegistroVentana extends JFrame {
 
     private static final EntradaAudioControlador sttControlador;
     private static final SalidaAudioControlador ttsControlador = SalidaAudioControlador.getInstance();
@@ -30,8 +30,6 @@ public class RegistroVentana extends JFrame { //QUITAR EL ROL DEL FOCO Y QUE EST
         }
     }
 
-    //---
-
     private JPanel panelPrincipal;
     private JButton botonRegistro;
     private JButton botonVolver;
@@ -43,13 +41,19 @@ public class RegistroVentana extends JFrame { //QUITAR EL ROL DEL FOCO Y QUE EST
 
     public RegistroVentana() {
         super("Registro de Usuario");
-        setSize(700, 550);
-        setLocationRelativeTo(null); // Centrar
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        configurarVentana();
         inicializarComponentes();
+        //ttsControlador.hablar("Bienvenido a la ventana de inicio de sesión. Use la tecla Tabulador para cambiar entre campos y Alt más i para iniciar sesión, se hará saber cuando pueda empezar a escribir", 14);
         agregarEventos();
         setContentPane(panelPrincipal);
         if (VariablesGlobales.auxModoAudio) inicializarAccesibilidad();
+
+    }
+
+    private void configurarVentana() {
+        setSize(700, 550);
+        setLocationRelativeTo(null); // Centrar
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static Boolean pedirContrasenaRol() {
@@ -91,7 +95,12 @@ public class RegistroVentana extends JFrame { //QUITAR EL ROL DEL FOCO Y QUE EST
         panelPrincipal = new PanelConRayasVerticales();
         panelPrincipal.setLayout(new GridBagLayout());
 
-        // Título
+        agregarEtiquetasYCampos();
+        agregarBotones();
+        getRootPane().setDefaultButton(botonRegistro);
+    }
+
+    private void agregarEtiquetasYCampos() {
         JLabel etiquetaTitulo = crearEtiqueta("Registro de Usuario");
         etiquetaTitulo.setFont(new Font("Arial", Font.BOLD, 25));
         etiquetaTitulo.setForeground(Color.WHITE);
@@ -102,15 +111,12 @@ public class RegistroVentana extends JFrame { //QUITAR EL ROL DEL FOCO Y QUE EST
         instrucciones.setFont(instrucciones.getFont().deriveFont(15f));
         panelPrincipal.add(instrucciones, crearConstraint(1, 0, 3, 1, 10));
 
-        JLabel nombreLabel = crearEtiqueta("Nombre de usuario:");
-        JLabel correoLabel = crearEtiqueta("Correo electrónico:");
-        JLabel contrasenaLabel = crearEtiqueta("Contraseña:");
-        JLabel confirmarLabel = crearEtiqueta("Confirmar contraseña:");
-        JLabel rolLabel = crearEtiqueta("Rol:");
-
-        for (JLabel lbl : new JLabel[]{nombreLabel, correoLabel, contrasenaLabel, confirmarLabel, rolLabel}) {
-            lbl.setFont(lbl.getFont().deriveFont(15f));
-            lbl.setForeground(Color.WHITE);
+        String[] etiquetas = {"Nombre de usuario:", "Correo electrónico:", "Contraseña:", "Confirmar contraseña:", "Rol:"};
+        for (int i = 0; i < etiquetas.length; i++) {
+            JLabel label = crearEtiqueta(etiquetas[i]);
+            label.setFont(label.getFont().deriveFont(15f));
+            label.setForeground(Color.WHITE);
+            panelPrincipal.add(label, crearConstraint(i + 2, 0, 1, 1, 20));
         }
 
         campoNombre = crearCampoTxt(15);
@@ -119,21 +125,14 @@ public class RegistroVentana extends JFrame { //QUITAR EL ROL DEL FOCO Y QUE EST
         campoConfirmar = new JPasswordField(15);
         comboRol = new JComboBox<>(new String[]{"Administrador", "Estudiante"});
 
-        panelPrincipal.add(nombreLabel, crearConstraint(2, 0, 1, 1, 20));
         panelPrincipal.add(campoNombre, crearConstraint(2, 1, 2, 1, 100));
-
-        panelPrincipal.add(correoLabel, crearConstraint(3, 0, 1, 1, 20));
         panelPrincipal.add(campoCorreo, crearConstraint(3, 1, 2, 1, 100));
-
-        panelPrincipal.add(contrasenaLabel, crearConstraint(4, 0, 1, 1, 20));
         panelPrincipal.add(campoContrasena, crearConstraint(4, 1, 2, 1, 100));
-
-        panelPrincipal.add(confirmarLabel, crearConstraint(5, 0, 1, 1, 20));
         panelPrincipal.add(campoConfirmar, crearConstraint(5, 1, 2, 1, 100));
-
-        panelPrincipal.add(rolLabel, crearConstraint(6, 0, 1, 1, 20));
         panelPrincipal.add(comboRol, crearConstraint(6, 1, 2, 1, 100));
+    }
 
+    private void agregarBotones() {
         botonRegistro = crearBotonEstilizado("Registrar", null, null);
         botonRegistro.setMnemonic(KeyEvent.VK_R); // ALT + R
 
@@ -142,71 +141,79 @@ public class RegistroVentana extends JFrame { //QUITAR EL ROL DEL FOCO Y QUE EST
 
         panelPrincipal.add(botonRegistro, crearConstraintBotonAncho(7, 0, 3, 1, 200));
         panelPrincipal.add(botonVolver, crearConstraintBotonAncho(8, 0, 3, 1, 200));
-
-        getRootPane().setDefaultButton(botonRegistro);
     }
 
-
     private void agregarEventos() {
+        botonRegistro.addActionListener(e -> registrarUsuario());
+        botonVolver.addActionListener(e -> volverAInicio());
+    }
 
-        ActionListener registrar = e -> {
-            String nombre = campoNombre.getText().trim();
-            String correo = campoCorreo.getText().trim();
-            String contra = new String(campoContrasena.getPassword());
-            String confirmar = new String(campoConfirmar.getPassword());
-            int idRol = comboRol.getSelectedIndex() == 0 ? 1 : 2;
+    private void registrarUsuario() {
+        String nombre = campoNombre.getText().trim();
+        String correo = campoCorreo.getText().trim();
+        String contra = new String(campoContrasena.getPassword());
+        String confirmar = new String(campoConfirmar.getPassword());
+        int idRol = comboRol.getSelectedIndex() == 0 ? 1 : 2;
 
-            if (nombre.isEmpty() || correo.isEmpty() || contra.isEmpty() || confirmar.isEmpty()) {
-                mostrarMensaje("Por favor complete todos los campos.", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
-                return;
-            } else if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-                mostrarMensaje("Correo electrónico inválido.", "Error de validación", JOptionPane.ERROR_MESSAGE);
-                return;
-            } else if (!contra.equals(confirmar)) {
-                mostrarMensaje("Las contraseñas no coinciden.", "Error de validación", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Confirmación por voz (si el modo audio está activado)
+        if (validarCampos(nombre, correo, contra, confirmar)) {
             if (VariablesGlobales.auxModoAudio) {
-                String mensajeConfirmacion = "¿Está seguro de registrar al usuario con nombre " + nombre + " y correo " + correo + "? Responda sí o no.";
-                ttsControlador.hablar(mensajeConfirmacion);
-
-                Boolean respuesta = null;
-                try {
-                    respuesta = sttControlador.entradaAfirmacionNegacion();
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                if (!respuesta) {
-                    ttsControlador.hablar("Registro cancelado.");
-                    return;
-                }
+                confirmarRegistroPorVoz(nombre, correo);
+            } else {
+                procesarRegistro(nombre, contra, correo, idRol);
             }
+        }
+    }
 
-            try {
-                if (new RegistroControlador().procesarRegistro(nombre, contra, correo, idRol, this)) {
-                    mostrarMensaje("¡Registro exitoso!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+    private boolean validarCampos(String nombre, String correo, String contra, String confirmar) {
+        if (nombre.isEmpty() || correo.isEmpty() || contra.isEmpty() || confirmar.isEmpty()) {
+            mostrarMensaje("Por favor complete todos los campos.", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
+            return false;
+        } else if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            mostrarMensaje("Correo electrónico inválido.", "Error de validación", JOptionPane.ERROR_MESSAGE);
+            return false;
+        } else if (!contra.equals(confirmar)) {
+            mostrarMensaje("Las contraseñas no coinciden.", "Error de validación", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void confirmarRegistroPorVoz(String nombre, String correo) {
+        String mensajeConfirmacion = "¿Está seguro de registrar al usuario con nombre " + nombre + " y correo " + correo + "? Responda sí o no.";
+        ttsControlador.hablar(mensajeConfirmacion);
+
+        Boolean respuesta;
+        try {
+            respuesta = sttControlador.entradaAfirmacionNegacion();
+            if (respuesta != null && !respuesta) {
+                ttsControlador.hablar("Registro cancelado.");
+                return;
             }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
 
-            dispose();
-        };
+        procesarRegistro(nombre, new String(campoContrasena.getPassword()), correo, comboRol.getSelectedIndex() + 1);
+    }
 
-
-        botonRegistro.addActionListener(registrar);
-
-        botonVolver.addActionListener(e -> {
-            try {
-                new InicioVentana().setVisible(true);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+    private void procesarRegistro(String nombre, String contra, String correo, int idRol) {
+        try {
+            if (new RegistroControlador().procesarRegistro(nombre, contra, correo, idRol, this)) {
+                mostrarMensaje("¡Registro exitoso!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             }
-            dispose();
-        });
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        dispose();
+    }
+
+    private void volverAInicio() {
+        try {
+            new InicioVentana().setVisible(true);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        dispose();
     }
 
     private void mostrarMensaje(String mensaje, String titulo, int tipo) {
@@ -258,6 +265,4 @@ public class RegistroVentana extends JFrame { //QUITAR EL ROL DEL FOCO Y QUE EST
             }
         });
     }
-
-
 }

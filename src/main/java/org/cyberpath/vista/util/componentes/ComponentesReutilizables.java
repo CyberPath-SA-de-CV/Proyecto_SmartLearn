@@ -21,11 +21,6 @@ import java.time.format.DateTimeFormatter;
 
 public abstract class ComponentesReutilizables extends JFrame {
 
-    /// *** Función crearPanel
-    /// Crea un panel con el número de filas y columnas especificadas en los parámetros
-    public static JPanel crearPanel() {
-        return new JPanel(new GridBagLayout());
-    }
     /// Panel con fondo decorativo degradado y líneas
     public static JPanel crearPanelDegradadoDecorativo() {
         return new JPanel() {
@@ -51,7 +46,7 @@ public abstract class ComponentesReutilizables extends JFrame {
         return new JPanel(new BorderLayout()) {
             {
                 setOpaque(false);
-                setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+                setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
                 JPanel panelTitulo = new JPanel();
                 panelTitulo.setOpaque(false);
@@ -91,22 +86,6 @@ public abstract class ComponentesReutilizables extends JFrame {
         };
     }
 
-    public static JPanel crearPanelTituloConLogo(String titulo){
-        JPanel panelTituloConLogo = new JPanel();
-        panelTituloConLogo.setOpaque(false);
-        panelTituloConLogo.setLayout(new BoxLayout(panelTituloConLogo, BoxLayout.X_AXIS));
-
-        ImageIcon iconoLogo = new ImageIcon("recursosGraficos/logos/logo_smartlearn.png");
-        Image imagenEscalada = iconoLogo.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-        JLabel labelLogo = new JLabel(new ImageIcon(imagenEscalada));
-        labelLogo.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
-
-        JLabel labelTexto = crearTituloCentrado(titulo);
-        panelTituloConLogo.add(labelLogo);
-        panelTituloConLogo.add(labelTexto);
-
-        return panelTituloConLogo;
-    }
     public static JPanel crearPanelTituloConLogo(String titulo, String rutaImagenCircular) {
         JPanel panelTituloConLogo = new JPanel();
         panelTituloConLogo.setOpaque(false);
@@ -136,56 +115,6 @@ public abstract class ComponentesReutilizables extends JFrame {
 
         return panelTituloConLogo;
     }
-
-
-    /// Panel transparente con padding
-    public static JPanel crearPanelTransparenteConPadding(int top, int left, int bottom, int right) {
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(new EmptyBorder(top, left, bottom, right));
-        return panel;
-    }
-
-    // Barra superior con fecha y etiqueta de usuario
-    public static JPanel crearBarraSuperior(String textoUsuario) {
-        JPanel barra = new JPanel(new BorderLayout());
-        barra.setOpaque(false);
-        barra.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-
-        JLabel fecha = crearFecha();
-        barra.add(fecha, BorderLayout.WEST);
-
-        JLabel usuario = new JLabel("Usuario " + textoUsuario);
-        usuario.setFont(new Font("Segoe UI", Font.BOLD, 17));
-        usuario.setForeground(Color.WHITE);
-        usuario.setBorder(new EmptyBorder(2, 5, 3, 0));
-        barra.add(usuario, BorderLayout.EAST);
-
-        return barra;
-    }
-
-
-    public static JButton crearBoton(String texto, ActionListener accion) {
-        JButton boton = new JButton(texto);
-        boton.setFont(new Font("Arial", Font.BOLD, 16));
-        boton.setBackground(new Color(19, 36, 81));
-        boton.setForeground(Color.WHITE);
-        boton.addActionListener(accion);
-        return boton;
-    }
-
-    public static JButton crearBoton(String texto, ActionListener accion, int tamFuente, int altoPadding) {
-        JButton boton = new JButton(texto);
-        boton.addActionListener(accion);
-        boton.setFont(new Font("Arial", Font.PLAIN, tamFuente));
-        boton.setFocusPainted(false);
-        boton.setBackground(new Color(70, 130, 180)); // Azul suave
-        boton.setForeground(Color.WHITE);
-        boton.setBorder(BorderFactory.createEmptyBorder(altoPadding, 20, altoPadding, 20));
-        return boton;
-    }
-
 
     // Metodo estático que crea un Botón con estilo suave y esquinas redondeadas
     public static JButton crearBotonEstilizado(String texto, String iconoRuta, ActionListener accion) {
@@ -268,6 +197,8 @@ public abstract class ComponentesReutilizables extends JFrame {
             }
         });
 
+        botonSalir.setPreferredSize(new Dimension(200, 35));
+
         return botonSalir;
     }
 
@@ -282,7 +213,7 @@ public abstract class ComponentesReutilizables extends JFrame {
 
     ///  **** Crear etiqueta(2)
     /// Crea una etiqueta centrada tomando como parámetro tan solo el texto de esta
-    public static JLabel    crearEtiqueta(String texto) {
+    public static JLabel crearEtiqueta(String texto) {
         JLabel etiqueta = new JLabel(texto, SwingConstants.CENTER);
         etiqueta.setFont(new Font("Arial", Font.PLAIN, 12));
         return etiqueta;

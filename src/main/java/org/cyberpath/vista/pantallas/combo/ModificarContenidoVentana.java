@@ -1,6 +1,5 @@
 package org.cyberpath.vista.pantallas.combo;
 
-
 import org.cyberpath.modelo.entidades.contenido.ContenidoTeorico;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
@@ -14,18 +13,18 @@ import org.cyberpath.util.VariablesGlobales;
 import org.cyberpath.vista.util.base.PlantillaBaseVentana;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
-import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.crearScrollPaneTransparente;
 
 public class ModificarContenidoVentana extends PlantillaBaseVentana {
 
+    private JComboBox<Materia> comboMaterias;
     private JButton botonAgregarMateria;
     private JButton botonEditarMateria;
     private JButton botonEliminarMateria;
@@ -55,6 +54,31 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
         panelContenido = crearPanelDegradadoDecorativo("Gestión de Contenido", "src/main/resources/recursosGraficos/titulos/modificacion.jpg");
         panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
 
+        agregarComboMaterias();
+        agregarSeccionMaterias();
+        agregarSeccionTemas();
+        agregarSeccionSubtemas();
+        agregarSeccionEjercicios();
+        agregarBotonSalir();
+
+        getPanelCentral().add(panelContenido);
+    }
+
+    private void agregarComboMaterias(){
+        panelContenido.add(Box.createVerticalStrut(20));
+        comboMaterias = new JComboBox<>(Materia.materiaDao.findAll().toArray(new Materia[0]));
+        comboMaterias.setPreferredSize(new Dimension(600, 45));
+        estilizarComboBox(comboMaterias);
+
+        JPanel contenedorCombo = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        contenedorCombo.setOpaque(false);
+        contenedorCombo.add(comboMaterias);
+
+        panelContenido.add(contenedorCombo);
+        panelContenido.add(Box.createVerticalStrut(20));
+    }
+
+    private void agregarSeccionMaterias() {
         panelContenido.add(crearTituloCentrado("Gestión de Materias"));
         panelContenido.add(Box.createVerticalStrut(20));
 
@@ -62,13 +86,20 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
         botonEditarMateria = crearBotonEstilizado("Editar Materia", null, null);
         botonEliminarMateria = crearBotonEstilizado("Eliminar Materia", null, null);
 
+        agregarBotonesMaterias();
+    }
+
+
+    private void agregarBotonesMaterias() {
         panelContenido.add(botonAgregarMateria, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(6));
         panelContenido.add(botonEditarMateria, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(6));
         panelContenido.add(botonEliminarMateria, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(40));
+    }
 
+    private void agregarSeccionTemas() {
         panelContenido.add(crearTituloCentrado("Gestión de Temas"));
         panelContenido.add(Box.createVerticalStrut(20));
 
@@ -76,55 +107,79 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
         botonEditarTema = crearBotonEstilizado("Editar Tema", null, null);
         botonEliminarTema = crearBotonEstilizado("Eliminar Tema", null, null);
 
+        agregarBotonesTemas();
+    }
+
+    private void agregarBotonesTemas() {
         panelContenido.add(botonAgregarTema, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(6));
         panelContenido.add(botonEditarTema, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(6));
         panelContenido.add(botonEliminarTema, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(40));
+    }
 
-        panelContenido.add(crearTituloCentrado("Gestión de Subtema"));
+    private void agregarSeccionSubtemas() {
+        panelContenido.add(crearTituloCentrado("Gestión de Subtemas"));
         panelContenido.add(Box.createVerticalStrut(20));
 
         botonAgregarSubtema = crearBotonEstilizado("Agregar Subtema", null, null);
         botonEditarSubtema = crearBotonEstilizado("Editar Subtema", null, null);
         botonEliminarSubtema = crearBotonEstilizado("Eliminar Subtema", null, null);
 
+        agregarBotonesSubtemas();
+    }
+
+    private void agregarBotonesSubtemas() {
         panelContenido.add(botonAgregarSubtema, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(6));
         panelContenido.add(botonEditarSubtema, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(6));
         panelContenido.add(botonEliminarSubtema, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(40));
+    }
 
-        panelContenido.add(crearTituloCentrado("Gestión de Ejercicio"));
+    private void agregarSeccionEjercicios() {
+        panelContenido.add(crearTituloCentrado("Gestión de Ejercicios"));
         panelContenido.add(Box.createVerticalStrut(20));
 
         botonAgregarEjercicio = crearBotonEstilizado("Agregar Ejercicio", null, null);
         botonEditarEjercicio = crearBotonEstilizado("Editar Ejercicio", null, null);
         botonEliminarEjercicio = crearBotonEstilizado("Eliminar Ejercicio", null, null);
 
+        agregarBotonesEjercicios();
+    }
+
+    private void agregarBotonesEjercicios() {
         panelContenido.add(botonAgregarEjercicio, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(6));
         panelContenido.add(botonEditarEjercicio, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(6));
         panelContenido.add(botonEliminarEjercicio, crearConstraintBotonAncho(3, 0, 3, 1, 200));
         panelContenido.add(Box.createVerticalStrut(40));
+    }
 
+    private void agregarBotonSalir() {
         panelContenido.add(Box.createVerticalStrut(40));
         panelContenido.add(crearBotonSalirAPantallaPrincipal());
         panelContenido.add(Box.createVerticalGlue());
-
-        getPanelCentral().add(panelContenido);
-}
+    }
 
     @Override
     protected void agregarEventos() {
+        agregarEventosMaterias();
+        agregarEventosTemas();
+        agregarEventosSubtemas();
+        agregarEventosEjercicios();
+    }
+
+    private void agregarEventosMaterias() {
         botonAgregarMateria.addActionListener(e -> {
             String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva materia:");
             if (nombre != null && !nombre.trim().isEmpty()) {
                 if (Materia.agregar(nombre.trim())) {
                     JOptionPane.showMessageDialog(this, "Materia agregada exitosamente.");
+                    comboMaterias.addItem(Materia.findByNombre(nombre.trim())); // Actualizar el ComboBox
                 }
             }
         });
@@ -132,31 +187,24 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
         botonEditarMateria.addActionListener(e -> {
             JTextField campoTexto = new JTextField();
             List<Materia> opcionesMaterias = Materia.materiaDao.findAll();
-            JComboBox<Materia> comboBox = new JComboBox<>();
-            for (Materia m : opcionesMaterias) {
-                comboBox.addItem(m);
-            }
+            JComboBox<Materia> comboBox = new JComboBox<>(opcionesMaterias.toArray(new Materia[0]));
 
             Object[] mensaje = {
                     "Selecciona una materia:", comboBox,
                     "Nuevo Nombre", campoTexto
             };
 
-            int opcion = JOptionPane.showConfirmDialog(
-                    null,
-                    mensaje,
-                    "Actualizar materia",
-                    JOptionPane.OK_CANCEL_OPTION
-            );
-
+            int opcion = JOptionPane.showConfirmDialog(null, mensaje, "Actualizar materia", JOptionPane.OK_CANCEL_OPTION);
             if (opcion == JOptionPane.OK_OPTION) {
                 String nuevoNombre = campoTexto.getText();
                 Materia materiaSeleccionada = (Materia) comboBox.getSelectedItem();
 
                 if (materiaSeleccionada != null && nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
                     Integer id = materiaSeleccionada.getId();
-                    Materia.actualizar(id, nuevoNombre); // Llamada a tu método
+                    Materia.actualizar(id, nuevoNombre);
                     JOptionPane.showMessageDialog(null, "Materia actualizada correctamente.");
+                    comboMaterias.removeItem(materiaSeleccionada);
+                    comboMaterias.addItem(Materia.materiaDao.findById(id)); // Actualizar el ComboBox
                 } else {
                     JOptionPane.showMessageDialog(null, "Faltan datos para actualizar.");
                 }
@@ -165,102 +213,82 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
 
         botonEliminarMateria.addActionListener(e -> {
             List<Materia> opcionesMaterias = Materia.materiaDao.findAll();
-
-            // Asegúrate de tener el método toString() en Materia que devuelva el nombre
-            JComboBox<Materia> comboBox = new JComboBox<>();
-            for (Materia m : opcionesMaterias) {
-                comboBox.addItem(m);
-            }
+            JComboBox<Materia> comboBox = new JComboBox<>(opcionesMaterias.toArray(new Materia[0]));
 
             Object[] mensaje = {
-                    "Selecciona una materia a eliminar:", comboBox
+                    "Selecciona la materia a eliminar:", comboBox
             };
 
-            int opcion = JOptionPane.showConfirmDialog(
-                    null,
-                    mensaje,
-                    "Eliminar materia",
-                    JOptionPane.OK_CANCEL_OPTION
-            );
-
+            int opcion = JOptionPane.showConfirmDialog(null, mensaje, "Eliminar materia", JOptionPane.OK_CANCEL_OPTION);
             if (opcion == JOptionPane.OK_OPTION) {
                 Materia materiaSeleccionada = (Materia) comboBox.getSelectedItem();
-
                 if (materiaSeleccionada != null) {
-                    int confirmacion = JOptionPane.showConfirmDialog(
-                            null,
+                    int confirmacion = JOptionPane.showConfirmDialog(null,
                             "¿Estás seguro de que deseas eliminar la materia \"" + materiaSeleccionada.getNombre() + "\"?",
-                            "Confirmar eliminación",
-                            JOptionPane.YES_NO_OPTION
-                    );
+                            "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
                     if (confirmacion == JOptionPane.YES_OPTION) {
                         Integer id = materiaSeleccionada.getId();
-                        Materia.eliminar(id); // Llama a tu método de eliminación
+                        Materia.eliminar(id);
                         JOptionPane.showMessageDialog(null, "Materia eliminada exitosamente.");
+                        comboMaterias.removeItem(materiaSeleccionada); // Actualizar el ComboBox
                     }
                 }
             }
         });
+    }
 
+    private void agregarEventosTemas() {
         botonAgregarTema.addActionListener(e -> {
             JTextField campoNombre = new JTextField();
-            JComboBox<Materia> comboMaterias = new JComboBox<>();
-            for (Materia m : Materia.materiaDao.findAll()) {
-                comboMaterias.addItem(m);
-            }
+            Materia materiaSeleccionada = (Materia) comboMaterias.getSelectedItem();
 
-            Object[] mensaje = {
-                    "Nombre del nuevo tema:", campoNombre,
-                    "Materia asociada:", comboMaterias
-            };
+            if (materiaSeleccionada != null) {
+                Object[] mensaje = {
+                        "Nombre del nuevo tema:", campoNombre
+                };
 
-            int opcion = JOptionPane.showConfirmDialog(null, mensaje, "Crear nuevo tema", JOptionPane.OK_CANCEL_OPTION);
-            if (opcion == JOptionPane.OK_OPTION) {
-                String nombre = campoNombre.getText();
-                Materia materia = (Materia) comboMaterias.getSelectedItem();
-                if (nombre != null && !nombre.trim().isEmpty() && materia != null) {
-                    Tema.agregar(nombre, materia);
-                    JOptionPane.showMessageDialog(null, "Tema creado exitosamente.");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Faltan datos.");
+                int opcion = JOptionPane.showConfirmDialog(null, mensaje, "Crear nuevo tema", JOptionPane.OK_CANCEL_OPTION);
+                if (opcion == JOptionPane.OK_OPTION) {
+                    String nombre = campoNombre.getText();
+                    if (nombre != null && !nombre.trim().isEmpty()) {
+                        Tema.agregar(nombre, materiaSeleccionada);
+                        JOptionPane.showMessageDialog(null, "Tema creado exitosamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Faltan datos.");
+                    }
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "Selecciona una materia primero.");
             }
         });
 
         botonEditarTema.addActionListener(e -> {
-            List<Tema> temas = Tema.temaDao.findAll();
-            JComboBox<Tema> comboTemas = new JComboBox<>();
-            for (Tema t : temas) {
-                comboTemas.addItem(t);
+            Materia materiaSeleccionada = (Materia) comboMaterias.getSelectedItem();
+            if (materiaSeleccionada == null) {
+                JOptionPane.showMessageDialog(null, "Selecciona una materia primero.");
+                return;
             }
+
+            List<Tema> temas = Tema.findByMateria(materiaSeleccionada);
+            JComboBox<Tema> comboTemas = new JComboBox<>(temas.toArray(new Tema[0]));
 
             JTextField campoNombre = new JTextField();
-            JComboBox<Materia> comboMaterias = new JComboBox<>();
-            for (Materia m : Materia.materiaDao.findAll()) {
-                comboMaterias.addItem(m);
-            }
-
             Object[] mensaje = {
                     "Selecciona el tema a actualizar:", comboTemas,
-                    "Nuevo nombre:", campoNombre,
-                    "Nueva materia asociada:", comboMaterias
+                    "Nuevo nombre:", campoNombre
             };
 
             int opcion = JOptionPane.showConfirmDialog(null, mensaje, "Actualizar tema", JOptionPane.OK_CANCEL_OPTION);
             if (opcion == JOptionPane.OK_OPTION) {
                 Tema tema = (Tema) comboTemas.getSelectedItem();
                 String nuevoNombre = campoNombre.getText();
-                Materia nuevaMateria = (Materia) comboMaterias.getSelectedItem();
 
                 if (tema != null) {
                     if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
                         Tema.actualizar(tema.getId(), nuevoNombre);
+                        JOptionPane.showMessageDialog(null, "Tema actualizado exitosamente.");
                     }
-                    if (nuevaMateria != null) {
-                        Tema.actualizar(tema.getId(), nuevaMateria);
-                    }
-                    JOptionPane.showMessageDialog(null, "Tema actualizado exitosamente.");
                 } else {
                     JOptionPane.showMessageDialog(null, "No se seleccionó un tema.");
                 }
@@ -268,11 +296,14 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
         });
 
         botonEliminarTema.addActionListener(e -> {
-            List<Tema> temas = Tema.temaDao.findAll();
-            JComboBox<Tema> comboTemas = new JComboBox<>();
-            for (Tema t : temas) {
-                comboTemas.addItem(t);
+            Materia materiaSeleccionada = (Materia) comboMaterias.getSelectedItem();
+            if (materiaSeleccionada == null) {
+                JOptionPane.showMessageDialog(null, "Selecciona una materia primero.");
+                return;
             }
+
+            List<Tema> temas = Tema.findByMateria(materiaSeleccionada);
+            JComboBox<Tema> comboTemas = new JComboBox<>(temas.toArray(new Tema[0]));
 
             Object[] mensaje = {
                     "Selecciona el tema a eliminar:", comboTemas
@@ -282,71 +313,85 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
             if (opcion == JOptionPane.OK_OPTION) {
                 Tema tema = (Tema) comboTemas.getSelectedItem();
                 if (tema != null) {
-                    int confirmacion = JOptionPane.showConfirmDialog(
-                            null,
-                            "¿Estás seguro de eliminar el tema \"" + tema.getNombre() + "\"?",
-                            "Confirmar eliminación",
-                            JOptionPane.YES_NO_OPTION
-                    );
+                    int confirmacion = JOptionPane.showConfirmDialog(null,
+                            "¿Estás seguro de que deseas eliminar el tema \"" + tema.getNombre() + "\"?",
+                            "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+
                     if (confirmacion == JOptionPane.YES_OPTION) {
                         Tema.eliminar(tema.getId());
                         JOptionPane.showMessageDialog(null, "Tema eliminado exitosamente.");
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "No se seleccionó un tema.");
                 }
             }
         });
+    }
 
+    private void agregarEventosSubtemas() {
         botonAgregarSubtema.addActionListener(e -> {
             String fechaSql = LocalDate.now().toString();
             JTextField campoNombre = new JTextField();
             JTextArea campoContenido = new JTextArea(5, 30);
             JScrollPane scroll = new JScrollPane(campoContenido);
-            List<Tema> temas = Tema.temaDao.findAll();
-            JComboBox<Tema> comboBox = new JComboBox<>(temas.toArray(new Tema[0]));
+            Materia materiaSeleccionada = (Materia) comboMaterias.getSelectedItem();
 
-            Object[] mensaje = {
-                    "Nombre del subtema:", campoNombre,
-                    "Contenido teórico:", scroll,
-                    "Tema asociado:", comboBox
-            };
+            if (materiaSeleccionada != null) {
+                List<Tema> temas = Tema.findByMateria(materiaSeleccionada);
+                JComboBox<Tema> comboBox = new JComboBox<>(temas.toArray(new Tema[0]));
 
-            int opcion = JOptionPane.showConfirmDialog(null, mensaje, "Crear Subtema", JOptionPane.OK_CANCEL_OPTION);
-            if (opcion == JOptionPane.OK_OPTION) {
-                String nombre = campoNombre.getText();
-                String texto = campoContenido.getText();
-                Tema temaSeleccionado = (Tema) comboBox.getSelectedItem();
+                Object[] mensaje = {
+                        "Nombre del subtema:", campoNombre,
+                        "Contenido teórico:", scroll,
+                        "Tema asociado:", comboBox
+                };
 
-                if (!texto.isEmpty() && !nombre.isEmpty() && temaSeleccionado != null) {
-                    ContenidoTeorico contenido = new ContenidoTeorico();
-                    contenido.setTexto(texto);
-                    contenido.setFecha_creacion(fechaSql);
-                    ContenidoTeorico.contenidoTeoricoDao.guardar(contenido);
-                    Subtema.agregar(nombre, temaSeleccionado, contenido);
-                    JOptionPane.showMessageDialog(null, "Subtema creado correctamente.");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+                int opcion = JOptionPane.showConfirmDialog(null, mensaje, "Crear Subtema", JOptionPane.OK_CANCEL_OPTION);
+                if (opcion == JOptionPane.OK_OPTION) {
+                    String nombre = campoNombre.getText();
+                    String texto = campoContenido.getText();
+                    Tema temaSeleccionado = (Tema) comboBox.getSelectedItem();
+
+                    if (!texto.isEmpty() && !nombre.isEmpty() && temaSeleccionado != null) {
+                        ContenidoTeorico contenido = new ContenidoTeorico();
+                        contenido.setTexto(texto);
+                        contenido.setFecha_creacion(fechaSql);
+                        ContenidoTeorico.contenidoTeoricoDao.guardar(contenido);
+                        Subtema.agregar(nombre, temaSeleccionado, contenido);
+                        JOptionPane.showMessageDialog(null, "Subtema creado correctamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "Selecciona una materia primero.");
             }
         });
+
         botonEditarSubtema.addActionListener(e -> {
-            List<Subtema> subtemas = Subtema.subtemaDao.findAll();
-            JComboBox<Subtema> comboBox = new JComboBox<>(subtemas.toArray(new Subtema[0]));
+            Materia materiaSeleccionada = (Materia) comboMaterias.getSelectedItem();
+            if (materiaSeleccionada == null) {
+                JOptionPane.showMessageDialog(null, "Selecciona una materia primero.");
+                return;
+            }
+
+            // Obtener solo subtemas relacionados con la materia seleccionada
+            List<Tema> temasMateria = Tema.findByMateria(materiaSeleccionada);
+            List<Subtema> subtemasFiltrados = new ArrayList<>();
+            for (Tema tema : temasMateria) {
+                subtemasFiltrados.addAll(Subtema.findByTema(tema));
+            }
+            JComboBox<Subtema> comboBox = new JComboBox<>(subtemasFiltrados.toArray(new Subtema[0]));
 
             int seleccion = JOptionPane.showConfirmDialog(null, comboBox, "Selecciona el Subtema a Editar", JOptionPane.OK_CANCEL_OPTION);
             if (seleccion == JOptionPane.OK_OPTION) {
                 Subtema subtemaSeleccionado = (Subtema) comboBox.getSelectedItem();
                 if (subtemaSeleccionado == null) return;
+
                 JTextField campoNombre = new JTextField(subtemaSeleccionado.getNombre());
                 JTextArea campoContenido = new JTextArea(subtemaSeleccionado.getContenidoTeorico().getTexto(), 5, 30);
                 JScrollPane scroll = new JScrollPane(campoContenido);
-                List<Tema> temas = Tema.temaDao.findAll();
+                List<Tema> temas = Tema.findByMateria(materiaSeleccionada);
                 JComboBox<Tema> comboTemas = new JComboBox<>(temas.toArray(new Tema[0]));
-                ///
-                System.out.println(subtemaSeleccionado.getTema().getNombre() + "4");
                 comboTemas.setSelectedItem(subtemaSeleccionado.getTema());
-                ///
 
                 Object[] mensajeEditar = {
                         "Nuevo nombre:", campoNombre,
@@ -371,9 +416,23 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
                 }
             }
         });
+
         botonEliminarSubtema.addActionListener(e -> {
+            Materia materiaSeleccionada = (Materia) comboMaterias.getSelectedItem();
+            if (materiaSeleccionada == null) {
+                JOptionPane.showMessageDialog(null, "Selecciona una materia primero.");
+                return;
+            }
+
             List<Subtema> subtemas = Subtema.subtemaDao.findAll();
-            JComboBox<Subtema> comboBox = new JComboBox<>(subtemas.toArray(new Subtema[0]));
+            List<Subtema> subtemasFiltrados = new ArrayList<>();
+            for (Subtema subtema : subtemas) {
+                if (subtema.getTema().getMateria().getId().equals(materiaSeleccionada.getId())) {
+                    subtemasFiltrados.add(subtema);
+                }
+            }
+
+            JComboBox<Subtema> comboBox = new JComboBox<>(subtemasFiltrados.toArray(new Subtema[0]));
 
             int seleccion = JOptionPane.showConfirmDialog(null, comboBox, "Selecciona el Subtema a eliminar", JOptionPane.OK_CANCEL_OPTION);
             if (seleccion == JOptionPane.OK_OPTION) {
@@ -385,18 +444,30 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
                         "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
                 if (confirmacion == JOptionPane.YES_OPTION) {
-                    System.out.println(subtema.getTema().getNombre());
                     Subtema.eliminar(subtema);
                     ContenidoTeorico.eliminar(subtema.getContenidoTeorico().getId());
                     JOptionPane.showMessageDialog(null, "Subtema eliminado correctamente.");
                 }
             }
         });
+    }
 
+    private void agregarEventosEjercicios() {
         botonAgregarEjercicio.addActionListener(e -> {
-            // Selección de tipo de ejercicio
+            Materia materiaSeleccionada = (Materia) comboMaterias.getSelectedItem();
+            if (materiaSeleccionada == null) {
+                JOptionPane.showMessageDialog(null, "Selecciona una materia primero.");
+                return;
+            }
+            // Obtener solo subtemas relacionados con la materia seleccionada
+            List<Tema> temasMateria = Tema.findByMateria(materiaSeleccionada);
+            List<Subtema> subtemasFiltrados = new ArrayList<>();
+            for (Tema tema : temasMateria) {
+                subtemasFiltrados.addAll(Subtema.findByTema(tema));
+            }
+
             JComboBox<TipoEjercicio> comboTipo = new JComboBox<>(TipoEjercicio.tipoEjercicioDao.findAll().toArray(new TipoEjercicio[0]));
-            JComboBox<Subtema> comboSubtema = new JComboBox<>(Subtema.subtemaDao.findAll().toArray(new Subtema[0]));
+            JComboBox<Subtema> comboSubtema = new JComboBox<>(subtemasFiltrados.toArray(new Subtema[0]));
             JTextField campoInstrucciones = new JTextField();
 
             Object[] mensaje = {
@@ -412,31 +483,28 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
                 String instrucciones = campoInstrucciones.getText();
 
                 if (tipoSeleccionado != null && subtemaSeleccionado != null && !instrucciones.trim().isEmpty()) {
-                    // Crear el ejercicio
                     Ejercicio ejercicio = new Ejercicio();
                     ejercicio.setTipo(tipoSeleccionado);
                     ejercicio.setSubtema(subtemaSeleccionado);
                     ejercicio.setInstrucciones(instrucciones);
-                    ejercicio.setCreador(VariablesGlobales.usuario); // Asumiendo que tienes un usuario actual
+                    ejercicio.setCreador(VariablesGlobales.usuario);
 
-                    // Guardar el ejercicio en la base de datos
                     Ejercicio.ejercicioDao.guardar(ejercicio);
 
-                    if (tipoSeleccionado.getId() == 2) { // Si es cuestionario
+                    if (tipoSeleccionado.getId() == 2) {
                         int cantidadPreguntas = Integer.parseInt(JOptionPane.showInputDialog("¿Cuántas preguntas tiene el cuestionario?"));
                         for (int i = 0; i < cantidadPreguntas; i++) {
-                            agregarPregunta(ejercicio); // Pasar el ejercicio actual
+                            agregarPregunta(ejercicio);
                         }
-                    } else { // Si es ejercicio
+                    } else {
                         String enunciado = JOptionPane.showInputDialog("Ingrese el enunciado del ejercicio:");
                         Pregunta pregunta = new Pregunta();
                         pregunta.setEjercicio(ejercicio);
                         pregunta.setEnunciado(enunciado);
-                        Pregunta.preguntaDao.guardar(pregunta); // Guardar la pregunta
+                        Pregunta.preguntaDao.guardar(pregunta);
 
-                        // Solo una opción para el ejercicio
                         String respuestaCorrecta = JOptionPane.showInputDialog("Ingrese la respuesta correcta:");
-                        Opcion.agregar(pregunta, respuestaCorrecta, true); // La única opción es correcta
+                        Opcion.agregar(pregunta, respuestaCorrecta, true);
                     }
                     JOptionPane.showMessageDialog(null, "Ejercicio agregado exitosamente.");
                 } else {
@@ -446,8 +514,31 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
         });
 
         botonEditarEjercicio.addActionListener(e -> {
-            List<Ejercicio> ejercicios = Ejercicio.ejercicioDao.findAll();
-            JComboBox<Ejercicio> comboEjercicios = new JComboBox<>(ejercicios.toArray(new Ejercicio[0]));
+            Materia materiaSeleccionada = (Materia) comboMaterias.getSelectedItem();
+            if (materiaSeleccionada == null) {
+                JOptionPane.showMessageDialog(null, "Selecciona una materia primero.");
+                return;
+            }
+
+            List<Tema> temasMateria = Tema.findByMateria(materiaSeleccionada);
+            List<Subtema> subtemaMateria = new ArrayList<>();
+            List<Ejercicio> ejerciciosFiltrados = new ArrayList<>();
+            for (Tema tema : temasMateria) {
+                for(Subtema subtema : Subtema.subtemaDao.findAll()){
+                    if(Objects.equals(subtema.getTema().getId(), tema.getId())){
+                        subtemaMateria.add(subtema);
+                    }
+                }
+            }
+            for (Subtema subtema : subtemaMateria){
+                for (Ejercicio ejercicio : Ejercicio.ejercicioDao.findAll()){
+                    if (Objects.equals(ejercicio.getSubtema().getId(), subtema.getId())){
+                        ejerciciosFiltrados.add(ejercicio);
+                    }
+                }
+            }
+
+            JComboBox<Ejercicio> comboEjercicios = new JComboBox<>(ejerciciosFiltrados.toArray(new Ejercicio[0]));
 
             int seleccion = JOptionPane.showConfirmDialog(null, comboEjercicios, "Selecciona el Ejercicio a Editar", JOptionPane.OK_CANCEL_OPTION);
             if (seleccion == JOptionPane.OK_OPTION) {
@@ -457,7 +548,17 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
                 JTextField campoInstrucciones = new JTextField(ejercicioSeleccionado.getInstrucciones());
                 JComboBox<TipoEjercicio> comboTipo = new JComboBox<>(TipoEjercicio.tipoEjercicioDao.findAll().toArray(new TipoEjercicio[0]));
                 comboTipo.setSelectedItem(ejercicioSeleccionado.getTipo());
-                JComboBox<Subtema> comboSubtema = new JComboBox<>(Subtema.subtemaDao.findAll().toArray(new Subtema[0]));
+
+                /*
+                // Filtrar subtemas segun materia seleccionada
+                List<Tema> temasMateria = Tema.findByMateria(materiaSeleccionada);
+
+                 */
+                List<Subtema> subtemasFiltrados = new ArrayList<>();
+                for (Tema tema : temasMateria) {
+                    subtemasFiltrados.addAll(Subtema.findByTema(tema));
+                }
+                JComboBox<Subtema> comboSubtema = new JComboBox<>(subtemasFiltrados.toArray(new Subtema[0]));
                 comboSubtema.setSelectedItem(ejercicioSeleccionado.getSubtema());
 
                 Object[] mensajeEditar = {
@@ -476,9 +577,8 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
                         ejercicioSeleccionado.setTipo(tipoSeleccionado);
                         ejercicioSeleccionado.setSubtema(subtemaSeleccionado);
                         ejercicioSeleccionado.setInstrucciones(instrucciones);
-                        Ejercicio.ejercicioDao.actualizar(ejercicioSeleccionado); // Actualizar el ejercicio en la base de datos
+                        Ejercicio.ejercicioDao.actualizar(ejercicioSeleccionado);
 
-                        // Actualizar preguntas
                         for (Pregunta pregunta : ejercicioSeleccionado.getPreguntas()) {
                             actualizarPregunta(pregunta);
                         }
@@ -492,8 +592,21 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
         });
 
         botonEliminarEjercicio.addActionListener(e -> {
+            Materia materiaSeleccionada = (Materia) comboMaterias.getSelectedItem();
+            if (materiaSeleccionada == null) {
+                JOptionPane.showMessageDialog(null, "Selecciona una materia primero.");
+                return;
+            }
+
             List<Ejercicio> ejercicios = Ejercicio.ejercicioDao.findAll();
-            JComboBox<Ejercicio> comboEjercicios = new JComboBox<>(ejercicios.toArray(new Ejercicio[0]));
+            List<Ejercicio> ejerciciosFiltrados = new ArrayList<>();
+            for (Ejercicio ejercicio : ejercicios) {
+                if (ejercicio.getSubtema().getTema().getMateria().getId().equals(materiaSeleccionada.getId())) {
+                    ejerciciosFiltrados.add(ejercicio);
+                }
+            }
+
+            JComboBox<Ejercicio> comboEjercicios = new JComboBox<>(ejerciciosFiltrados.toArray(new Ejercicio[0]));
 
             int seleccion = JOptionPane.showConfirmDialog(null, comboEjercicios, "Selecciona el Ejercicio a Eliminar", JOptionPane.OK_CANCEL_OPTION);
             if (seleccion == JOptionPane.OK_OPTION) {
@@ -505,15 +618,14 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
                         "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
                 if (confirmacion == JOptionPane.YES_OPTION) {
-                    Ejercicio.eliminar(ejercicioSeleccionado.getId()); // Llama a tu método de eliminación
+                    Ejercicio.eliminar(ejercicioSeleccionado.getId());
                     JOptionPane.showMessageDialog(null, "Ejercicio eliminado exitosamente.");
                 }
             }
         });
-
-
     }
-    // Método para agregar preguntas
+
+
     private void agregarPregunta(Ejercicio ejercicio) {
         JTextField campoEnunciado = new JTextField();
         JTextField campoOpcionA = new JTextField();
@@ -535,19 +647,16 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
         if (opcionPregunta == JOptionPane.OK_OPTION) {
             String enunciado = campoEnunciado.getText();
             Pregunta pregunta = new Pregunta();
-            pregunta.setEjercicio(ejercicio); // Asignar el ejercicio actual
+            pregunta.setEjercicio(ejercicio);
             pregunta.setEnunciado(enunciado);
 
-            // Guardar la pregunta
             Pregunta.preguntaDao.guardar(pregunta);
 
-            // Guardar las opciones
             Opcion.agregar(pregunta, campoOpcionA.getText(), comboRespuestaCorrecta.getSelectedItem().equals("A"));
-            Opcion.agregar(pregunta, campoOpcionB.getText(), comboRespuestaCorrecta.getSelectedItem().equals(" B"));
+            Opcion.agregar(pregunta, campoOpcionB.getText(), comboRespuestaCorrecta.getSelectedItem().equals("B"));
             Opcion.agregar(pregunta, campoOpcionC.getText(), comboRespuestaCorrecta.getSelectedItem().equals("C"));
             Opcion.agregar(pregunta, campoOpcionD.getText(), comboRespuestaCorrecta.getSelectedItem().equals("D"));
         }
-
     }
 
     private void actualizarPregunta(Pregunta pregunta) {
@@ -592,12 +701,36 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
                 nuevasOpciones.add(new Opcion(pregunta, opcionC, respuestaCorrecta.equals("C")));
                 nuevasOpciones.add(new Opcion(pregunta, opcionD, respuestaCorrecta.equals("D")));
                 pregunta.setOpciones(nuevasOpciones);
-                Pregunta.preguntaDao.actualizar(pregunta); // Actualizar la pregunta en la base de datos
+                Pregunta.preguntaDao.actualizar(pregunta);
             } else {
                 JOptionPane.showMessageDialog(null, "Faltan datos para actualizar la pregunta.");
             }
         }
     }
+
+    private void estilizarComboBox(JComboBox<?> comboBox) {
+        comboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        comboBox.setForeground(new Color(33, 37, 41));
+        comboBox.setBackground(Color.WHITE);
+        comboBox.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(108, 117, 125), 1, true), // Borde gris suave, redondeado
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        comboBox.setMaximumRowCount(8);
+        comboBox.setFocusable(false);
+
+        comboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                label.setBorder(new EmptyBorder(5, 10, 5, 10));
+                return label;
+            }
+        });
+    }
+
 
     @Override
     public JPanel getContenido() {
@@ -605,7 +738,7 @@ public class ModificarContenidoVentana extends PlantillaBaseVentana {
     }
 
     public static void main(String[] args) {
-        Usuario ejemplo = Usuario.usuarioDao.findById(4);
+        Usuario ejemplo = Usuario.usuarioDao.findById(33);
         VariablesGlobales.usuario = ejemplo;
         SwingUtilities.invokeLater(() -> {
             try {

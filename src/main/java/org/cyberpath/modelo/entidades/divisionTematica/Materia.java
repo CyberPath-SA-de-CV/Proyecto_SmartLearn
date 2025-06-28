@@ -6,8 +6,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
+import org.cyberpath.modelo.baseDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioMateria;
+import org.hibernate.Session;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -15,7 +17,6 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "TBL_MATERIA")
@@ -32,6 +33,9 @@ public class Materia extends Entidad {
     @ToString.Exclude
     @OneToMany(mappedBy = "materia", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UsuarioMateria> inscripciones = new ArrayList<>();
+
+    @Transient
+    private String progresoGeneral;
 
     public static Boolean agregar(String nombre) {
         try {
@@ -81,8 +85,6 @@ public class Materia extends Entidad {
         tema.setMateria(this);
     }
 
-    ///---
-
     public void agregarInscripcion(UsuarioMateria inscripcion) {
         inscripciones.add(inscripcion);
         inscripcion.setMateria(this);
@@ -97,6 +99,14 @@ public class Materia extends Entidad {
         inscripciones.removeIf(inscAux -> inscAux.getId().equals(inscripcion.getId()));
         inscripciones.add(inscripcion);
         inscripcion.setMateria(this);
+    }
+
+    public static Materia findByNombre(String nombre) {
+        try (Session session = HibernateUtil.getSession()) {
+            return session.createQuery("FROM Materia m WHERE m.nombre = :nombre", Materia.class)
+                    .setParameter("nombre", nombre)
+                    .uniqueResult();
+        }
     }
 
     @Override

@@ -16,7 +16,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PantallasControlador {
-    public static final String[] sttLista = {"menú principal", "configuración cuenta", "configuración accesibilidad", "cerrar sesión", "no cambiar"};
+
+    private static final String[] STT_LISTA = {
+            "menú principal", "configuración cuenta", "configuración accesibilidad", "cerrar sesión", "no cambiar"
+    };
+
     private static JPanel panelContenedor;
 
     public static void asignarContenedor(JPanel panel) {
@@ -35,73 +39,68 @@ public class PantallasControlador {
     }
 
     public static void mostrarPantalla(PantallasEnum pantalla) throws Exception {
-//        if (ventanaActual != null) {
-//            ventanaActual.dispose();
-//        }
         switch (pantalla) {
-            case MENU_PRINCIPAL:
-                cambiarContenido(new MenuPrincipalVentana().getContenido());
-                break;
-            case ACCESIBILIDAD:
-                cambiarContenido(new AccesibilidadVentana().getContenido());
-                break;
-            case CONFIGURACION:
-                cambiarContenido(new ConfiguracionVentana().getContenido());
-                break;
-            case MODIFICAR_CONTENIDO:
-                cambiarContenido(new ModificarContenidoVentana().getContenido());
-                break;
-            case INSCRIBIR_MATERIA:
-                cambiarContenido(new InscribirMateriasVentana().getContenido());
-                break;
-            default:
-                throw new IllegalArgumentException("Pantalla desconocida: " + pantalla);
+            case MENU_PRINCIPAL ->
+                    cambiarContenido(new MenuPrincipalVentana().getContenido());
+            case ACCESIBILIDAD ->
+                    cambiarContenido(new AccesibilidadVentana().getContenido());
+            case CONFIGURACION ->
+                    cambiarContenido(new ConfiguracionVentana().getContenido());
+            case MODIFICAR_CONTENIDO ->
+                    cambiarContenido(new ModificarContenidoVentana().getContenido());
+            case INSCRIBIR_MATERIA ->
+                    cambiarContenido(new InscribirMateriasVentana().getContenido());
+            default ->
+                    throw new IllegalArgumentException("Pantalla desconocida: " + pantalla);
         }
     }
 
     public static Boolean menuAccesibilidad(String nombreVentana, Window window) throws Exception {
+        if (!VariablesGlobales.auxModoAudio) return false;
+
         EntradaAudioControlador sttControlador = EntradaAudioControlador.getInstance();
         SalidaAudioControlador ttsControlador = SalidaAudioControlador.getInstance();
-        if (VariablesGlobales.auxModoAudio) {
-            ttsControlador.hablar("Estás en la ventana " + nombreVentana, 2);
-            ttsControlador.hablar(Salidas.menu, 10);
-            String ventana = sttControlador.esperarPorPalabrasClave(sttLista);
 
-            switch (ventana) {
-                case "menú principal" -> {
-                    mostrarPantalla(PantallasEnum.MENU_PRINCIPAL);
-                }
-                case "configuración cuenta" -> {
-                    mostrarPantalla(PantallasEnum.CONFIGURACION);
-                }
-                case "configuración accesibilidad" -> {
-                    mostrarPantalla(PantallasEnum.ACCESIBILIDAD);
-                }
-                case "cerrar sesión" -> {
-                    ttsControlador.hablar("¿Seguro que desea cerrar sesión? Diga sí o no.");
-                    boolean confirmacion = sttControlador.entradaAfirmacionNegacion();
-                    if (confirmacion) {
-                        for (Window w : Window.getWindows()) {
-                            if (w.isDisplayable()) {
-                                w.dispose();
-                            }
-                        }
+        String inicioCadena = "Estás en la ventana " + nombreVentana + ".";
+        ttsControlador.hablar(inicioCadena + Salidas.menu, 13);
 
-                        // Abrir la ventana de inicio
-                        SwingUtilities.invokeLater(() -> {
-                            try {
-                                new InicioVentana().setVisible(true);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
-                    }
+        String comando = sttControlador.esperarPorPalabrasClave(STT_LISTA);
+
+        switch (comando) {
+            case "menú principal" -> mostrarPantalla(PantallasEnum.MENU_PRINCIPAL);
+            case "configuración cuenta" -> mostrarPantalla(PantallasEnum.CONFIGURACION);
+            case "configuración accesibilidad" -> mostrarPantalla(PantallasEnum.ACCESIBILIDAD);
+            case "cerrar sesión" -> {
+                ttsControlador.hablar("¿Seguro que desea cerrar sesión? Diga sí o no.");
+                boolean confirmar = sttControlador.entradaAfirmacionNegacion();
+                if (confirmar) {
+                    cerrarTodasLasVentanas();
+                    abrirVentanaInicio();
                 }
-                case "no cambiar" -> {
-                    return true;
-                }
+            }
+            case "no cambiar" -> {
+                return true;
             }
         }
         return false;
     }
+
+    private static void cerrarTodasLasVentanas() {
+        for (Window w : Window.getWindows()) {
+            if (w.isDisplayable()) {
+                w.dispose();
+            }
+        }
+    }
+
+    private static void abrirVentanaInicio() {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new InicioVentana().setVisible(true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
 }
+

@@ -9,14 +9,13 @@ import org.cyberpath.modelo.entidades.usuario.Usuario;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class DaoImpl<T extends Entidad> implements DaoInterface<T> {
-    private Class<T> clase;
 
+    private Class<T> clase;
 
     public DaoImpl(Class<T> clase) {
         this.clase = clase;
@@ -24,57 +23,56 @@ public class DaoImpl<T extends Entidad> implements DaoInterface<T> {
 
     @Override
     public List<T> findAll() {
-        Session session = HibernateUtil.getSession();
-        List<T> lista = session.createQuery("from " + clase.getSimpleName(), clase).getResultList();
-        session.close();
-        return lista;
+        try (Session session = HibernateUtil.getSession()) {
+            return session.createQuery("from " + clase.getSimpleName(), clase).getResultList();
+        }
     }
 
     @Override
     public List<T> findAllWithFetch(String fetchQuery) {
-        Session session = HibernateUtil.getSession();
-        List<T> lista = session.createQuery(fetchQuery, clase).getResultList();
-        session.close();
-        return lista;
+        try (Session session = HibernateUtil.getSession()) {
+            return session.createQuery(fetchQuery, clase).getResultList();
+        }
     }
 
     @Override
-    public boolean guardar(T e) {
-        Session session = HibernateUtil.getSession();
-        session.beginTransaction();
-        session.persist(e);
-        session.getTransaction().commit();
-        session.close();
-        return true;
+    public boolean guardar(T entidad) {
+        try (Session session = HibernateUtil.getSession()) {
+            session.beginTransaction();
+            session.persist(entidad);
+            session.getTransaction().commit();
+            return true;
+        }
     }
 
     @Override
-    public boolean actualizar(T e) {
-        Session session = HibernateUtil.getSession();
-        session.beginTransaction();
-        session.merge(e);
-        session.getTransaction().commit();
-        session.close();
-        return true;
+    public boolean actualizar(T entidad) {
+        try (Session session = HibernateUtil.getSession()) {
+            session.beginTransaction();
+            session.merge(entidad);
+            session.getTransaction().commit();
+            return true;
+        }
     }
 
     @Override
-    public boolean eliminar(T e) {
-        Session session = HibernateUtil.getSession();
-        session.beginTransaction();
-        session.remove(e);
-        session.getTransaction().commit();
-        session.close();
-        return true;
+    public boolean eliminar(T entidad) {
+        try (Session session = HibernateUtil.getSession()) {
+            session.beginTransaction();
+            session.remove(entidad);
+            session.getTransaction().commit();
+            return true;
+        }
     }
 
     @Override
     public T findById(int id) {
-        Session session = HibernateUtil.getSession();
-        T obj = session.get(clase, id);
-        session.close();
-        return obj;
+        try (Session session = HibernateUtil.getSession()) {
+            return session.get(clase, id);
+        }
     }
+
+
 
     public List<Materia> obtenerMateriasInscritasPorUsuario(int idUsuario) {
         try (Session session = HibernateUtil.getSession()) {
@@ -82,22 +80,12 @@ public class DaoImpl<T extends Entidad> implements DaoInterface<T> {
             Hibernate.initialize(usuario.getMateriasInscritas());
 
             return usuario.getMateriasInscritas().stream()
-                    .map(um -> {
-                        Materia materia = um.getMateria();
-                        Hibernate.initialize(materia); // <- esto es clave
+                    .map(inscripcion -> {
+                        Materia materia = inscripcion.getMateria();
+                        Hibernate.initialize(materia);
                         return materia;
                     })
                     .collect(Collectors.toList());
         }
-    }
-
-    public Usuario findUsuarioConMaterias(int idUsuario) {
-        Session session = HibernateUtil.getSession();
-        Usuario usuario = session.createQuery(
-                "SELECT u FROM Usuario u LEFT JOIN FETCH u.materiasInscritas mi LEFT JOIN FETCH mi.materia WHERE u.id = :id",
-                Usuario.class
-        ).setParameter("id", idUsuario).uniqueResult();
-        session.close();
-        return usuario;
     }
 }

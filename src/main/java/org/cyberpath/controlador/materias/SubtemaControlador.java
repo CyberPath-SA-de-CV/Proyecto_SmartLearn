@@ -7,48 +7,63 @@ import org.cyberpath.util.audio.EntradaAudioControlador;
 import org.cyberpath.util.audio.SalidaAudioControlador;
 import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class SubtemaControlador {
+
     public static void procesarAccesibilidad(Tema tema, MenuPrincipalVentana menu) throws Exception {
-        EntradaAudioControlador sttControlador = EntradaAudioControlador.getInstance();
-        SalidaAudioControlador ttsControlador = SalidaAudioControlador.getInstance();
+        if (!VariablesGlobales.auxModoAudio) return;
 
-        String[] sttListaOpciones = {"regresar", "navegar", "navegar subtemas disponibles", "subtemas"};
-        String[] sttListaTeoriaPractica = {"teoría", "teoria", "contenido teorico", "contenido", "práctica"};
-        ArrayList<String> sttListaSubtemas = new ArrayList<>();
-        Subtema subtema = new Subtema();
-        if (VariablesGlobales.auxModoAudio) {
-            ttsControlador.hablar("Estas en la ventana subtemas. ¿Qué desea hacer? regresar a la ventana anterior. navegar a uno de los subtemas disponibles?", 6);
-            String opcion1 = sttControlador.esperarPorPalabrasClave(sttListaOpciones);
-            if (Objects.equals(opcion1, "regresar")) {
-                menu.regresar();
-                TemaControlador.procesarAccesibilidad(tema.getMateria(), menu);///////
-                //PantallasControlador.menuAccesibilidad("Tema", menu);
-                //Sistema.pausa(2);
-            } else {
-                ttsControlador.hablar("Acontinuación se hará una lista de todos los subtemas disponibles.", 5);
-                for (Subtema s : tema.getSubtemas()) {
-                    ttsControlador.hablar((s.getNombre() + "."), 2);
-                    sttListaSubtemas.add(s.getNombre().toLowerCase());
-                }
-                ttsControlador.hablar("¿A cuál deseas acceder?");
-                String nombreSubtema = sttControlador.esperarPorPalabrasClave(sttListaSubtemas.toArray(new String[0])).toLowerCase();
-                for (Subtema s : tema.getSubtemas()) {
-                    if (Objects.equals(nombreSubtema, s.getNombre().toLowerCase())) subtema = s;
-                }
+        SalidaAudioControlador tts = SalidaAudioControlador.getInstance();
+        EntradaAudioControlador stt = EntradaAudioControlador.getInstance();
 
-                ttsControlador.hablar("¿A que sección deseas acceder? Teoría o Práctica ");
-                String opcion2 = sttControlador.esperarPorPalabrasClave(sttListaTeoriaPractica);
-                if (Objects.equals(opcion2, "práctica")) {
-                    menu.mostrarContenidoPractico(subtema);
-                } else {
-                    menu.mostrarContenidoTeorico(subtema);
-                }
+        String[] opcionesGenerales = {"regresar", "navegar", "navegar subtemas disponibles", "subtemas"};
+        String[] opcionesSeccion = {"teoría", "teoria", "contenido teórico", "contenido", "práctica"};
 
+        tts.hablar("Estás en la ventana de subtemas. ¿Qué desea hacer? Regresar o navegar a un subtema disponible.", 6);
+        String eleccion = stt.esperarPorPalabrasClave(opcionesGenerales);
+
+        if (Objects.equals(eleccion, "regresar")) {
+            menu.regresar();
+            TemaControlador.procesarAccesibilidad(tema.getMateria(), menu);
+            return;
+        }
+
+        List<String> nombresSubtemas = new ArrayList<>();
+        for (Subtema subtema : tema.getSubtemas()) {
+            tts.hablar(subtema.getNombre() + ".", 3);
+            nombresSubtemas.add(subtema.getNombre().toLowerCase());
+        }
+
+        tts.hablar("¿A cuál deseas acceder?");
+        String nombreSubtema = stt.esperarPorPalabrasClave(nombresSubtemas.toArray(new String[0])).toLowerCase();
+
+        Subtema subtemaSeleccionado = obtenerSubtemaSeleccionado(nombreSubtema, tema.getSubtemas());
+
+        if (subtemaSeleccionado == null) {
+            tts.hablar("Subtema no encontrado. Regresando al menú anterior.");
+            menu.regresar();
+            return;
+        }
+
+        tts.hablar("¿A qué sección deseas acceder? ¿Teoría o Práctica?");
+        String seccion = stt.esperarPorPalabrasClave(opcionesSeccion);
+
+        if (seccion.equalsIgnoreCase("práctica")) {
+            menu.mostrarContenidoPractico(subtemaSeleccionado);
+        } else {
+            menu.mostrarContenidoTeorico(subtemaSeleccionado);
+        }
+    }
+
+    private static Subtema obtenerSubtemaSeleccionado(String nombre, List<Subtema> listaSubtemas) {
+        for (Subtema s : listaSubtemas) {
+            if (s.getNombre().equalsIgnoreCase(nombre)) {
+                return s;
             }
         }
+        return null;
     }
 }

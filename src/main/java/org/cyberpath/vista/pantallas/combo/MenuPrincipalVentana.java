@@ -1,6 +1,5 @@
 package org.cyberpath.vista.pantallas.combo;
 
-import jdk.swing.interop.SwingInterOpUtils;
 import org.cyberpath.controlador.combo.MenuPrincipalControlador;
 import org.cyberpath.controlador.pantallas.PantallasControlador;
 import org.cyberpath.controlador.pantallas.PantallasEnum;
@@ -23,6 +22,7 @@ import org.cyberpath.vista.util.base.PlantillaBaseVentana;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
@@ -38,15 +38,7 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
     public MenuPrincipalVentana() throws Exception {
         super("Menú Principal", 1200, 800);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        new Thread(() -> {
-            try {
-                if (PantallasControlador.menuAccesibilidad("Materias", this)) {
-                    mostrarTemas(MenuPrincipalControlador.procesarAccesibilidad(this));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        iniciarAccesibilidad();
     }
 
     public static void main(String[] args) {
@@ -60,15 +52,13 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
                 throw new RuntimeException(e);
             }
         });
-
     }
 
     @Override
     protected void inicializarComponentes() throws Exception {
-
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-        getPanelCentral().add(mainPanel, BorderLayout.CENTER);  // Cambio aquí
+        getPanelCentral().add(mainPanel, BorderLayout.CENTER);
         mostrarMenuMaterias();
     }
 
@@ -86,71 +76,21 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
         return super.getPanelCentral();
     }
 
-    public void mostrarMenuMaterias() {
-
-        JPanel panelMaterias = crearPanelDegradadoDecorativo("Materias", "src/main/resources/recursosGraficos/titulos/materias.jpg");
-
-        JPanel panelBotones = new JPanel();
-        panelBotones.setOpaque(false);
-        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
-
-        List<Materia> materiasInscritas = new DaoImpl<Usuario>().obtenerMateriasInscritasPorUsuario(
-                VariablesGlobales.usuario.getId());
-        if (!materiasInscritas.isEmpty()) {
-            for (Materia materia : materiasInscritas) {
-
-                for(Tema tema : materia.getTemas()){
-                    System.out.println(tema.getNombre());
+    private void iniciarAccesibilidad() {
+        new Thread(() -> {
+            try {
+                if (PantallasControlador.menuAccesibilidad("Materias", this)) {
+                    mostrarTemas(MenuPrincipalControlador.procesarAccesibilidad(this));
                 }
-                System.out.println(materia.getNombre());
-                UsuarioMateria usuarioMateria = null;
-
-                // Buscar la inscripción del usuario a la materia
-                for (UsuarioMateria inscripcion : materia.getInscripciones()) {
-                    if (inscripcion.getUsuario().getId().equals(VariablesGlobales.usuario.getId())) {
-                        usuarioMateria = inscripcion;
-                        break; // Salir del bucle una vez que encontramos la inscripción
-                    }
-                }
-
-                // Verificar si se encontró la inscripción
-                if (usuarioMateria != null) {
-                    int totalEjercicios = 0;
-                    for(Ejercicio ejercicio : Ejercicio.ejercicioDao.findAll()){
-                        if(Objects.equals(ejercicio.getSubtema().getTema().getMateria().getId(), materia.getId())) totalEjercicios++;
-                    }
-                    System.out.println(totalEjercicios);
-                    int ejerciciosRealizados = 0;
-                    for(UsuarioEjercicio usuarioEjercicio : VariablesGlobales.usuario.getEjercicios()){
-                        if(Objects.equals(usuarioEjercicio.getEjercicio().getSubtema().getTema().getMateria().getId(), materia.getId())) ejerciciosRealizados ++;
-                    }
-                    System.out.println(ejerciciosRealizados);
-                    double progreso = 0;
-                    if ( totalEjercicios != 0 )  progreso = (double) ejerciciosRealizados / totalEjercicios * 100;
-
-                    // Crear el botón
-                    JButton btnMateria = crearBotonEstilizado(
-                            materia.getNombre(), null, e -> mostrarTemas(materia));
-                    panelBotones.add(btnMateria);
-
-                    // Crear JProgressBar
-                    BarraProgresoTransparente progressBar = new BarraProgresoTransparente(0, 100);
-                    progressBar.setValue((int) progreso);
-                    progressBar.setStringPainted(true);
-                    panelBotones.add(progressBar);
-                    progressBar.setMaximumSize(new Dimension(750, 30));
-                    panelBotones.add(progressBar);
-                    panelBotones.add(Box.createVerticalStrut(5));
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } else {
-            JLabel mensaje = crearTituloCentrado("No hay materias inscritas aún");
-            mensaje.setFont(new Font("Segoe UI", Font.ITALIC, 22));
-            panelBotones.add(mensaje);
-            panelBotones.add(Box.createVerticalStrut(5));
-        }
+        }).start();
+    }
 
-
+    public void mostrarMenuMaterias() {
+        JPanel panelMaterias = crearPanelDegradadoDecorativo("Materias", "src/main/resources/recursosGraficos/titulos/materias.jpg");
+        JPanel panelBotones = crearPanelBotones();
         JButton btnInscribirMateria = crearBotonEstilizado("Inscribir Materia", null, e -> {
             try {
                 PantallasControlador.mostrarPantalla(PantallasEnum.INSCRIBIR_MATERIA);
@@ -160,12 +100,88 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
         });
         panelBotones.add(Box.createVerticalStrut(10));
         panelBotones.add(btnInscribirMateria);
+        panelBotones.add(Box.createVerticalStrut(20));
+
+        List<Materia> materiasInscritas = new DaoImpl<Usuario>().obtenerMateriasInscritasPorUsuario(VariablesGlobales.usuario.getId());
+        if (!materiasInscritas.isEmpty()) {
+            for (Materia materia : materiasInscritas) {
+                agregarMateria(panelBotones, materia);
+
+            }
+        } else {
+            JLabel mensaje = crearTituloCentrado("No hay materias inscritas aún");
+            mensaje.setFont(new Font("Segoe UI", Font.ITALIC, 22));
+            panelBotones.add(mensaje);
+            panelBotones.add(Box.createVerticalStrut(5));
+        }
 
         panelMaterias.add(panelBotones, BorderLayout.CENTER);
         mainPanel.add(panelMaterias, "Materias");
         cardLayout.show(mainPanel, "Materias");
     }
 
+    private JPanel crearPanelBotones() {
+        JPanel panelBotones = new JPanel();
+        panelBotones.setOpaque(false);
+        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
+        return panelBotones;
+    }
+
+    private void agregarMateria(JPanel panelBotones, Materia materia) {
+        UsuarioMateria usuarioMateria = obtenerInscripcion(materia);
+        if (usuarioMateria != null) {
+            int totalEjercicios = contarEjercicios(materia);
+            int ejerciciosRealizados = contarEjerciciosRealizados(materia);
+            double progreso = calcularProgreso(totalEjercicios, ejerciciosRealizados);
+
+            DecimalFormat formato = new DecimalFormat("#.#");
+            String redondeado = formato.format(progreso);
+            materia.setProgresoGeneral(redondeado);
+
+            JButton btnMateria = crearBotonEstilizado(materia.getNombre(), null, e -> mostrarTemas(materia));
+            panelBotones.add(btnMateria);
+
+            BarraProgresoTransparente progressBar = new BarraProgresoTransparente(0, 100);
+            progressBar.setValue((int) progreso);
+            progressBar.setStringPainted(true);
+            progressBar.setMaximumSize(new Dimension(750, 30));
+            panelBotones.add(progressBar);
+            panelBotones.add(Box.createVerticalStrut(10));
+        }
+    }
+
+    private UsuarioMateria obtenerInscripcion(Materia materia) {
+        for (UsuarioMateria inscripcion : materia.getInscripciones()) {
+            if (inscripcion.getUsuario().getId().equals(VariablesGlobales.usuario.getId())) {
+                return inscripcion;
+            }
+        }
+        return null;
+    }
+
+    private int contarEjercicios(Materia materia) {
+        int totalEjercicios = 0;
+        for (Ejercicio ejercicio : Ejercicio.ejercicioDao.findAll()) {
+            if (Objects.equals(ejercicio.getSubtema().getTema().getMateria().getId(), materia.getId())) {
+                totalEjercicios++;
+            }
+        }
+        return totalEjercicios;
+    }
+
+    private int contarEjerciciosRealizados(Materia materia) {
+        int ejerciciosRealizados = 0;
+        for (UsuarioEjercicio usuarioEjercicio : VariablesGlobales.usuario.getEjercicios()) {
+            if (Objects.equals(usuarioEjercicio.getEjercicio().getSubtema().getTema().getMateria().getId(), materia.getId())) {
+                ejerciciosRealizados++;
+            }
+        }
+        return ejerciciosRealizados;
+    }
+
+    private double calcularProgreso(int totalEjercicios, int ejerciciosRealizados) {
+        return totalEjercicios != 0 ? (double) ejerciciosRealizados / totalEjercicios * 100 : 0;
+    }
 
     public void mostrarTemas(Materia materia) {
         if (materia != null) {
@@ -174,7 +190,6 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
             historial.push(new PanelHistorial(temaVentana, nombre));
             mainPanel.add(temaVentana, nombre);
             cardLayout.show(mainPanel, nombre);
-        } else {
         }
     }
 
@@ -270,7 +285,5 @@ public class MenuPrincipalVentana extends PlantillaBaseVentana {
 
             g2.dispose();
         }
-
     }
-
 }

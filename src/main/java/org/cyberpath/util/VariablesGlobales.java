@@ -9,13 +9,6 @@ import javax.swing.*;
 public class VariablesGlobales {
     public static Boolean auxModoAudio = false;
     public static String contrasenaRol = "123";
-    public static Usuario usuario/* = new Usuario()*/;
-    /*
-    static {
-        usuario.setNombre("Efren");
-        usuario.setRol(new Rol("ADMIN"));
-    }
 
-     */
-
+    public static Usuario usuario;
 }

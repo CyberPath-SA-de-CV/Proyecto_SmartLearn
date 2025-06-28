@@ -18,24 +18,24 @@ import java.util.Objects;
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public class ConfiguracionControlador {
-
     private static EntradaAudioControlador sttControlador;
-    private static SalidaAudioControlador ttsControlador;
+    private static SalidaAudioControlador ttsControlador = SalidaAudioControlador.getInstance();
 
     static {
         try {
             sttControlador = EntradaAudioControlador.getInstance();
-            ttsControlador = SalidaAudioControlador.getInstance();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private static String[] opciones = {"nombre", "contraseña", "correo", "repetir el menu principal", "repetir menu", "repetir"};
+
     public static void procesarAccesibilidad(JFrame ventana) throws Exception {
         if (VariablesGlobales.auxModoAudio) {
             ttsControlador.hablar("Bienvenido a la configuración de usuario. ¿Qué dato desea cambiar? Diga 'nombre', 'contraseña' o 'correo'. O repetir el menu principal", 5);
-            String[] opciones = {"nombre", "contraseña", "correo", "repetir el menu principal", "repetir menu", "repetir"};
             String seleccion = sttControlador.esperarPorPalabrasClave(opciones);
+
             if(Objects.equals(seleccion, "repetir el menu principal") || Objects.equals(seleccion, "repetir menu") || Objects.equals(seleccion, "repetir")){
                 if(PantallasControlador.menuAccesibilidad("Configuración de Cuenta", ventana)){
                     switch (seleccion) {
@@ -97,7 +97,6 @@ public class ConfiguracionControlador {
         nombreEtiqueta.setFont(nombreEtiqueta.getFont().deriveFont(20f));
         nombreEtiqueta.setForeground(Color.WHITE);
 
-        //
         JButton botonAceptar = crearBotonEstilizado("Aceptar", null, e -> {
             String nombreNuevo = campoNombre.getText();
             new Thread(() -> {

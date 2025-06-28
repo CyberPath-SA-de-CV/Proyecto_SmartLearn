@@ -9,100 +9,99 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.crearPanelTituloConLogo;
+import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public class ContenidoTeoricoVentana extends PanelDegradado {
+
+    private static final Font BUTTON_FONT = new Font("Segoe UI", Font.BOLD, 16);
+    private static final Color BUTTON_COLOR = new Color(220, 53, 69);
+    private static final int BUTTON_WIDTH = 200;
+    private static final int BUTTON_HEIGHT = 40;
+
     public ContenidoTeoricoVentana(Subtema subtema, MenuPrincipalVentana menu) {
-        setLayout(new BorderLayout());  // <--- CAMBIO CLAVE
+        setLayout(new BorderLayout());
         setOpaque(false);
 
-        // Panel que pinta fondo blanco translúcido
-        JPanel panelContenedor = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setColor(new Color(255, 255, 255, 210));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-                g2.dispose();
-            }
-        };
-        panelContenedor.setOpaque(false);
-        panelContenedor.setLayout(new BorderLayout());
-        panelContenedor.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        JPanel panelContenedor = new JPanel();
+        panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS)); // Usar BoxLayout
+        add(panelContenedor, BorderLayout.CENTER);
 
-        add(panelContenedor, BorderLayout.CENTER);  // <--- Expande todo el espacio disponible
+        JPanel panelTituloConLogo = createTitlePanel("Teoría. Subtema | " + subtema.getNombre());
+        panelContenedor.add(panelTituloConLogo);
 
-        // Panel superior (título)
-        JPanel panelTituloConLogo = crearPanelTituloConLogo("Teoría. Subtema | " + subtema.getNombre());
-        panelTituloConLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelTituloConLogo.setLayout(new BorderLayout()); // Centrado forzado
+        JTextPane textoPane = createTextPane(subtema);
+        JScrollPane scrollTexto = createScrollPane(textoPane);
+        panelContenedor.add(scrollTexto);
 
-        // Centrar y colorear el título si es un JLabel
-        for (Component comp : panelTituloConLogo.getComponents()) {
-            if (comp instanceof JLabel label) {
-                label.setHorizontalAlignment(SwingConstants.CENTER);
-                label.setForeground(new Color(0, 51, 153)); // Azul fuerte
-                label.setFont(new Font("Segoe UI", Font.BOLD, 24)); // Tamaño y negrita
-            }
-        }
+        JPanel panelBoton = createButtonPanel(menu);
+        panelContenedor.add(panelBoton);
 
-        panelContenedor.add(panelTituloConLogo, BorderLayout.NORTH);
+        startAccessibilityThread(subtema, menu);
+    }
 
-        // Panel central con scroll solo para el texto
+    private JPanel createTitlePanel(String titulo) {
+        JPanel panelTituloConLogo = new JPanel();
+        panelTituloConLogo.setOpaque(false);
+        panelTituloConLogo.setLayout(new BoxLayout(panelTituloConLogo, BoxLayout.X_AXIS));
+        panelTituloConLogo.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        ImageIcon iconoLogo = new ImageIcon("recursosGraficos/logos/logo_smartlearn.png");
+        Image imagenEscalada = iconoLogo.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+        JLabel labelLogo = new JLabel(new ImageIcon(imagenEscalada));
+        labelLogo.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+
+        JLabel labelTexto = crearTituloCentrado(titulo);
+        labelTexto.setForeground(new Color(0, 51, 153));
+        panelTituloConLogo.add(labelLogo);
+        panelTituloConLogo.add(labelTexto);
+
+        return panelTituloConLogo;
+    }
+
+    private JTextPane createTextPane(Subtema subtema) {
         String textoConImagenes = convertirTextoAHtml(subtema.getContenidoTeorico().getTexto());
-        JTextPane textoPane = new JTextPane() {
-            @Override
-            public boolean getScrollableTracksViewportWidth() {
-                return true;  // evita barra horizontal
-            }
-        };
+        JTextPane textoPane = new JTextPane();
         textoPane.setContentType("text/html");
         textoPane.setText(textoConImagenes);
         textoPane.setEditable(false);
         textoPane.setOpaque(false);
         textoPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        return textoPane;
+    }
 
-        textoPane.setCaretPosition(0);
-        textoPane.revalidate();
-        textoPane.repaint();
-
-
-        // ScrollPane SOLO para texto
+    private JScrollPane createScrollPane(JTextPane textoPane) {
         JScrollPane scrollTexto = new JScrollPane(textoPane);
         scrollTexto.setOpaque(false);
         scrollTexto.getViewport().setOpaque(false);
         scrollTexto.setBorder(null);
         scrollTexto.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollTexto.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollTexto.setPreferredSize(new Dimension(800, 400)); // Establece un tamaño preferido para el JScrollPane
+        return scrollTexto;
+    }
 
-        // Solución: permitir scroll con la rueda del mouse aunque no esté directamente sobre el scroll
-        scrollTexto.addMouseWheelListener(e -> scrollTexto.getParent().dispatchEvent(e));
-
-        panelContenedor.add(scrollTexto, BorderLayout.CENTER);
-
-        // Panel del botón al sur
+    private JPanel createButtonPanel(MenuPrincipalVentana menu) {
         JPanel panelBoton = new JPanel();
         panelBoton.setOpaque(false);
         panelBoton.setLayout(new BoxLayout(panelBoton, BoxLayout.Y_AXIS));
         panelBoton.add(Box.createVerticalStrut(10));
 
         JButton btnRegresar = new JButton("Regresar");
-        btnRegresar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnRegresar.setBackground(new Color(220, 53, 69));
+        btnRegresar.setFont(BUTTON_FONT);
+        btnRegresar.setBackground(BUTTON_COLOR);
         btnRegresar.setForeground(Color.WHITE);
         btnRegresar.setFocusPainted(false);
         btnRegresar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnRegresar.setMaximumSize(new Dimension(200, 40));
+        btnRegresar.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         btnRegresar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegresar.addActionListener(e -> menu.regresar());
 
         panelBoton.add(btnRegresar);
         panelBoton.add(Box.createVerticalStrut(10));
+        return panelBoton;
+    }
 
-        panelContenedor.add(panelBoton, BorderLayout.SOUTH);  // <--- Botón fuera del scroll
-
-        // Accesibilidad
+    private void startAccessibilityThread(Subtema subtema, MenuPrincipalVentana menu) {
         new Thread(() -> {
             try {
                 ContenidoTeoricoControlador.procesarAccesibilidad(subtema, menu);
@@ -112,19 +111,13 @@ public class ContenidoTeoricoVentana extends PanelDegradado {
         }).start();
     }
 
-
     private String convertirTextoAHtml(String textoPlano) {
         StringBuilder html = new StringBuilder("<html><body style='font-family: Serif; font-size: 16px;'>");
 
         for (String linea : textoPlano.split("\n")) {
             linea = linea.trim();
             if (esRutaImagen(linea)) {
-                if (linea.startsWith("http")) {
-                    html.append("<img src='").append(linea).append("' width='200'><br>");
-                } else {
-                    File file = new File(linea);
-                    html.append("<img src='file:/").append(file.getAbsolutePath().replace("\\", "/")).append("' width='200'><br>");
-                }
+                appendImageToHtml(html, linea);
             } else {
                 html.append(linea).append("<br>");
             }
@@ -132,6 +125,15 @@ public class ContenidoTeoricoVentana extends PanelDegradado {
 
         html.append("</body></html>");
         return html.toString();
+    }
+
+    private void appendImageToHtml(StringBuilder html, String linea) {
+        if (linea.startsWith("http")) {
+            html.append("<img src='").append(linea).append("' width='200'><br>");
+        } else {
+            File file = new File(linea);
+            html.append("<img src='file:/").append(file.getAbsolutePath().replace("\\", "/")).append("' width='200'><br>");
+        }
     }
 
     private boolean esRutaImagen(String texto) {

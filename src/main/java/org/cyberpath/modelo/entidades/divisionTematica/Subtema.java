@@ -3,9 +3,11 @@ package org.cyberpath.modelo.entidades.divisionTematica;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
+import org.cyberpath.modelo.baseDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
 import org.cyberpath.modelo.entidades.contenido.ContenidoTeorico;
 import org.cyberpath.modelo.entidades.ejercicios.Ejercicio;
+import org.hibernate.Session;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -108,6 +110,15 @@ public class Subtema extends Entidad {
         ejercicios.add(ejercicioActualizado);
         ejercicioActualizado.setSubtema(this);
     }
+
+    public static List<Subtema> findByTema(Tema tema) {
+        try (Session session = HibernateUtil.getSession()) {
+            return session.createQuery("FROM Subtema s WHERE s.tema = :tema", Subtema.class)
+                    .setParameter("tema", tema)
+                    .getResultList();
+        }
+    }
+
 
     @Override
     public String toString() {

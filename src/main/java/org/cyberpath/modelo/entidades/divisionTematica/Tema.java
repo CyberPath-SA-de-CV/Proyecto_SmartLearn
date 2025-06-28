@@ -3,7 +3,9 @@ package org.cyberpath.modelo.entidades.divisionTematica;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cyberpath.modelo.baseDatos.dao.implementacion.DaoImpl;
+import org.cyberpath.modelo.baseDatos.hibernate.HibernateUtil;
 import org.cyberpath.modelo.entidades.base.Entidad;
+import org.hibernate.Session;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -89,6 +91,15 @@ public class Tema extends Entidad {
         subtemas.add(subtemaActualizado);
         subtemaActualizado.setTema(this);
     }
+
+    public static List<Tema> findByMateria(Materia materia) {
+        try (Session session = HibernateUtil.getSession()) {
+            return session.createQuery("FROM Tema t WHERE t.materia = :materia", Tema.class)
+                    .setParameter("materia", materia)
+                    .getResultList();
+        }
+    }
+
 
     @Override
     public String toString() {

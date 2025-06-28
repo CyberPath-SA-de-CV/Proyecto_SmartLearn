@@ -12,57 +12,62 @@ import org.cyberpath.vista.pantallas.combo.MenuPrincipalVentana;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-///MOVER VELOCIDAD CON LA QUE SE DICEN LAS OPCION, VELOCIDAD CON LA QUE SE PUEDE RESPONDER (EL PEQUEÑO VACIO QUE QUEDA) Y
+
 public class ContenidoPracticoControlador {
-    public static Boolean banderaTeoria = false;
-    private static EntradaAudioControlador sttControlador;
+
+    public static boolean banderaTeoria = false;
+
+    private static final SalidaAudioControlador tts = SalidaAudioControlador.getInstance();
+    private static final EntradaAudioControlador stt;
+    private static final String[] opcionesIniciales = {"regresar", "ejercicios", "escuchar ejercicios"};
+
     static {
         try {
-            sttControlador = EntradaAudioControlador.getInstance();
+            stt = EntradaAudioControlador.getInstance();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error al inicializar el controlador de entrada de audio", e);
         }
     }
-    private static SalidaAudioControlador ttsControlador = SalidaAudioControlador.getInstance();
 
     public static void procesarAccesibilidad(Subtema subtema, MenuPrincipalVentana menu) throws Exception {
-        String[] sttListaOpciones = {"regresar", "ejercicios", "escuchar ejercicios"};
-        if (VariablesGlobales.auxModoAudio) {
-            ttsControlador.hablar("Estás en la ventana de práctica. ¿Qué deseas hacer? regresar a la ventana anterior o escuchar la lista de ejercicios?", 7);
-            String opcion = sttControlador.esperarPorPalabrasClave(sttListaOpciones);
-            if (Objects.equals(opcion, "regresar")) {
-                menu.regresar();
-                SubtemaControlador.procesarAccesibilidad(subtema.getTema(), menu);
-            } else {
-                mostrarEjercicios(subtema, menu);
-            }
+        if (!VariablesGlobales.auxModoAudio) return;
+
+        tts.hablar("Estás en la ventana de práctica. ¿Qué deseas hacer? Regresar a la ventana anterior o escuchar la lista de ejercicios?", 7);
+        String opcion = stt.esperarPorPalabrasClave(opcionesIniciales);
+
+        if ("regresar".equals(opcion)) {
+            menu.regresar();
+            SubtemaControlador.procesarAccesibilidad(subtema.getTema(), menu);
+        } else {
+            mostrarEjercicios(subtema, menu);
         }
     }
 
     private static void mostrarEjercicios(Subtema subtema, MenuPrincipalVentana menu) throws Exception {
         List<Ejercicio> ejercicios = subtema.getEjercicios();
+
         if (ejercicios.isEmpty()) {
-            ttsControlador.hablar("No hay ejercicios disponibles para este subtema.", 5);
+            tts.hablar("No hay ejercicios disponibles para este subtema.", 5);
             return;
         }
 
-        ttsControlador.hablar("A continuación, se enumerarán los ejercicios disponibles.", 5);
-        ArrayList<String> sttListaEjercicios = new ArrayList<>();
+        tts.hablar("A continuación, se enumerarán los ejercicios disponibles.", 5);
+
+        List<String> nombresEjercicios = new ArrayList<>();
         for (Ejercicio ejercicio : ejercicios) {
-            ttsControlador.hablar(ejercicio.getInstrucciones(), 3);
-            sttListaEjercicios.add(ejercicio.getInstrucciones().toLowerCase());
+            String instruccion = ejercicio.getInstrucciones().toLowerCase();
+            tts.hablar(instruccion, 3);
+            nombresEjercicios.add(instruccion);
         }
 
-        ttsControlador.hablar("¿Cuál ejercicio deseas realizar?", 5);
-        String nombreEjercicio = sttControlador.esperarPorPalabrasClave(sttListaEjercicios.toArray(new String[0])).toLowerCase();
+        tts.hablar("¿Cuál ejercicio deseas realizar?", 4);
+        String nombreSeleccionado = stt.esperarPorPalabrasClave(nombresEjercicios.toArray(new String[0])).toLowerCase();
 
         for (Ejercicio ejercicio : ejercicios) {
-            if (nombreEjercicio.equals(ejercicio.getInstrucciones().toLowerCase())) {
-                ttsControlador.hablar("A continuación se leerá el enunciado de la pregunta y sus posibles respuestas, al final escoja una de ellas");
+            if (nombreSeleccionado.equals(ejercicio.getInstrucciones().toLowerCase())) {
+                tts.hablar("A continuación se leerá el enunciado de la pregunta y sus posibles respuestas. Al final, escoja una de ellas.");
                 ejecutarEjercicio(ejercicio, menu);
                 break;
             }
@@ -70,110 +75,106 @@ public class ContenidoPracticoControlador {
     }
 
     private static void ejecutarEjercicio(Ejercicio ejercicio, MenuPrincipalVentana menu) throws Exception {
-        if (ejercicio.getTipo().getId() == 1) {
-            ttsControlador.hablar(ejercicio.getInstrucciones(), 5);
-            ttsControlador.hablar("Por favor, proporciona tu respuesta.", 5);
+        int tipo = ejercicio.getTipo().getId();
 
-            String respuesta = sttControlador.esperarPorPalabrasClave(new String[]{});
-            boolean esCorrecta = validarRespuestaEjercicio(ejercicio, respuesta);
-
-            if (esCorrecta) {
-                ttsControlador.hablar("¡Respuesta correcta!", 3);
-            } else {
-                String correcta = ejercicio.getPreguntas().get(0).getOpciones().stream()
-                        .filter(Opcion::getEs_correcta)
-                        .map(Opcion::getTexto)
-                        .findFirst()
-                        .orElse("Desconocida");
-                ttsControlador.hablar("Respuesta incorrecta. La respuesta correcta es: " + correcta, 5);
-                int opcion = mostrarDialogoConfirmacionModerno(
-                        "¿Quieres consultar la teoría relacionada?",
-                        "Respuesta Incorrecta"
-                );
-                if (opcion == JOptionPane.YES_OPTION) {
-                    menu.mostrarContenidoTeorico(ejercicio.getSubtema());
-                }
-            }
-        } else if (ejercicio.getTipo().getId() == 2) {
+        if (tipo == 1) {
+            ejecutarEjercicioSimple(ejercicio, menu);
+        } else if (tipo == 2) {
             ejecutarCuestionario(ejercicio, menu);
         }
 
         UsuarioEjercicio.agregar(VariablesGlobales.usuario, ejercicio);
     }
 
-    private static boolean validarRespuestaEjercicio(Ejercicio ejercicio, String respuesta) {
-        return Objects.equals(ejercicio.getPreguntas().get(0).getOpciones().get(0).getTexto(), respuesta);
+    private static void ejecutarEjercicioSimple(Ejercicio ejercicio, MenuPrincipalVentana menu) throws Exception {
+        tts.hablar(ejercicio.getInstrucciones(), 5);
+        tts.hablar("Por favor, proporciona tu respuesta.", 5);
+
+        String respuesta = stt.esperarPorPalabrasClave(new String[]{}); // No hay opciones predefinidas
+
+        boolean correcta = validarRespuestaLibre(ejercicio, respuesta);
+
+        if (correcta) {
+            tts.hablar("¡Respuesta correcta!", 3);
+        } else {
+            String respuestaCorrecta = obtenerRespuestaCorrecta(ejercicio.getPreguntas().get(0));
+            tts.hablar("Respuesta incorrecta. La respuesta correcta es: " + respuestaCorrecta, 5);
+
+            int opcion = mostrarDialogoConfirmacion("¿Quieres consultar la teoría relacionada?", "Respuesta Incorrecta");
+            if (opcion == JOptionPane.YES_OPTION) {
+                menu.mostrarContenidoTeorico(ejercicio.getSubtema());
+            }
+        }
+    }
+
+    private static boolean validarRespuestaLibre(Ejercicio ejercicio, String respuesta) {
+        return Objects.equals(
+                ejercicio.getPreguntas().get(0).getOpciones().get(0).getTexto(),
+                respuesta
+        );
     }
 
     private static void ejecutarCuestionario(Ejercicio ejercicio, MenuPrincipalVentana menu) throws Exception {
         List<Pregunta> preguntas = ejercicio.getPreguntas();
         AtomicInteger correctas = new AtomicInteger();
         AtomicInteger incorrectas = new AtomicInteger();
-        StringBuilder resumenIncorrectas = new StringBuilder();
+        StringBuilder resumen = new StringBuilder();
+
+        String[] letras = {"a", "b", "c", "d"};
 
         for (Pregunta pregunta : preguntas) {
-            ttsControlador.hablar(pregunta.getEnunciado(), 1);
-            ArrayList<String> opcionesTexto = new ArrayList<>();
-            String[] li = {"a", "b", "c", "d"};
+            tts.hablar(pregunta.getEnunciado(), 1);//PENDIENTE DE REVISIÓN---
 
-            // Asegúrate de que el número de opciones no exceda 4
-            int numOpciones = Math.min(pregunta.getOpciones().size(), li.length);
-
-            for (int aux = 0; aux < numOpciones; aux++) {
-                Opcion opcion = pregunta.getOpciones().get(aux);
-                ttsControlador.hablar(li[aux] + ". " + opcion.getTexto(), 3);
-                opcionesTexto.add(opcion.getTexto());
+            int limiteOpciones = Math.min(pregunta.getOpciones().size(), letras.length);
+            for (int i = 0; i < limiteOpciones; i++) {
+                tts.hablar(letras[i] + ". " + pregunta.getOpciones().get(i).getTexto(), 3);
             }
 
-            ttsControlador.hablar("¿Cuál es tu respuesta? a, b, c o d", 5);
-            String seleccion = sttControlador.esperarPorPalabrasClave(li);
+            tts.hablar("¿Cuál es tu respuesta? a, b, c o d", 5);
+            String seleccion = stt.esperarPorPalabrasClave(letras);
 
-            int indiceSeleccion = -1;
-            for (int i = 0; i < li.length; i++) {
-                if (li[i].equals(seleccion)) {
-                    indiceSeleccion = i;
-                    break;
-                }
-            }
+            int indice = Arrays.asList(letras).indexOf(seleccion);
+            boolean correcta = (indice >= 0 && indice < pregunta.getOpciones().size()) &&
+                    pregunta.getOpciones().get(indice).getEs_correcta();
 
-            boolean esCorrecta = false;
-            if (indiceSeleccion != -1 && indiceSeleccion < pregunta.getOpciones().size()) {
-                esCorrecta = pregunta.getOpciones().get(indiceSeleccion).getEs_correcta();
-            }
-
-            if (esCorrecta) {
-                correctas.getAndIncrement();
-                ttsControlador.hablar("¡Respuesta correcta!", 3);
+            if (correcta) {
+                correctas.incrementAndGet();
+                tts.hablar("¡Respuesta correcta!", 2);
             } else {
-                incorrectas.getAndIncrement();
-                String correcta = pregunta.getOpciones().stream()
-                        .filter(Opcion::getEs_correcta)
-                        .map(Opcion::getTexto)
-                        .findFirst()
-                        .orElse("Desconocida");
-                resumenIncorrectas.append("Pregunta: ").append(pregunta.getEnunciado())
-                        .append("\nRespuesta correcta: ").append(correcta).append("\n\n");
-                ttsControlador.hablar("Respuesta incorrecta. La respuesta correcta es: " + correcta, 5);
+                incorrectas.incrementAndGet();
+                String correctaTexto = obtenerRespuestaCorrecta(pregunta);
+                resumen.append("Pregunta: ").append(pregunta.getEnunciado()).append("\n")
+                        .append("Respuesta correcta: ").append(correctaTexto).append("\n\n");
+                tts.hablar("Respuesta incorrecta. La respuesta correcta es: " + correctaTexto, 5);
             }
         }
 
+        String resumenFinal = String.format(
+                "Resumen:\nCorrectas: %d\nIncorrectas: %d\n\n%s¿Quieres consultar la teoría? Diga sí o no.",
+                correctas.get(), incorrectas.get(), resumen
+        );
 
-        String resumen = "Resumen:\nCorrectas: " + correctas + "\nIncorrectas: " + incorrectas + "\n\n" + resumenIncorrectas + "¿Quieres consultar la teoría, diga sí o no?";
-        ttsControlador.hablar(resumen, 10);
-        if (sttControlador.entradaAfirmacionNegacion()) {
+        tts.hablar(resumenFinal, 10);
+
+        if (stt.entradaAfirmacionNegacion()) {
             banderaTeoria = true;
             menu.mostrarContenidoTeorico(ejercicio.getSubtema());
-            //ContenidoTeoricoControlador.procesarAccesibilidad(ejercicio.getSubtema(), menu);
         } else {
             banderaTeoria = false;
             menu.regresar();
-            ContenidoPracticoControlador.procesarAccesibilidad(ejercicio.getSubtema(), menu);
+            procesarAccesibilidad(ejercicio.getSubtema(), menu);
         }
-
     }
 
-    private static int mostrarDialogoConfirmacionModerno(String mensaje, String titulo) {
-        // Implementación del diálogo de confirmación
+    private static String obtenerRespuestaCorrecta(Pregunta pregunta) {
+        return pregunta.getOpciones().stream()
+                .filter(Opcion::getEs_correcta)
+                .map(Opcion::getTexto)
+                .findFirst()
+                .orElse("Desconocida");
+    }
+
+    private static int mostrarDialogoConfirmacion(String mensaje, String titulo) {
         return JOptionPane.showConfirmDialog(null, mensaje, titulo, JOptionPane.YES_NO_OPTION);
     }
 }

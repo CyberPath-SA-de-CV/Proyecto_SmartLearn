@@ -31,13 +31,11 @@
 		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.Subtema"/>
 		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioMateria"/>
 		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioEjercicio"/>
-		<mapping class="org.cyberpath.modelo.entidades.ejercicios.Calificacion"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.Ejercicio"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.IntentoEjercicio"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.Opcion"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.Pregunta"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.RespuestaUsuario"/>
-		<mapping class="org.cyberpath.modelo.entidades.ejercicios.Retroalimentacion"/>
 		<mapping class="org.cyberpath.modelo.entidades.ejercicios.TipoEjercicio"/>
 		<mapping class="org.cyberpath.modelo.entidades.divisionTematica.relacionesUsuario.UsuarioMateria"/>
 

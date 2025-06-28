@@ -1,5 +1,6 @@
 package org.cyberpath.vista.pantallas.materias;
 
+
 import org.cyberpath.controlador.materias.ContenidoPracticoControlador;
 import org.cyberpath.modelo.entidades.divisionTematica.Materia;
 import org.cyberpath.modelo.entidades.divisionTematica.Subtema;
@@ -23,18 +24,48 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public class ContenidoPracticoVentana extends PanelDegradado {
+    private static final Color BUTTON_COLOR = new Color(220, 53, 69);
+    private static final Font BUTTON_FONT = new Font("Segoe UI", Font.BOLD, 16);
+    private static final int BUTTON_WIDTH = 200;
+    private static final int BUTTON_HEIGHT = 40;
+    private static final int DIALOG_WIDTH = 600;
+    private static final int DIALOG_HEIGHT = 300;
+
     public ContenidoPracticoVentana(Subtema subtema, MenuPrincipalVentana menu) {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new BorderLayout());
 
-        add(Box.createVerticalStrut(20));
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
+        panelContenido.setOpaque(false);
+        panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        panelContenido.add(createTitlePanel(subtema));
+        panelContenido.add(Box.createVerticalStrut(20));
+        panelContenido.add(createExercisesPanel(subtema, menu));
+        panelContenido.add(Box.createVerticalStrut(20));
+        panelContenido.add(createBackButton(menu)); // <- Ahora está dentro del scroll
+        panelContenido.add(Box.createVerticalStrut(20));
+
+        JScrollPane scrollPane = new JScrollPane(panelContenido);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        add(scrollPane, BorderLayout.CENTER);
+
+        startAccessibilityThread(subtema, menu);
+    }
+
+
+    private JPanel createTitlePanel(Subtema subtema) {
         JPanel panelTituloConLogo = crearPanelTituloConLogo("Práctica. Subtema | " + subtema.getNombre(), "src/main/resources/recursosGraficos/titulos/practica.jpg");
         panelTituloConLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(panelTituloConLogo);
+        return panelTituloConLogo;
+    }
 
-        add(Box.createVerticalStrut(20));
-
-        // Panel con ejercicios
+    private JPanel createExercisesPanel(Subtema subtema, MenuPrincipalVentana menu) {
         JPanel panelEjercicios = new JPanel();
         panelEjercicios.setLayout(new BoxLayout(panelEjercicios, BoxLayout.Y_AXIS));
         panelEjercicios.setOpaque(false);
@@ -46,35 +77,23 @@ public class ContenidoPracticoVentana extends PanelDegradado {
             panelEjercicios.add(Box.createVerticalStrut(10));
         }
 
-        JScrollPane scrollPane = new JScrollPane(panelEjercicios);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-        scrollPane.setPreferredSize(new Dimension(800, 400));
+        return panelEjercicios;
+    }
 
-        JPanel panelScrollWrapper = new JPanel();
-        panelScrollWrapper.setLayout(new BoxLayout(panelScrollWrapper, BoxLayout.Y_AXIS));
-        panelScrollWrapper.setOpaque(false);
-        panelScrollWrapper.add(scrollPane);
-        panelScrollWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        add(panelScrollWrapper);
-
-        add(Box.createVerticalStrut(20));
-
+    private JButton createBackButton(MenuPrincipalVentana menu) {
         JButton btnRegresar = new JButton("Regresar");
-        btnRegresar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnRegresar.setBackground(new Color(220, 53, 69));
+        btnRegresar.setFont(BUTTON_FONT);
+        btnRegresar.setBackground(BUTTON_COLOR);
         btnRegresar.setForeground(Color.WHITE);
         btnRegresar.setFocusPainted(false);
         btnRegresar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnRegresar.setMaximumSize(new Dimension(200, 40));
+        btnRegresar.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         btnRegresar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegresar.addActionListener(e -> menu.regresar());
-        add(btnRegresar);
+        return btnRegresar;
+    }
 
-        add(Box.createVerticalStrut(20));
-
+    private void startAccessibilityThread(Subtema subtema, MenuPrincipalVentana menu) {
         new Thread(() -> {
             try {
                 ContenidoPracticoControlador.procesarAccesibilidad(subtema, menu);
@@ -86,61 +105,63 @@ public class ContenidoPracticoVentana extends PanelDegradado {
 
     public void ejecutarEjercicio(Ejercicio ejercicio, MenuPrincipalVentana menu) {
         if (ejercicio.getTipo().getId() == 1) {
-            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Ejercicio", true);
-            dialog.setSize(600, 300);
-            dialog.setLocationRelativeTo(this);
-            dialog.setUndecorated(true);
-            dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
-
-            PanelDegradado panelContenido = new PanelDegradado();
-            panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
-            panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-            JLabel lblInstruccion = new JLabel("<html><body style='width: 500px'>" + ejercicio.getInstrucciones() + "</body></html>");
-            lblInstruccion.setFont(new Font("Segoe UI", Font.BOLD, 16));
-            lblInstruccion.setForeground(Color.WHITE);
-            lblInstruccion.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            JTextField txtRespuesta = new JTextField();
-            txtRespuesta.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-            txtRespuesta.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
-            JButton btnEnviar = crearBotonEstilizado("Enviar Respuesta", null, e -> {
-                String respuesta = txtRespuesta.getText().trim();
-                boolean esCorrecta = validarRespuestaEjercicio(ejercicio, respuesta);
-                dialog.dispose();
-                if (esCorrecta) {
-                    mostrarDialogoModerno("¡Respuesta correcta!", "Correcto", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    String correcta = ejercicio.getPreguntas().get(0).getOpciones().stream()
-                            .filter(Opcion::getEs_correcta)
-                            .map(Opcion::getTexto)
-                            .findFirst()
-                            .orElse("Desconocida");
-                    int opcion = mostrarDialogoConfirmacionModerno(
-                            "Respuesta incorrecta.\nRespuesta correcta: " + correcta + "\n\n¿Quieres consultar la teoría relacionada?",
-                            "Respuesta Incorrecta"
-                    );
-                    if (opcion == JOptionPane.YES_OPTION) {
-                        menu.mostrarContenidoTeorico(ejercicio.getSubtema());
-                    }
-                }
-            });
-
-            panelContenido.add(lblInstruccion);
-            panelContenido.add(Box.createVerticalStrut(20));
-            panelContenido.add(txtRespuesta);
-            panelContenido.add(Box.createVerticalStrut(20));
-            panelContenido.add(btnEnviar);
-
-            dialog.setContentPane(panelContenido);
-            dialog.setVisible(true);
+            showSingleAnswerDialog(ejercicio, menu);
         } else if (ejercicio.getTipo().getId() == 2) {
             ejecutarCuestionario(ejercicio, menu);
         }
         UsuarioEjercicio.agregar(VariablesGlobales.usuario, ejercicio);
     }
 
+    private void showSingleAnswerDialog(Ejercicio ejercicio, MenuPrincipalVentana menu) {
+        JDialog dialog = createDialog("Ejercicio");
+        PanelDegradado panelContenido = new PanelDegradado();
+        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
+        panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel lblInstruccion = new JLabel("<html><body style='width: 500px'>" + ejercicio.getInstrucciones() + "</body></html>");
+        lblInstruccion.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblInstruccion.setForeground(Color.WHITE);
+        lblInstruccion.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JTextField txtRespuesta = new JTextField();
+        txtRespuesta.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        txtRespuesta.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+        JButton btnEnviar = crearBotonEstilizado("Enviar Respuesta", null, e -> {
+            String respuesta = txtRespuesta.getText().trim();
+            boolean esCorrecta = validarRespuestaEjercicio(ejercicio, respuesta);
+            dialog.dispose();
+            handleResponseResult(ejercicio, menu, esCorrecta);
+        });
+
+        panelContenido.add(lblInstruccion);
+        panelContenido.add(Box.createVerticalStrut(20));
+        panelContenido.add(txtRespuesta);
+        panelContenido.add(Box.createVerticalStrut(20));
+        panelContenido.add(btnEnviar);
+
+        dialog.setContentPane(panelContenido);
+        dialog.setVisible(true);
+    }
+
+    private void handleResponseResult(Ejercicio ejercicio, MenuPrincipalVentana menu, boolean esCorrecta) {
+        if (esCorrecta) {
+            mostrarDialogo("¡Respuesta correcta!", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            String correcta = ejercicio.getPreguntas().get(0).getOpciones().stream()
+                    .filter(Opcion::getEs_correcta)
+                    .map(Opcion::getTexto)
+                    .findFirst()
+                    .orElse("Desconocida");
+            int opcion = mostrarDialogoConfirmacionModerno(
+                    "Respuesta incorrecta.\nRespuesta correcta: " + correcta + "\n\n¿Quieres consultar la teoría relacionada?",
+                    "Respuesta Incorrecta"
+            );
+            if (opcion == JOptionPane.YES_OPTION) {
+                menu.mostrarContenidoTeorico(ejercicio.getSubtema());
+            }
+        }
+    }
 
     private boolean validarRespuestaEjercicio(Ejercicio ejercicio, String respuesta) {
         return Objects.equals(ejercicio.getPreguntas().get(0).getOpciones().get(0).getTexto(), respuesta);
@@ -153,12 +174,7 @@ public class ContenidoPracticoVentana extends PanelDegradado {
         StringBuilder resumenIncorrectas = new StringBuilder();
 
         for (Pregunta pregunta : preguntas) {
-            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Pregunta", true);
-            dialog.setSize(600, 300);
-            dialog.setLocationRelativeTo(this);
-            dialog.setUndecorated(true);
-            dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
-
+            JDialog dialog = createDialog("Pregunta");
             PanelDegradado panelContenido = new PanelDegradado();
             panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
             panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -194,7 +210,7 @@ public class ContenidoPracticoVentana extends PanelDegradado {
                             .anyMatch(o -> o.getTexto().equals(seleccion) && o.getEs_correcta());
                     if (esCorrecta) {
                         correctas.getAndIncrement();
-                        mostrarDialogoModerno("¡Respuesta correcta!", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+                        mostrarDialogo("¡Respuesta correcta!", "Correcto", JOptionPane.INFORMATION_MESSAGE);
                     } else {
                         incorrectas.getAndIncrement();
                         resumenIncorrectas.append("Pregunta: ").append(pregunta.getEnunciado())
@@ -215,8 +231,8 @@ public class ContenidoPracticoVentana extends PanelDegradado {
             dialog.setVisible(true);
         }
 
-        String resumen = "Resumen:\nCorrectas: " + correctas + "\nIncorrectas: " + incorrectas + "\n\n" + resumenIncorrectas;
-        mostrarDialogoModerno(resumen, "Resultados del Cuestionario", JOptionPane.INFORMATION_MESSAGE);
+        String resumen = "Resumen:\nCorrectas: " + correctas + "\nIncorrectas: " + incorrectas + "\n\n" + "Preguntas incorrectas: " + "\n" + resumenIncorrectas;
+        mostrarDialogo(resumen, "Resultados del Cuestionario", JOptionPane.INFORMATION_MESSAGE);
         int respuestaTeoria = mostrarDialogoConfirmacionModerno(
                 "¿Quieres consultar la teoría relacionada?",
                 "Retroalimentación"
@@ -224,46 +240,56 @@ public class ContenidoPracticoVentana extends PanelDegradado {
         if (respuestaTeoria == JOptionPane.YES_OPTION) {
             menu.mostrarContenidoTeorico(ejercicio.getSubtema());
         }
-
-
     }
 
-    //------
-
-    private void mostrarDialogoModerno(String mensaje, String titulo, int tipo) {
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), titulo, true);
-        dialog.setUndecorated(true);
-        dialog.setSize(500, 250);
+    private JDialog createDialog(String title) {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), title, true);
+        dialog.setSize(DIALOG_WIDTH, DIALOG_HEIGHT);
         dialog.setLocationRelativeTo(this);
+        dialog.setUndecorated(true);
         dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+        return dialog;
+    }
 
+    private void mostrarDialogo(String mensaje, String titulo, int tipo) {
+        JDialog dialog = createDialog(titulo);
         PanelDegradado panel = new PanelDegradado();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        // Crear JLabel con HTML para el mensaje
         JLabel label = new JLabel("<html><body style='width: 400px'>" + mensaje.replace("\n", "<br>") + "</body></html>");
         label.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         label.setForeground(Color.WHITE);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // Envolver el JLabel en un JScrollPane
+        JScrollPane scrollPane = new JScrollPane(label);
+        scrollPane.setPreferredSize(new Dimension(420, 200)); // Limita la altura visible
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
         JButton btnCerrar = crearBotonEstilizado("Cerrar", null, e -> dialog.dispose());
-        panel.add(label);
+        btnCerrar.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(scrollPane);
         panel.add(Box.createVerticalStrut(20));
         panel.add(btnCerrar);
 
         dialog.setContentPane(panel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(null); // Centrar
         dialog.setVisible(true);
     }
+
 
     private int mostrarDialogoConfirmacionModerno(String mensaje, String titulo) {
         final int[] respuesta = {JOptionPane.NO_OPTION};
 
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), titulo, true);
-        dialog.setUndecorated(true);
-        dialog.setSize(550, 250);
-        dialog.setLocationRelativeTo(this);
-        dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
-
+        JDialog dialog = createDialog(titulo);
         PanelDegradado panel = new PanelDegradado();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -288,8 +314,8 @@ public class ContenidoPracticoVentana extends PanelDegradado {
         });
         btnNo.setPreferredSize(new Dimension(100, 40));
 
-        panelBotones.add(btnSi, crearConstraintBotonAncho(3, 0, 3, 1, 200));
-        panelBotones.add(btnNo, crearConstraintBotonAncho(3, 0, 3, 1, 200));
+        panelBotones.add(btnSi);
+        panelBotones.add(btnNo);
         panel.add(label);
         panel.add(Box.createVerticalStrut(20));
         panel.add(panelBotones);
@@ -299,6 +325,4 @@ public class ContenidoPracticoVentana extends PanelDegradado {
 
         return respuesta[0];
     }
-
-
 }

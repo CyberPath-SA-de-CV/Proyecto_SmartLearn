@@ -1,42 +1,46 @@
 package org.cyberpath.vista.util.base;
 
+import lombok.Getter;
+
 import javax.swing.*;
 import java.awt.*;
-
-import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public abstract class PlantillaBaseVentana extends JFrame {
 
     private JPanel panelSuperior;
-    private JPanel panelCentral;  // Panel con CardLayout
+    @Getter
+    private JPanel panelCentral;
     private JScrollPane scrollPaneCentral;
 
     public PlantillaBaseVentana(String tituloVentana, int ancho, int alto) throws Exception {
         super(tituloVentana);
         configurarVentana(ancho, alto);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-
         setLayout(new BorderLayout());
 
+        inicializarComponentesVentana();
+        establecerIconoVentana();
+    }
+
+    private void inicializarComponentesVentana() throws Exception {
         // Panel superior fijo
-        panelSuperior = crearPanelSuperior();
+        panelSuperior = new PanelSuperior();
         add(panelSuperior, BorderLayout.NORTH);
 
         // Panel central con CardLayout y scroll
         panelCentral = new JPanel(new CardLayout());
+        configurarScrollPaneCentral();
 
+        add(scrollPaneCentral, BorderLayout.CENTER);
+        inicializarComponentes();
+        agregarEventos();
+    }
+
+    private void configurarScrollPaneCentral() {
         scrollPaneCentral = new JScrollPane(panelCentral);
         scrollPaneCentral.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPaneCentral.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPaneCentral.getVerticalScrollBar().setUnitIncrement(50);  // ← Desplazamiento aumentado
-
-        add(scrollPaneCentral, BorderLayout.CENTER);
-
-        inicializarComponentes();  // Lo que quieras mostrar al inicio
-        agregarEventos();
-
-        Image icono = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/recursosGraficos/logos/logo.png"));
-        setIconImage(icono);
+        scrollPaneCentral.getVerticalScrollBar().setUnitIncrement(50);  // Desplazamiento aumentado
     }
 
     protected void configurarVentana(int ancho, int alto) {
@@ -45,39 +49,14 @@ public abstract class PlantillaBaseVentana extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    /**
-     * Agrega una nueva pantalla al panel central con nombre y la muestra.
-     */
-    public void mostrarPantalla(String nombre, JPanel pantalla) {
-        panelCentral.add(pantalla, nombre);
-        ((CardLayout) panelCentral.getLayout()).show(panelCentral, nombre);
-        panelCentral.revalidate();
-        panelCentral.repaint();
-    }
-
-    /**
-     * Opcional: si necesitas acceso al panel central directamente.
-     */
-    public JPanel getPanelCentral() {
-        return this.panelCentral;
-    }
-
-    /**
-     * Si necesitas refrescar solo el panel superior.
-     */
-    public void actualizarPanelSuperior(JPanel nuevoPanelSuperior) {
-        remove(panelSuperior);
-        panelSuperior = nuevoPanelSuperior;
-        add(panelSuperior, BorderLayout.NORTH);
-        revalidate();
-        repaint();
-    }
-
-    protected JPanel crearPanelSuperior() {
-        return new PanelSuperior();
+    private void establecerIconoVentana() {
+        Image icono = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/recursosGraficos/logos/logo.png"));
+        setIconImage(icono);
     }
 
     protected abstract void inicializarComponentes() throws Exception;
+
     protected abstract void agregarEventos();
+
     public abstract JPanel getContenido();  // Podrías eliminar esto si ya no lo necesitas
 }

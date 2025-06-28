@@ -9,39 +9,65 @@ import org.cyberpath.vista.util.componentes.PanelDegradado;
 import javax.swing.*;
 import java.awt.*;
 
-import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.crearBotonEstilizado;
-import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.crearPanelTituloConLogo;
+import static org.cyberpath.vista.util.componentes.ComponentesReutilizables.*;
 
 public class SubtemaVentana extends PanelDegradado {
+
+    private static final String FONT_NAME = "Segoe UI";
+    private static final int FONT_SIZE = 16;
+    private static final Color BUTTON_COLOR = new Color(220, 53, 69);
+    private static final Color BUTTON_TEXT_COLOR = Color.WHITE;
+
     public SubtemaVentana(Tema tema, MenuPrincipalVentana menu) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        initializeComponents(tema, menu);
+        startAccessibilityThread(tema, menu);
+    }
 
+    private void initializeComponents(Tema tema, MenuPrincipalVentana menu) {
         add(Box.createVerticalStrut(20));
-        JPanel panelTituloConLogo = crearPanelTituloConLogo("Subtemas | " + tema.getNombre(), "src/main/resources/recursosGraficos/titulos/subtema.jpg");
-        add(panelTituloConLogo);
+        add(createTitlePanel(tema));
         add(Box.createVerticalStrut(20));
-
         for (Subtema subtema : tema.getSubtemas()) {
-            JButton btnSubtema = crearBotonEstilizado(subtema.getNombre(), null, e -> {
-                mostrarVentanaSeleccion(subtema, menu);
-            });
+            JButton btnSubtema = crearBotonEstilizado(subtema.getNombre(), null, e -> mostrarVentanaSeleccion(subtema, menu));
             add(btnSubtema);
             add(Box.createVerticalStrut(5));
         }
-
         add(Box.createVerticalStrut(20));
+        add(createBackButton(menu));
+    }
 
+    private JPanel createTitlePanel(Tema tema) {
+        return crearPanelTituloConLogo("Subtemas | " + tema.getNombre(),
+                "src/main/resources/recursosGraficos/titulos/subtema.jpg");
+    }
+
+    private JPanel createSubtemaButtons(Tema tema, MenuPrincipalVentana menu) {
+        JPanel panel = crearPanelDegradadoDecorativo();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        for (Subtema subtema : tema.getSubtemas()) {
+            JButton btnSubtema = crearBotonEstilizado(subtema.getNombre(), null, e -> mostrarVentanaSeleccion(subtema, menu));
+            panel.add(btnSubtema);
+            panel.add(Box.createVerticalStrut(5));
+        }
+        return panel;
+    }
+
+    private JButton createBackButton(MenuPrincipalVentana menu) {
         JButton btnRegresar = new JButton("Regresar");
-        btnRegresar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnRegresar.setBackground(new Color(220, 53, 69));
-        btnRegresar.setForeground(Color.WHITE);
+        btnRegresar.setFont(new Font(FONT_NAME, Font.BOLD, FONT_SIZE));
+        btnRegresar.setBackground(BUTTON_COLOR);
+        btnRegresar.setForeground(BUTTON_TEXT_COLOR);
         btnRegresar.setFocusPainted(false);
         btnRegresar.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnRegresar.setMaximumSize(new Dimension(200, 40));
         btnRegresar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegresar.addActionListener(e -> menu.regresar());
-        add(btnRegresar);
+        return btnRegresar;
+    }
 
+    private void startAccessibilityThread(Tema tema, MenuPrincipalVentana menu) {
         new Thread(() -> {
             try {
                 SubtemaControlador.procesarAccesibilidad(tema, menu);
@@ -52,18 +78,29 @@ public class SubtemaVentana extends PanelDegradado {
     }
 
     private void mostrarVentanaSeleccion(Subtema subtema, MenuPrincipalVentana menu) {
+        JDialog dialog = createSelectionDialog();
+        JPanel panelContenido = createSelectionPanel(subtema, menu, dialog);
+        dialog.setContentPane(panelContenido);
+        dialog.setVisible(true);
+    }
+
+    private JDialog createSelectionDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Selecciona el tipo de contenido", true);
         dialog.setSize(400, 200);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout());
+        dialog.setUndecorated(true);
+        dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+        return dialog;
+    }
 
-        // Panel decorado
+    private JPanel createSelectionPanel(Subtema subtema, MenuPrincipalVentana menu, JDialog dialog) {
         PanelDegradado panelContenido = new PanelDegradado();
         panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
         panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JLabel lblMensaje = new JLabel("¿Qué tipo de contenido deseas ver?");
-        lblMensaje.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblMensaje.setFont(new Font(FONT_NAME, Font.BOLD, 18));
         lblMensaje.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblMensaje.setForeground(Color.WHITE);
         panelContenido.add(lblMensaje);
@@ -86,11 +123,6 @@ public class SubtemaVentana extends PanelDegradado {
         panelContenido.add(Box.createVerticalStrut(10));
         panelContenido.add(btnPractica);
 
-        dialog.setContentPane(panelContenido);
-        dialog.setUndecorated(true); // si quieres un estilo más moderno sin bordes
-        dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
-        dialog.setVisible(true);
-
-
+        return panelContenido;
     }
 }
